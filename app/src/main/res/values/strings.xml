@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Auto Mute</string>
+    
+    <!-- Preferences -->
+    
+    <!-- General -->
+    <string name="pref_general_title">General</string>
+    
+    <string name="pref_general_enabled_title">Enable Service</string>
+    <string name="pref_general_enabled_summary_off">Auto Mute service is not enabled.</string>
+    <string name="pref_general_enabled_summary_on">Auto Mute service is enabled.</string>
+    
+    <string name="pref_general_notifications_title">Notification Settings</string>
+    <string name="pref_general_notifications_summary">Disable or hide app notifications.</string>
+    
+    <!-- Auto Mute -->
+    <string name="pref_auto_mute_title">Auto Mute</string>
+    
+    <string name="pref_auto_mute_enabled_title">Auto Mute</string>
+    <string name="pref_auto_mute_enabled_summary_on">Automatically mute after audio stops playing.</string>
+    <string name="pref_auto_mute_enabled_summary_off">Don\'t automatically mute.</string>
+    
+    <string name="pref_auto_mute_delay_title">Auto Mute Delay</string>
+    <string name="pref_auto_mute_delay_summary" formatted="true">Automatically mute after %1$s.</string>
+    <string-array name="pref_auto_mute_delay_entries">
+        <item>10 Seconds</item>
+        <item>30 Seconds</item>
+        <item>1 Minute</item>
+        <item>2 Minutes</item>
+    </string-array>
+    <string-array name="pref_auto_mute_delay_values">
+        <item>10</item>
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+    </string-array>
+    
+    <string name="pref_auto_mute_toast_title">Show Toast</string>
+    <string name="pref_auto_mute_toast_summary_on">Show a toast when auto muting.</string>
+    <string name="pref_auto_mute_toast_summary_off">Don\'t show anything when auto muting.</string>
+    
+    <!-- Auto Unmute -->
+    <string name="pref_auto_unmute_title">Auto Unmute</string>
+    
+    <string name="pref_auto_unmute_default_volume_title">Default Volume</string>
+    <string name="pref_auto_unmute_default_volume_summary">Volume to use after being manually muted.</string>
+    
+    <string name="pref_auto_unmute_music_mode_title">Music</string>
+    <string name="pref_auto_unmute_music_mode_summary" formatted="true">%1$s when music starts playing.</string>
+    
+    <string name="pref_auto_unmute_media_mode_title">Media</string>
+    <string name="pref_auto_unmute_media_mode_summary" formatted="true">%1$s when media starts playing.</string>
+    
+    <string name="pref_auto_unmute_assistant_mode_title">Assistant</string>
+    <string name="pref_auto_unmute_assistant_mode_summary" formatted="true">%1$s when assistant speaks.</string>
+    
+    <string name="pref_auto_unmute_game_mode_title">Game</string>
+    <string name="pref_auto_unmute_game_mode_summary" formatted="true">%1$s when a games starts playing audio.</string>
+    
+    <string-array name="pref_auto_unmute_mode_entries">
+        <item>Never auto unmute</item>
+        <item>Ask to unmute</item>
+        <item>Always auto unmute</item>
+    </string-array>
+    <string-array name="pref_auto_unmute_mode_values">
+        <item>NEVER</item>
+        <item>ASK</item>
+        <item>ALWAYS</item>
+    </string-array>
+</resources>
