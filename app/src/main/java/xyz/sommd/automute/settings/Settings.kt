@@ -35,6 +35,10 @@ class Settings(private val context: Context): SharedPreferences.OnSharedPreferen
     private val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
     private val listeners = mutableSetOf<ChangeListener>()
     
+    init {
+        sharedPrefs.registerOnSharedPreferenceChangeListener(this)
+    }
+    
     fun setDefaultValues() {
         PreferenceManager.setDefaultValues(context, R.xml.preferences, false)
     }
