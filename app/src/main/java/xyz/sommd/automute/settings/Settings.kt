@@ -1,12 +1,23 @@
 package xyz.sommd.automute.settings
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.support.v7.preference.PreferenceManager
 import androidx.content.edit
 import xyz.sommd.automute.App
 import xyz.sommd.automute.R
 
-class Settings(private val context: Context) {
+class Settings(private val context: Context): SharedPreferences.OnSharedPreferenceChangeListener {
+    interface ChangeListener {
+        fun onSettingsChanged(settings: Settings, key: String)
+    }
+    
+    enum class UnmuteMode {
+        NEVER,
+        ASK,
+        ALWAYS;
+    }
+    
     companion object {
         const val SERVICE_ENABLED_KEY = "service_enabled"
         const val AUTO_MUTE_ENABLED_KEY = "auto_mute_enabled"
@@ -21,13 +32,34 @@ class Settings(private val context: Context) {
         fun from(context: Context) = (context.applicationContext as App).settings
     }
     
-    enum class UnmuteMode {
-        NEVER,
-        ASK,
-        ALWAYS;
+    private val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
+    private val listeners = mutableSetOf<ChangeListener>()
+    
+    fun setDefaultValues() {
+        PreferenceManager.setDefaultValues(context, R.xml.preferences, false)
     }
     
-    private val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
+    fun addChangeListener(listener: ChangeListener) {
+        listeners.add(listener)
+    }
+    
+    inline fun addChangeListener(crossinline listener: (Settings, String) -> Any?) {
+        addChangeListener(object: ChangeListener {
+            override fun onSettingsChanged(settings: Settings, key: String) {
+                listener(settings, key)
+            }
+        })
+    }
+    
+    fun removeChangeListener(listener: ChangeListener) {
+        listeners.remove(listener)
+    }
+    
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+        for (listener in listeners) {
+            listener.onSettingsChanged(this, key)
+        }
+    }
     
     var serviceEnabled: Boolean
         get() = sharedPrefs.getBoolean(
@@ -83,8 +115,4 @@ class Settings(private val context: Context) {
                 AUTO_UNMUTE_GAME_MODE_KEY, "NEVER"))
         set(value) = sharedPrefs.edit { putString(
                 AUTO_UNMUTE_GAME_MODE_KEY, value.name) }
-    
-    fun setDefaultValues() {
-        PreferenceManager.setDefaultValues(context, R.xml.preferences, false)
-    }
 }

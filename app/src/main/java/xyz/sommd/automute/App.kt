@@ -11,7 +11,5 @@ class App: Application() {
         
         settings = Settings(this)
         settings.setDefaultValues()
-        
-        
     }
 }
