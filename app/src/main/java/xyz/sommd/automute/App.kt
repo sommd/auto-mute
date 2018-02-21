@@ -1,17 +1,28 @@
 package xyz.sommd.automute
 
 import android.app.Application
+import android.content.Context
 import android.content.Intent
 import xyz.sommd.automute.service.AutoMuteService
+import xyz.sommd.automute.service.Notifications
 import xyz.sommd.automute.settings.Settings
 
 class App: Application(), Settings.ChangeListener {
+    companion object {
+        fun from(context: Context) = context.applicationContext as App
+    }
+    
+    lateinit var notifications: Notifications
     lateinit var settings: Settings
     
     override fun onCreate() {
         super.onCreate()
         
+        notifications = Notifications(this)
         settings = Settings(this)
+        
+        notifications.createChannels()
+        
         settings.setDefaultValues()
         settings.addChangeListener(this)
         
@@ -33,8 +44,7 @@ class App: Application(), Settings.ChangeListener {
     }
     
     private fun startAutoMuteService() {
-        // TODO Use startForegroundService
-        startService(Intent(this, AutoMuteService::class.java))
+        startForegroundService(Intent(this, AutoMuteService::class.java))
     }
     
     private fun stopAutoMuteService() {

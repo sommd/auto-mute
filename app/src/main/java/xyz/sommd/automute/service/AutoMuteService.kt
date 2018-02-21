@@ -15,6 +15,7 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener {
     override fun onBind(intent: Intent?): IBinder? = null
     
     private lateinit var settings: Settings
+    private lateinit var notifications: Notifications
     private lateinit var handler: Handler
     private lateinit var audioManager: AudioManager
     private lateinit var playbackMonitor: AudioPlaybackMonitor
@@ -23,11 +24,14 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener {
         Toast.makeText(this, "Starting Auto Mute Service", Toast.LENGTH_SHORT).show()
         
         settings = Settings.from(this)
+        notifications = Notifications.from(this)
         handler = Handler()
         audioManager = systemService()
         playbackMonitor = AudioPlaybackMonitor(this, this)
         
         audioManager.registerAudioPlaybackCallback(playbackMonitor, handler)
+        
+        startForeground(Notifications.STATUS_ID, notifications.createStatusNotification())
     }
     
     override fun onDestroy() {

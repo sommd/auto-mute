@@ -68,4 +68,12 @@
         <item>ASK</item>
         <item>ALWAYS</item>
     </string-array>
+    
+    <!-- Notifications -->
+    
+    <!-- Status -->
+    <string name="notif_channel_status_name">Status Notification</string>
+    
+    <string name="notif_status_content_title">Auto Mute Service</string>
+    <string name="notif_status_content_text">Auto Mute service is running</string>
 </resources>
