@@ -105,11 +105,12 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener {
         }
         
         if (audioManager.isStreamMute(stream) || audioManager.getStreamVolume(stream) == 0) {
+            val flags = if (settings.autoUnmuteShowUi) AudioManager.FLAG_SHOW_UI else 0
+            
             when (mode) {
                 Settings.UnmuteMode.ALWAYS -> {
                     // Unmute stream
-                    audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_UNMUTE,
-                                                    AudioManager.FLAG_SHOW_UI)
+                    audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_UNMUTE, flags)
                     
                     // Set to default volume if volume is 0
                     if (audioManager.getStreamVolume(stream) == 0) {
@@ -117,13 +118,13 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener {
                         
                         val maxVolume = audioManager.getStreamMaxVolume(stream)
                         val volume = (settings.autoUnmuteDefaultVolume * maxVolume).toInt()
-                        audioManager.setStreamVolume(stream, volume, AudioManager.FLAG_SHOW_UI)
+                        audioManager.setStreamVolume(stream, volume, flags)
                     }
                 }
                 Settings.UnmuteMode.SHOW_UI -> {
                     // Show volume UI
                     audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_SAME,
-                                                    AudioManager.FLAG_SHOW_UI)
+                                                    flags or AudioManager.FLAG_SHOW_UI)
                 }
             }
         }
