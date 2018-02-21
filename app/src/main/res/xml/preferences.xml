@@ -46,7 +46,7 @@
     </PreferenceCategory>
     
     <PreferenceCategory android:title="@string/pref_auto_unmute_title">
-        <SeekBarPreference
+        <xyz.sommd.automute.utils.FloatSeekBarPreference
             android:defaultValue="50"
             android:key="auto_unmute_default_volume"
             android:max="100"

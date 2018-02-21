@@ -90,8 +90,8 @@ class Settings(private val context: Context): SharedPreferences.OnSharedPreferen
     // Auto Unmute
     
     var autoUnmuteDefaultVolume: Float
-        get() = sharedPrefs.getInt(AUTO_UNMUTE_DEFAULT_VOLUME_KEY, 50) / 100f
-        set(value) = sharedPrefs.edit { putInt(AUTO_UNMUTE_DEFAULT_VOLUME_KEY, (value * 100).toInt()) }
+        get() = sharedPrefs.getFloat(AUTO_UNMUTE_DEFAULT_VOLUME_KEY, 0.5f)
+        set(value) = sharedPrefs.edit { putFloat(AUTO_UNMUTE_DEFAULT_VOLUME_KEY, value) }
     
     var autoUnmuteShowUi: Boolean
         get() = sharedPrefs.getBoolean(AUTO_UNMUTE_SHOW_UI_KEY, true)
