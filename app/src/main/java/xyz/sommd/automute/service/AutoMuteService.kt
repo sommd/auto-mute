@@ -56,7 +56,7 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, Settings.Change
     }
     
     override fun onCreate() {
-        Toast.makeText(this, "Starting Auto Mute Service", Toast.LENGTH_SHORT).show()
+        log("Starting")
         
         settings = Settings.from(this)
         notifications = Notifications.from(this)
@@ -71,7 +71,7 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, Settings.Change
     }
     
     override fun onDestroy() {
-        Toast.makeText(this, "Stopping Auto Mute Service", Toast.LENGTH_SHORT).show()
+        log("Stopping")
         
         settings.removeChangeListener(this)
         audioManager.unregisterAudioPlaybackCallback(playbackMonitor)
