@@ -20,18 +20,19 @@ package xyz.sommd.automute.utils
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 
-class AudioPlaybackMonitor(private val listener: Listener):
-        AudioManager.AudioPlaybackCallback() {
-    
+class AudioPlaybackMonitor(private val listener: Listener): AudioManager.AudioPlaybackCallback() {
     interface Listener {
-        fun audioPlaybackStarted(config: AudioPlaybackConfiguration)
-        fun audioPlaybackStopped(config: AudioPlaybackConfiguration)
+        fun audioPlaybackStarted(config: AudioPlaybackConfiguration) {}
+        fun audioPlaybackStopped(config: AudioPlaybackConfiguration) {}
+        fun audioPlaybackChanged(configs: List<AudioPlaybackConfiguration>) {}
     }
     
     private val _playbackConfigs = mutableSetOf<AudioPlaybackConfiguration>()
     val playbackConfigs: Set<AudioPlaybackConfiguration> = _playbackConfigs
     
-    override fun onPlaybackConfigChanged(newConfigs: MutableList<AudioPlaybackConfiguration>) {
+    override fun onPlaybackConfigChanged(newConfigs: List<AudioPlaybackConfiguration>) {
+        listener.audioPlaybackChanged(newConfigs)
+        
         for (config in newConfigs) {
             if (config !in _playbackConfigs) {
                 _playbackConfigs.add(config)
