@@ -9,7 +9,6 @@ import android.os.Handler
 import android.os.IBinder
 import android.widget.Toast
 import androidx.content.systemService
-import xyz.sommd.automute.R
 import xyz.sommd.automute.settings.Settings
 import xyz.sommd.automute.utils.AudioPlaybackMonitor
 import xyz.sommd.automute.utils.log
@@ -52,14 +51,8 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener {
     private val autoMuteRunnable = Runnable {
         log("Auto muting now")
         
-        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0)
-        
-        if (settings.autoMuteToast) {
-            Toast.makeText(this@AutoMuteService,
-                           R.string.toast_auto_mute_text,
-                           Toast.LENGTH_SHORT)
-                    .show()
-        }
+        val flags = if (settings.autoMuteShowUi) AudioManager.FLAG_SHOW_UI else 0
+        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, flags)
     }
     
     override fun onCreate() {

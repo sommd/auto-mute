@@ -39,10 +39,10 @@
         <SwitchPreference
             android:defaultValue="false"
             android:dependency="auto_mute_enabled"
-            android:key="auto_mute_toast"
-            android:summaryOff="@string/pref_auto_mute_toast_summary_off"
-            android:summaryOn="@string/pref_auto_mute_toast_summary_on"
-            android:title="@string/pref_auto_mute_toast_title" />
+            android:key="auto_mute_show_ui"
+            android:summaryOff="@string/pref_auto_mute_show_ui_summary_off"
+            android:summaryOn="@string/pref_auto_mute_show_ui_summary_on"
+            android:title="@string/pref_auto_mute_show_ui_title" />
     </PreferenceCategory>
     
     <PreferenceCategory android:title="@string/pref_auto_unmute_title">

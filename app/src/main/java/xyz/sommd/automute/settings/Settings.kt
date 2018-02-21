@@ -23,7 +23,7 @@ class Settings(private val context: Context): SharedPreferences.OnSharedPreferen
         
         const val AUTO_MUTE_ENABLED_KEY = "auto_mute_enabled"
         const val AUTO_MUTE_DELAY_KEY = "auto_mute_delay"
-        const val AUTO_MUTE_TOAST_KEY = "auto_mute_toast"
+        const val AUTO_MUTE_SHOW_UI_KEY = "auto_mute_show_ui"
         
         const val AUTO_UNMUTE_DEFAULT_VOLUME_KEY = "auto_unmute_default_volume"
         const val AUTO_UNMUTE_SHOW_UI_KEY = "auto_unmute_show_ui"
@@ -83,9 +83,9 @@ class Settings(private val context: Context): SharedPreferences.OnSharedPreferen
         get() = sharedPrefs.getString(AUTO_MUTE_DELAY_KEY, "30").toLong()
         set(value) = sharedPrefs.edit { putString(AUTO_MUTE_DELAY_KEY, value.toString()) }
     
-    var autoMuteToast: Boolean
-        get() = sharedPrefs.getBoolean(AUTO_MUTE_TOAST_KEY, false)
-        set(value) = sharedPrefs.edit { putBoolean(AUTO_MUTE_TOAST_KEY, value) }
+    var autoMuteShowUi: Boolean
+        get() = sharedPrefs.getBoolean(AUTO_MUTE_SHOW_UI_KEY, false)
+        set(value) = sharedPrefs.edit { putBoolean(AUTO_MUTE_SHOW_UI_KEY, value) }
     
     // Auto Unmute
     

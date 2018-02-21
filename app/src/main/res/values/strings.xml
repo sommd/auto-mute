@@ -36,9 +36,9 @@
         <item>120</item>
     </string-array>
     
-    <string name="pref_auto_mute_toast_title">Show Toast</string>
-    <string name="pref_auto_mute_toast_summary_on">Show a toast when auto muting.</string>
-    <string name="pref_auto_mute_toast_summary_off">Don\'t show anything when auto muting.</string>
+    <string name="pref_auto_mute_show_ui_title">Show Volume Control</string>
+    <string name="pref_auto_mute_show_ui_summary_on">Show volume control when auto unmuting.</string>
+    <string name="pref_auto_mute_show_ui_summary_off">Don\'t show anything when auto muting.</string>
     
     <!-- Auto Unmute -->
     <string name="pref_auto_unmute_title">Auto Unmute</string>
@@ -48,7 +48,7 @@
     
     <string name="pref_auto_unmute_show_ui_title">Show Volume Control</string>
     <string name="pref_auto_unmute_show_ui_summary_on">Show volume control when auto unmuting.</string>
-    <string name="pref_auto_unmute_show_ui_summary_off">Don\'t show volume control when auto unmuting.</string>
+    <string name="pref_auto_unmute_show_ui_summary_off">Don\'t show anything when auto unmuting.</string>
     
     <string name="pref_auto_unmute_music_mode_title">Music</string>
     <string name="pref_auto_unmute_music_mode_summary" formatted="true">%1$s when music starts playing.</string>
@@ -80,7 +80,4 @@
     
     <string name="notif_status_content_title">Auto Mute Service</string>
     <string name="notif_status_content_text">Auto Mute service is running</string>
-    
-    <!-- Toasts -->
-    <string name="toast_auto_mute_text">Audio muted</string>
 </resources>
