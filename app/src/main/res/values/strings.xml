@@ -106,6 +106,25 @@
     <!-- Status -->
     <string name="notif_channel_status_name">Status Notification</string>
     
-    <string name="notif_status_content_title">Auto Mute Service</string>
-    <string name="notif_status_content_text">Auto Mute service is running</string>
+    <plurals name="notif_status_total_streams">
+        <item quantity="one">%1$d audio stream playing</item>
+        <item quantity="other">%1$d audio streams playing</item>
+    </plurals>
+    <plurals name="notif_status_total_types">
+        <item quantity="one">%1$d type of audio playing</item>
+        <item quantity="other">%1$d types of audio playing</item>
+    </plurals>
+    <plurals name="notif_status_type_count">
+        <item quantity="one">%1$d %2$s audio stream playing</item>
+        <item quantity="other">%1$d %2$s audio streams playing</item>
+    </plurals>
+    
+    <!-- Other -->
+    <string-array name="audio_type_names">
+        <item>music</item>
+        <item>media</item>
+        <item>assistant</item>
+        <item>game</item>
+        <item>unknown</item>
+    </string-array>
 </resources>

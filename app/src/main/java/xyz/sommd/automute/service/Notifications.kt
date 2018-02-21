@@ -23,6 +23,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.AudioPlaybackConfiguration
 import androidx.content.systemService
 import xyz.sommd.automute.App
 import xyz.sommd.automute.R
@@ -53,14 +54,57 @@ class Notifications(private val context: Context) {
         notifManager.createNotificationChannel(statusChannel)
     }
     
-    fun createStatusNotification(): Notification {
+    fun updateStatusNotification(playbackConfigs: List<AutoMuteService.AudioType>) {
+        notifManager.notify(STATUS_ID, createStatusNotification(playbackConfigs))
+    }
+    
+    fun createStatusNotification(audioStreams: List<AutoMuteService.AudioType> = emptyList()):
+            Notification {
+        val typeCounts = audioStreams.groupBy { it }.mapValues { it.value.size }
+        val totalStreams = audioStreams.size
+        val totalTypes = typeCounts.size
+        
         return Notification.Builder(context, STATUS_CHANNEL).apply {
             setSmallIcon(R.drawable.ic_notif_status)
-            setContentTitle(res.getText(R.string.notif_status_content_title))
-            setContentText(res.getText(R.string.notif_status_content_text))
+            
+            // Always the total number of streams playing
+            setContentTitle(res.getQuantityString(R.plurals.notif_status_total_streams,
+                                                  totalStreams, totalStreams))
+            
+            if (totalTypes == 1) {
+                // 1 type implies audioStreams.size >= 1
+                val type = audioStreams.first()
+                val count = audioStreams.size
+                
+                // Count of audio only type
+                setContentText(getTypeCountText(type, count))
+            } else {
+                // Number of different audio types
+                setContentText(res.getQuantityString(R.plurals.notif_status_total_types,
+                                                     totalTypes, totalTypes))
+                
+                if (totalTypes > 0) {
+                    val style = Notification.InboxStyle()
+                    
+                    // Counts of each audio type
+                    for (type in typeCounts.keys.sorted()) {
+                        val count = typeCounts[type] ?: 0
+                        style.addLine(getTypeCountText(type, count))
+                    }
+                    
+                    setStyle(style)
+                }
+            }
+            
+            // Open SettingsActivity when clicked
             setContentIntent(PendingIntent.getActivity(context, 0, Intent(
                     context, SettingsActivity::class.java
             ), 0))
         }.build()
+    }
+    
+    private fun getTypeCountText(type: AutoMuteService.AudioType, count: Int): CharSequence {
+        val typeName = res.getStringArray(R.array.audio_type_names)[type.ordinal]
+        return res.getQuantityString(R.plurals.notif_status_type_count, count, count, typeName)
     }
 }

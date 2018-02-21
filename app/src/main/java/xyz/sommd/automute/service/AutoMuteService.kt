@@ -129,6 +129,10 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, Settings.Change
         }
     }
     
+    override fun audioPlaybackChanged(configs: List<AudioPlaybackConfiguration>) {
+        notifications.updateStatusNotification(configs.map { AudioType.from(it.audioAttributes) })
+    }
+    
     private fun getAutoUnmuteMode(audioType: AudioType) = when (audioType) {
         AudioType.MUSIC -> settings.autoUnmuteMusicMode
         AudioType.MEDIA -> settings.autoUnmuteMediaMode
