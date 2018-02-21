@@ -22,7 +22,7 @@
     <string name="pref_auto_mute_enabled_summary_off">Don\'t automatically mute.</string>
     
     <string name="pref_auto_mute_delay_title">Auto Mute Delay</string>
-    <string name="pref_auto_mute_delay_summary" formatted="true">Automatically mute after %1$s.</string>
+    <string name="pref_auto_mute_delay_summary" formatted="true">Automatically mute %1$s after audio stops playing.</string>
     <string-array name="pref_auto_mute_delay_entries">
         <item>0 seconds</item>
         <item>10 seconds</item>
