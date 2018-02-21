@@ -120,7 +120,7 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener {
                         audioManager.setStreamVolume(stream, volume, AudioManager.FLAG_SHOW_UI)
                     }
                 }
-                Settings.UnmuteMode.ASK -> {
+                Settings.UnmuteMode.SHOW_UI -> {
                     // Show volume UI
                     audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_SAME,
                                                     AudioManager.FLAG_SHOW_UI)

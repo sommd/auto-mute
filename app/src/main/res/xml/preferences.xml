@@ -63,7 +63,7 @@
             android:title="@string/pref_auto_unmute_music_mode_title" />
         
         <DropDownPreference
-            android:defaultValue="ASK"
+            android:defaultValue="SHOW_UI"
             android:entries="@array/pref_auto_unmute_mode_entries"
             android:entryValues="@array/pref_auto_unmute_mode_values"
             android:key="auto_unmute_media_mode"

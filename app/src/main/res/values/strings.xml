@@ -59,14 +59,14 @@
     <string name="pref_auto_unmute_game_mode_summary" formatted="true">%1$s when a games starts playing audio.</string>
     
     <string-array name="pref_auto_unmute_mode_entries">
-        <item>Never auto unmute</item>
-        <item>Ask to unmute</item>
         <item>Always auto unmute</item>
+        <item>Show volume control</item>
+        <item>Never auto unmute</item>
     </string-array>
     <string-array name="pref_auto_unmute_mode_values">
-        <item>NEVER</item>
-        <item>ASK</item>
         <item>ALWAYS</item>
+        <item>SHOW_UI</item>
+        <item>NEVER</item>
     </string-array>
     
     <!-- Notifications -->
