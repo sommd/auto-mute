@@ -82,9 +82,9 @@ class Settings(private val context: Context): SharedPreferences.OnSharedPreferen
         get() = sharedPrefs.getBoolean(AUTO_MUTE_TOAST_KEY, false)
         set(value) = sharedPrefs.edit { putBoolean(AUTO_MUTE_TOAST_KEY, value) }
     
-    var autoUnmuteDefaultVolume: Int
-        get() = sharedPrefs.getInt(AUTO_UNMUTE_DEFAULT_VOLUME_KEY, 50)
-        set(value) = sharedPrefs.edit { putInt(AUTO_UNMUTE_DEFAULT_VOLUME_KEY, value) }
+    var autoUnmuteDefaultVolume: Float
+        get() = sharedPrefs.getInt(AUTO_UNMUTE_DEFAULT_VOLUME_KEY, 50) / 100f
+        set(value) = sharedPrefs.edit { putInt(AUTO_UNMUTE_DEFAULT_VOLUME_KEY, (value * 100).toInt()) }
     
     var autoUnmuteMusicMode: UnmuteMode
         get() = UnmuteMode.valueOf(sharedPrefs.getString(AUTO_UNMUTE_MUSIC_MODE_KEY, "ALWAYS"))
