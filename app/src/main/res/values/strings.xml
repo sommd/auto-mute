@@ -92,6 +92,15 @@
         <item>NEVER</item>
     </string-array>
     
+    <!-- About -->
+    <string name="pref_about_title">About</string>
+    
+    <string name="pref_about_project_title">View Project Page</string>
+    
+    <string name="pref_about_issue_title">Report an Issue</string>
+    
+    <string name="pref_about_copyright_summary">Copyright &#169; 2018 David Sommerich</string>
+    
     <!-- Notifications -->
     
     <!-- Status -->

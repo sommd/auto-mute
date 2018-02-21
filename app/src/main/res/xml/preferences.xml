@@ -110,4 +110,22 @@
             android:summary="@string/pref_auto_unmute_game_mode_summary"
             android:title="@string/pref_auto_unmute_game_mode_title" />
     </PreferenceCategory>
+    
+    <PreferenceCategory android:title="@string/pref_about_title">
+        <Preference android:title="@string/pref_about_project_title">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/sommd/auto-mute" />
+        </Preference>
+        
+        <Preference android:title="@string/pref_about_issue_title">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/sommd/auto-mute/issues/new" />
+        </Preference>
+        
+        <Preference
+            android:enabled="false"
+            android:summary="@string/pref_about_copyright_summary" />
+    </PreferenceCategory>
 </PreferenceScreen>
