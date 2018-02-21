@@ -24,12 +24,14 @@
     <string name="pref_auto_mute_delay_title">Auto Mute Delay</string>
     <string name="pref_auto_mute_delay_summary" formatted="true">Automatically mute after %1$s.</string>
     <string-array name="pref_auto_mute_delay_entries">
-        <item>10 Seconds</item>
-        <item>30 Seconds</item>
-        <item>1 Minute</item>
-        <item>2 Minutes</item>
+        <item>0 seconds</item>
+        <item>10 seconds</item>
+        <item>30 seconds</item>
+        <item>1 minute</item>
+        <item>2 minutes</item>
     </string-array>
     <string-array name="pref_auto_mute_delay_values">
+        <item>0</item>
         <item>10</item>
         <item>30</item>
         <item>60</item>
