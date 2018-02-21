@@ -24,7 +24,6 @@ import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
 import android.os.IBinder
-import android.widget.Toast
 import androidx.content.systemService
 import xyz.sommd.automute.settings.Settings
 import xyz.sommd.automute.utils.AudioPlaybackMonitor
@@ -79,7 +78,7 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, Settings.Change
         notifications = Notifications.from(this)
         handler = Handler()
         audioManager = systemService()
-        playbackMonitor = AudioPlaybackMonitor(this, this)
+        playbackMonitor = AudioPlaybackMonitor(this)
         
         settings.addChangeListener(this)
         audioManager.registerAudioPlaybackCallback(playbackMonitor, handler)
@@ -99,9 +98,7 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, Settings.Change
         val audioType = AudioType.from(config.audioAttributes)
         val unmuteMode = getAutoUnmuteMode(audioType)
         
-        log("Playback started: ${config.audioAttributes}")
-        log("Audio type: $audioType")
-        log("Unmute mode: $unmuteMode")
+        log("Playback started: $audioType, $unmuteMode, ${config.audioAttributes}")
         
         if (unmuteMode != null) {
             // Cancel auto mute

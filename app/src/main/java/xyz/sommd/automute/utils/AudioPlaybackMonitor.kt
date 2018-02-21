@@ -17,15 +17,10 @@
 
 package xyz.sommd.automute.utils
 
-import android.content.Context
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
-import android.os.Handler
-import android.os.Looper
 
-class AudioPlaybackMonitor(private val context: Context,
-                           private val listener: Listener,
-                           private val handler: Handler = Handler(Looper.getMainLooper())):
+class AudioPlaybackMonitor(private val listener: Listener):
         AudioManager.AudioPlaybackCallback() {
     
     interface Listener {
@@ -44,9 +39,10 @@ class AudioPlaybackMonitor(private val context: Context,
             }
         }
         
-        for (config in _playbackConfigs) {
+        val iter = _playbackConfigs.iterator()
+        for (config in iter) {
             if (config !in newConfigs) {
-                _playbackConfigs.remove(config)
+                iter.remove()
                 listener.audioPlaybackStopped(config)
             }
         }
