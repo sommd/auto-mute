@@ -14,7 +14,7 @@ import xyz.sommd.automute.utils.AudioPlaybackMonitor
 import xyz.sommd.automute.utils.log
 import java.util.concurrent.TimeUnit
 
-class AutoMuteService: Service(), AudioPlaybackMonitor.Listener {
+class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, Settings.ChangeListener {
     enum class AudioType {
         MUSIC,
         MEDIA,
@@ -64,6 +64,7 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener {
         audioManager = systemService()
         playbackMonitor = AudioPlaybackMonitor(this, this)
         
+        settings.addChangeListener(this)
         audioManager.registerAudioPlaybackCallback(playbackMonitor, handler)
         
         startForeground(Notifications.STATUS_ID, notifications.createStatusNotification())
@@ -72,7 +73,9 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener {
     override fun onDestroy() {
         Toast.makeText(this, "Stopping Auto Mute Service", Toast.LENGTH_SHORT).show()
         
+        settings.removeChangeListener(this)
         audioManager.unregisterAudioPlaybackCallback(playbackMonitor)
+        cancelAutoMute()
     }
     
     override fun audioPlaybackStarted(config: AudioPlaybackConfiguration) {
@@ -85,7 +88,7 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener {
         
         if (unmuteMode != null) {
             // Cancel auto mute
-            handler.removeCallbacks(autoMuteRunnable)
+            cancelAutoMute()
             
             // Unmute Stream
             val stream = config.audioAttributes.volumeControlStream
@@ -148,6 +151,21 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener {
                     // Show volume UI
                     audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_SAME,
                                                     flags or AudioManager.FLAG_SHOW_UI)
+                }
+            }
+        }
+    }
+    
+    private fun cancelAutoMute() {
+        handler.removeCallbacks(autoMuteRunnable)
+        log("Auto mute cancelled")
+    }
+    
+    override fun onSettingsChanged(settings: Settings, key: String) {
+        when (key) {
+            Settings.AUTO_MUTE_ENABLED_KEY -> {
+                if (!settings.autoMuteEnabled) {
+                    cancelAutoMute()
                 }
             }
         }
