@@ -79,8 +79,8 @@ class Settings(private val context: Context): SharedPreferences.OnSharedPreferen
         set(value) = sharedPrefs.edit { putBoolean(AUTO_MUTE_ENABLED_KEY, value) }
     
     // TODO use int pref
-    var autoMuteDelay: Int
-        get() = sharedPrefs.getString(AUTO_MUTE_DELAY_KEY, "30").toInt()
+    var autoMuteDelay: Long
+        get() = sharedPrefs.getString(AUTO_MUTE_DELAY_KEY, "30").toLong()
         set(value) = sharedPrefs.edit { putString(AUTO_MUTE_DELAY_KEY, value.toString()) }
     
     var autoMuteToast: Boolean

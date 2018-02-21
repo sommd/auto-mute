@@ -16,20 +16,21 @@ class AudioPlaybackMonitor(private val context: Context,
         fun audioPlaybackStopped(config: AudioPlaybackConfiguration)
     }
     
-    private val playbackConfigs = mutableSetOf<AudioPlaybackConfiguration>()
+    private val _playbackConfigs = mutableSetOf<AudioPlaybackConfiguration>()
+    val playbackConfigs: Set<AudioPlaybackConfiguration> = _playbackConfigs
     
     override fun onPlaybackConfigChanged(newConfigs: MutableList<AudioPlaybackConfiguration>) {
         for (config in newConfigs) {
-            if (config !in playbackConfigs) {
+            if (config !in _playbackConfigs) {
+                _playbackConfigs.add(config)
                 listener.audioPlaybackStarted(config)
-                playbackConfigs.add(config)
             }
         }
         
-        for (config in playbackConfigs) {
+        for (config in _playbackConfigs) {
             if (config !in newConfigs) {
+                _playbackConfigs.remove(config)
                 listener.audioPlaybackStopped(config)
-                playbackConfigs.remove(config)
             }
         }
     }

@@ -80,4 +80,7 @@
     
     <string name="notif_status_content_title">Auto Mute Service</string>
     <string name="notif_status_content_text">Auto Mute service is running</string>
+    
+    <!-- Toasts -->
+    <string name="toast_auto_mute_text">Audio muted</string>
 </resources>

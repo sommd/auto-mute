@@ -9,9 +9,11 @@ import android.os.Handler
 import android.os.IBinder
 import android.widget.Toast
 import androidx.content.systemService
+import xyz.sommd.automute.R
 import xyz.sommd.automute.settings.Settings
 import xyz.sommd.automute.utils.AudioPlaybackMonitor
 import xyz.sommd.automute.utils.log
+import java.util.concurrent.TimeUnit
 
 class AutoMuteService: Service(), AudioPlaybackMonitor.Listener {
     enum class AudioType {
@@ -41,13 +43,24 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener {
         }
     }
     
-    override fun onBind(intent: Intent?): IBinder? = null
-    
     private lateinit var settings: Settings
     private lateinit var notifications: Notifications
     private lateinit var handler: Handler
     private lateinit var audioManager: AudioManager
     private lateinit var playbackMonitor: AudioPlaybackMonitor
+    
+    private val autoMuteRunnable = Runnable {
+        log("Auto muting now")
+        
+        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0)
+        
+        if (settings.autoMuteToast) {
+            Toast.makeText(this@AutoMuteService,
+                           R.string.toast_auto_mute_text,
+                           Toast.LENGTH_SHORT)
+                    .show()
+        }
+    }
     
     override fun onCreate() {
         Toast.makeText(this, "Starting Auto Mute Service", Toast.LENGTH_SHORT).show()
@@ -78,6 +91,10 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener {
         log("Unmute mode: $unmuteMode")
         
         if (unmuteMode != null) {
+            // Cancel auto mute
+            handler.removeCallbacks(autoMuteRunnable)
+            
+            // Unmute Stream
             val stream = config.audioAttributes.volumeControlStream
             unmute(unmuteMode, stream)
         }
@@ -86,7 +103,20 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener {
     override fun audioPlaybackStopped(config: AudioPlaybackConfiguration) {
         log("Playback stopped: ${config.audioAttributes}")
         
-        // TODO
+        if (settings.autoMuteEnabled) {
+            val audioPlaying = playbackMonitor.playbackConfigs
+                    .any { AudioType.from(it.audioAttributes) != AudioType.UNKNOWN }
+            
+            if (!audioPlaying) {
+                // Schedule auto mute
+                val delay = TimeUnit.SECONDS.toMillis(settings.autoMuteDelay)
+                handler.postDelayed(autoMuteRunnable, delay)
+                
+                log("Audio stopped, auto mute in ${delay}ms")
+            } else {
+                log("Audio still playing, not auto muting")
+            }
+        }
     }
     
     private fun getAutoUnmuteMode(audioType: AudioType) = when (audioType) {
@@ -129,4 +159,6 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener {
             }
         }
     }
+    
+    override fun onBind(intent: Intent?): IBinder? = null
 }
