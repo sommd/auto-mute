@@ -54,6 +54,13 @@
             android:summary="@string/pref_auto_unmute_default_volume_summary"
             android:title="@string/pref_auto_unmute_default_volume_title" />
         
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="auto_unmute_show_ui"
+            android:summaryOff="@string/pref_auto_unmute_show_ui_summary_off"
+            android:summaryOn="@string/pref_auto_unmute_show_ui_summary_on"
+            android:title="@string/pref_auto_unmute_show_ui_title" />
+        
         <DropDownPreference
             android:defaultValue="ALWAYS"
             android:entries="@array/pref_auto_unmute_mode_entries"
@@ -69,7 +76,7 @@
             android:key="auto_unmute_media_mode"
             android:summary="@string/pref_auto_unmute_media_mode_summary"
             android:title="@string/pref_auto_unmute_media_mode_title" />
-    
+        
         <DropDownPreference
             android:defaultValue="ALWAYS"
             android:entries="@array/pref_auto_unmute_mode_entries"
@@ -77,7 +84,7 @@
             android:key="auto_unmute_assistant_mode"
             android:summary="@string/pref_auto_unmute_assistant_mode_summary"
             android:title="@string/pref_auto_unmute_assistant_mode_title" />
-    
+        
         <DropDownPreference
             android:defaultValue="NEVER"
             android:entries="@array/pref_auto_unmute_mode_entries"

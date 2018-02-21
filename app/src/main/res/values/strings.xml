@@ -46,6 +46,10 @@
     <string name="pref_auto_unmute_default_volume_title">Default Volume</string>
     <string name="pref_auto_unmute_default_volume_summary">Volume to use after being manually muted.</string>
     
+    <string name="pref_auto_unmute_show_ui_title">Show Volume Control</string>
+    <string name="pref_auto_unmute_show_ui_summary_on">Show volume control when auto unmuting.</string>
+    <string name="pref_auto_unmute_show_ui_summary_off">Don\'t show volume control when auto unmuting.</string>
+    
     <string name="pref_auto_unmute_music_mode_title">Music</string>
     <string name="pref_auto_unmute_music_mode_summary" formatted="true">%1$s when music starts playing.</string>
     
