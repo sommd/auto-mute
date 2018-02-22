@@ -16,7 +16,8 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory android:title="@string/pref_general_title">
         <SwitchPreference
             android:defaultValue="true"
@@ -69,7 +70,8 @@
             android:max="100"
             android:min="0"
             android:summary="@string/pref_auto_unmute_default_volume_summary"
-            android:title="@string/pref_auto_unmute_default_volume_title" />
+            android:title="@string/pref_auto_unmute_default_volume_title"
+            app:showSeekBarValue="false" />
         
         <SwitchPreference
             android:defaultValue="true"
