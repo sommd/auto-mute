@@ -20,6 +20,7 @@ package xyz.sommd.automute.settings
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.PreferenceFragmentCompat
+import xyz.sommd.automute.BuildConfig
 import xyz.sommd.automute.R
 
 class SettingsActivity: AppCompatActivity() {
@@ -35,6 +36,11 @@ class SettingsActivity: AppCompatActivity() {
     class SettingsFragment: PreferenceFragmentCompat() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
+            
+            // Set app version string
+            findPreference("app_version").summary = resources.getString(
+                    R.string.pref_about_app_version_summary,
+                    BuildConfig.VERSION_NAME, BuildConfig.BUILD_TYPE)
         }
     }
 }

@@ -99,6 +99,8 @@
     
     <string name="pref_about_issue_title">Report an Issue</string>
     
+    <string name="pref_about_app_version_summary">Version %1$s (%2$s)</string>
+    
     <string name="pref_about_copyright_summary">Copyright &#169; 2018 David Sommerich</string>
     
     <!-- Notifications -->
