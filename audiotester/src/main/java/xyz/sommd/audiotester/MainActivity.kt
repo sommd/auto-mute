@@ -18,9 +18,12 @@
 package xyz.sommd.audiotester
 
 import android.media.AudioAttributes
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import androidx.net.toUri
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity: AppCompatActivity() {
@@ -41,14 +44,14 @@ class MainActivity: AppCompatActivity() {
         )
     }
     
-    private lateinit var audioSampleUrls: List<String>
+    private lateinit var audioSampleUris: List<Uri>
     private val adapter = AudioStreamAdapter()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         
-        audioSampleUrls = resources.getStringArray(R.array.audio_sample_urls).toList()
+        audioSampleUris = resources.getStringArray(R.array.audio_sample_urls).map(String::toUri)
         
         audioStreamRecycler.adapter = adapter
     }
@@ -67,12 +70,16 @@ class MainActivity: AppCompatActivity() {
                 .setContentType(AUDIO_CONTENT_TYPES[contentTypeSpinner.selectedItemPosition])
                 .build()
         
-        val audioStream = AudioStream(
-                audioSampleUrls[sampleSpinner.selectedItemPosition],
-                audioAttributes,
-                sampleSpinner.selectedItem as CharSequence,
-                usageSpinner.selectedItem as CharSequence,
-                contentTypeSpinner.selectedItem as CharSequence)
+        val mediaPlayer = MediaPlayer()
+        mediaPlayer.setDataSource(this, audioSampleUris[sampleSpinner.selectedItemPosition])
+        mediaPlayer.setAudioAttributes(audioAttributes)
+        mediaPlayer.isLooping = true
+        mediaPlayer.prepare()
+        
+        val audioStream = AudioStream(mediaPlayer,
+                                      sampleSpinner.selectedItem as CharSequence,
+                                      usageSpinner.selectedItem as CharSequence,
+                                      contentTypeSpinner.selectedItem as CharSequence)
         
         adapter.addAudioStream(audioStream)
     }

@@ -17,24 +17,15 @@
 
 package xyz.sommd.audiotester
 
-import android.media.AudioAttributes
 import android.media.MediaPlayer
 import xyz.sommd.audiotester.utils.log
 
-class AudioStream(url: String, audioAttributes: AudioAttributes,
+class AudioStream(private val mediaPlayer: MediaPlayer,
                   val sampleName: CharSequence,
                   val usageName: CharSequence,
                   val contentTypeName: CharSequence) {
     
-    private val mediaPlayer = MediaPlayer()
-    
     val isPlaying get() = mediaPlayer.isPlaying
-    
-    init {
-        mediaPlayer.setDataSource(url)
-        mediaPlayer.setAudioAttributes(audioAttributes)
-        mediaPlayer.prepareAsync()
-    }
     
     fun play() {
         log("Playing: $mediaPlayer")

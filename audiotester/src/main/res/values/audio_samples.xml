@@ -17,9 +17,9 @@
 
 <resources>
     <string-array name="audio_sample_titles">
-        <item>Broke For Free - Night Owl</item>
+        <item>Silence</item>
     </string-array>
     <string-array name="audio_sample_urls">
-        <item>https://freemusicarchive.org/music/download/c1d4cc787740122967c05f5a25a492ae03d983e7</item>
+        <item>android.resource://xyz.sommd.audiotester/raw/silence</item>
     </string-array>
 </resources>
