@@ -39,21 +39,20 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, Settings.Change
         UNKNOWN;
         
         companion object {
-            fun from(audioAttributes: AudioAttributes) = when (audioAttributes.contentType) {
-                AudioAttributes.CONTENT_TYPE_MUSIC -> MUSIC
-                AudioAttributes.CONTENT_TYPE_MOVIE -> MEDIA
-                else -> {
-                    when (audioAttributes.usage) {
-                        AudioAttributes.USAGE_MEDIA -> MEDIA
-                        AudioAttributes.USAGE_ASSISTANT,
-                        AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE -> ASSISTANT
-                        AudioAttributes.USAGE_GAME -> GAME
-                        else -> when (audioAttributes.volumeControlStream) {
-                            AudioManager.STREAM_MUSIC -> MEDIA
-                            else -> UNKNOWN
-                        }
-                    }
+            fun from(audioAttributes: AudioAttributes) = when (audioAttributes.usage) {
+                AudioAttributes.USAGE_GAME -> GAME
+                AudioAttributes.USAGE_ASSISTANT,
+                AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE -> ASSISTANT
+                AudioAttributes.USAGE_MEDIA -> when (audioAttributes.contentType) {
+                    AudioAttributes.CONTENT_TYPE_MUSIC -> MUSIC
+                    else -> MEDIA
                 }
+                AudioAttributes.USAGE_UNKNOWN -> when (audioAttributes.contentType) {
+                    AudioAttributes.CONTENT_TYPE_MUSIC -> MUSIC
+                    AudioAttributes.CONTENT_TYPE_MOVIE -> MEDIA
+                    else -> UNKNOWN
+                }
+                else -> UNKNOWN
             }
         }
     }
