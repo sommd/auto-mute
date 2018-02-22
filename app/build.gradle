@@ -18,22 +18,42 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
+ext {
+    supportVersion = '27.0.2'
+
+    // Get version string from git tag
+    def describe = ['git', 'describe', '--tags', '--long'].execute().text.trim()
+    def m = (describe =~ /v([0-9]+)\.([0-9]+)\.([0-9]+)-([0-9]+)-(.+)/)
+
+    // Parse version tag
+    versionMajor = m[0][1].toInteger()
+    versionMinor = m[0][2].toInteger()
+    versionPatch = m[0][3].toInteger()
+    versionRelease = m[0][4].toInteger()
+    versionCommit = m[0][5]
+}
+
 android {
     compileSdkVersion 27
-
     defaultConfig {
         applicationId "xyz.sommd.automute"
         minSdkVersion 26
         targetSdkVersion 27
 
         // MAJOR_MINOR_PATCH_RELEASE
-        versionCode 1_00_01_00
-        versionName "1.0.1"
+        def code = versionMajor * 1_00_00_000 +
+                versionMinor * 1_00_000 +
+                versionPatch * 1_000 +
+                versionRelease
+        versionCode code.toInteger()
+        versionName "$versionMajor.$versionMinor.$versionPatch"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
+        debug {
+            versionNameSuffix "-$versionRelease-$versionCommit"
+        }
         release {
             minifyEnabled true
             shrinkResources true
@@ -44,11 +64,9 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-
     implementation 'androidx.core:core-ktx:0.1'
-    implementation 'com.android.support:appcompat-v7:27.0.2'
-    implementation 'com.android.support:preference-v14:27.0.2'
-
+    implementation "com.android.support:appcompat-v7:$supportVersion"
+    implementation "com.android.support:preference-v14:$supportVersion"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
