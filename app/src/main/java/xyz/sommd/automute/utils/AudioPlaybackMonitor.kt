@@ -39,15 +39,18 @@ class AudioPlaybackMonitor(context: Context,
     private val _playbackConfigs = mutableSetOf<AudioPlaybackConfiguration>()
     val playbackConfigs: Set<AudioPlaybackConfiguration> = _playbackConfigs
     
-    fun start() {
-        _playbackConfigs.addAll(audioManager.activePlaybackConfigurations)
+    fun start(notifyNow: Boolean = false) {
+        if (notifyNow) {
+            onPlaybackConfigChanged(audioManager.activePlaybackConfigurations)
+        } else {
+            _playbackConfigs.addAll(audioManager.activePlaybackConfigurations)
+        }
         
         audioManager.registerAudioPlaybackCallback(this, handler)
     }
     
     fun stop() {
         audioManager.unregisterAudioPlaybackCallback(this)
-        
         _playbackConfigs.clear()
     }
     
