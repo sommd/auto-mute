@@ -19,7 +19,6 @@ package xyz.sommd.automute.service
 
 import android.app.Service
 import android.content.Intent
-import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
@@ -33,32 +32,6 @@ import java.util.concurrent.TimeUnit
 
 class AutoMuteService: Service(),
         AudioPlaybackMonitor.Listener, AudioVolumeMonitor.Listener, Settings.ChangeListener {
-    
-    enum class AudioType {
-        MUSIC,
-        MEDIA,
-        ASSISTANT,
-        GAME,
-        UNKNOWN;
-        
-        companion object {
-            fun from(audioAttributes: AudioAttributes) = when (audioAttributes.usage) {
-                AudioAttributes.USAGE_GAME -> GAME
-                AudioAttributes.USAGE_ASSISTANT,
-                AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE -> ASSISTANT
-                AudioAttributes.USAGE_MEDIA -> when (audioAttributes.contentType) {
-                    AudioAttributes.CONTENT_TYPE_MUSIC -> MUSIC
-                    else -> MEDIA
-                }
-                AudioAttributes.USAGE_UNKNOWN -> when (audioAttributes.contentType) {
-                    AudioAttributes.CONTENT_TYPE_MUSIC -> MUSIC
-                    AudioAttributes.CONTENT_TYPE_MOVIE -> MEDIA
-                    else -> UNKNOWN
-                }
-                else -> UNKNOWN
-            }
-        }
-    }
     
     companion object {
         const val ACTION_MUTE = "xyz.sommd.automute.action.MUTE"

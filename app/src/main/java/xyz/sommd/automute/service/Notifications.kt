@@ -72,7 +72,7 @@ class Notifications(private val context: Context) {
         // Count number of streams of each type
         val typeCounts = SparseIntArray(0)
         for (config in playbackConfigs) {
-            val ordinal = AutoMuteService.AudioType.from(config.audioAttributes).ordinal
+            val ordinal = AudioType.from(config.audioAttributes).ordinal
             typeCounts[ordinal] = typeCounts.getOrDefault(ordinal, 0) + 1
         }
         
