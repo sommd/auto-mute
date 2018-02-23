@@ -31,8 +31,6 @@ class AudioPlaybackMonitor(private val listener: Listener): AudioManager.AudioPl
     val playbackConfigs: Set<AudioPlaybackConfiguration> = _playbackConfigs
     
     override fun onPlaybackConfigChanged(newConfigs: List<AudioPlaybackConfiguration>) {
-        listener.audioPlaybackChanged(newConfigs)
-        
         for (config in newConfigs) {
             if (config !in _playbackConfigs) {
                 _playbackConfigs.add(config)
@@ -47,5 +45,7 @@ class AudioPlaybackMonitor(private val listener: Listener): AudioManager.AudioPl
                 listener.audioPlaybackStopped(config)
             }
         }
+        
+        listener.audioPlaybackChanged(newConfigs)
     }
 }
