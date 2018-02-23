@@ -141,6 +141,14 @@ class Notifications(private val context: Context) {
                             actionAction, null, context, AutoMuteService::class.java
                     ), 0)
             ).build())
+            
+            addAction(Notification.Action.Builder(
+                    R.drawable.ic_notif_status_action_show,
+                    res.getText(R.string.notif_status_action_show),
+                    PendingIntent.getService(context, 0, Intent(
+                            AutoMuteService.ACTION_SHOW, null, context, AutoMuteService::class.java
+                    ), 0)
+            ).build())
         }.build()
     }
     

@@ -122,6 +122,7 @@
     </plurals>
     <string name="notif_status_action_mute">Mute</string>
     <string name="notif_status_action_unmute">Unmute</string>
+    <string name="notif_status_action_show">Change Volume</string>
     
     <!-- Other -->
     <string-array name="audio_type_names">
