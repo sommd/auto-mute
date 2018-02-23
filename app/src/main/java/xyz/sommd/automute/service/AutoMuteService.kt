@@ -43,11 +43,13 @@ class AutoMuteService: Service(),
     
     private lateinit var settings: Settings
     private lateinit var notifications: Notifications
-    private lateinit var handler: Handler
     private lateinit var audioManager: AudioManager
+    
+    private lateinit var handler: Handler
     private lateinit var playbackMonitor: AudioPlaybackMonitor
     private lateinit var volumeMonitor: AudioVolumeMonitor
     
+    /** Runnable to be posted when volume should be auto muted. */
     private val autoMuteRunnable = Runnable {
         if (isVolumeOff()) {
             log("Already muted, not auto muting")
@@ -62,21 +64,29 @@ class AutoMuteService: Service(),
     override fun onCreate() {
         log("Starting")
         
+        // Get global objects/services
         settings = Settings.from(this)
         notifications = Notifications.from(this)
-        handler = Handler()
         audioManager = systemService()
-        playbackMonitor = AudioPlaybackMonitor(this)
-        volumeMonitor = AudioVolumeMonitor(this, this, intArrayOf(AudioManager.STREAM_MUSIC))
         
+        // Create audio monitors
+        handler = Handler()
+        playbackMonitor = AudioPlaybackMonitor(this)
+        volumeMonitor = AudioVolumeMonitor(this, this, intArrayOf(DEFAULT_STREAM), handler)
+        
+        // Setup listeners
         settings.addChangeListener(this)
         audioManager.registerAudioPlaybackCallback(playbackMonitor, handler)
         volumeMonitor.start()
         
+        // Show foreground status notification
         val statusNotification = notifications.createStatusNotification(isVolumeOff())
         startForeground(Notifications.STATUS_ID, statusNotification)
     }
     
+    /**
+     * Handle actions sent from status notification (or other places).
+     */
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         log("Received command: ${intent.action}")
         
@@ -92,39 +102,69 @@ class AutoMuteService: Service(),
     override fun onDestroy() {
         log("Stopping")
         
+        // Remove listeners
         settings.removeChangeListener(this)
         audioManager.unregisterAudioPlaybackCallback(playbackMonitor)
         volumeMonitor.stop()
+        
+        // Cancel scheduled auto mute
         cancelAutoMute()
     }
     
     // AudioPlaybackMonitor
     
+    /**
+     * Check type of audio stream that started playing and auto unmute based on user's settings.
+     */
     override fun audioPlaybackStarted(config: AudioPlaybackConfiguration) {
+        // Get audio type and unmute mode
         val audioType = AudioType.from(config.audioAttributes)
         val unmuteMode = getAutoUnmuteMode(audioType)
         
         log("Playback started: $audioType, $unmuteMode, ${config.audioAttributes}")
         
         if (unmuteMode != null) {
-            // Cancel auto mute
+            // Always cancel auto mute, even if not auto unmuting, because audio is now playing
             cancelAutoMute()
             
-            // Unmute Stream
+            // Get stream or use DEFAULT_STREAM
             val stream = config.audioAttributes.volumeControlStream
-            autoUnmute(unmuteMode, stream)
+                    .let { if (it == AudioManager.USE_DEFAULT_STREAM_TYPE) DEFAULT_STREAM else it }
+            
+            // Unmute stream only if volume is off
+            if (isVolumeOff(stream)) {
+                when (unmuteMode) {
+                    Settings.UnmuteMode.ALWAYS -> unmute(stream)
+                    Settings.UnmuteMode.SHOW_UI -> showVolumeControl(stream)
+                }
+            }
         }
     }
     
+    /**
+     * Get the user's auto unmute setting for the given [AudioType].
+     */
+    private fun getAutoUnmuteMode(audioType: AudioType) = when (audioType) {
+        AudioType.MUSIC -> settings.autoUnmuteMusicMode
+        AudioType.MEDIA -> settings.autoUnmuteMediaMode
+        AudioType.ASSISTANT -> settings.autoUnmuteAssistantMode
+        AudioType.GAME -> settings.autoUnmuteGameMode
+        else -> null
+    }
+    
+    /**
+     * Auto mute based on user's settings if there are no more audio streams playing.
+     */
     override fun audioPlaybackStopped(config: AudioPlaybackConfiguration) {
         log("Playback stopped: ${config.audioAttributes}")
         
         if (settings.autoMuteEnabled) {
+            // Check if any audio types are playing that we care about
             val audioPlaying = playbackMonitor.playbackConfigs
                     .any { AudioType.from(it.audioAttributes) != AudioType.UNKNOWN }
             
+            // Schedule auto mute if no audio playing
             if (!audioPlaying) {
-                // Schedule auto mute
                 val delay = TimeUnit.SECONDS.toMillis(settings.autoMuteDelay)
                 handler.postDelayed(autoMuteRunnable, delay)
                 
@@ -135,43 +175,49 @@ class AutoMuteService: Service(),
         }
     }
     
+    /**
+     * Updates the status notification to show the currently playing audio streams.
+     */
     override fun audioPlaybackChanged(configs: List<AudioPlaybackConfiguration>) {
         updateStatusNotification()
     }
     
     // AudioVolumeMonitor
     
+    /**
+     * Updates the status notification to show mute/unmute state in case user manually mutes/unmutes
+     * the volume.
+     */
     override fun onVolumeChange(stream: Int, volume: Int) {
         updateStatusNotification()
     }
     
-    // Methods
+    // Settings
     
-    private fun getAutoUnmuteMode(audioType: AudioType) = when (audioType) {
-        AudioType.MUSIC -> settings.autoUnmuteMusicMode
-        AudioType.MEDIA -> settings.autoUnmuteMediaMode
-        AudioType.ASSISTANT -> settings.autoUnmuteAssistantMode
-        AudioType.GAME -> settings.autoUnmuteGameMode
-        else -> null
-    }
-    
-    private fun autoUnmute(mode: Settings.UnmuteMode, stream: Int) {
-        // Use STREAM_MUSIC if stream is USE_DEFAULT_STREAM_TYPE
-        val stream = if (stream == AudioManager.USE_DEFAULT_STREAM_TYPE) {
-            DEFAULT_STREAM
-        } else {
-            stream
-        }
-        
-        // Only autoUnmute if volume is off
-        if (isVolumeOff(stream)) {
-            when (mode) {
-                Settings.UnmuteMode.ALWAYS -> unmute(stream)
-                Settings.UnmuteMode.SHOW_UI -> showVolumeControl(stream)
+    /**
+     * Cancel scheduled auto mute if auto mute was disabled by user.
+     */
+    override fun onSettingsChanged(settings: Settings, key: String) {
+        when (key) {
+            Settings.AUTO_MUTE_ENABLED_KEY -> {
+                if (!settings.autoMuteEnabled) {
+                    cancelAutoMute()
+                }
             }
         }
     }
     
+    // Methods
+    
+    /**
+     * Unmute the given audio stream.
+     *
+     * If unmuting left the stream volume at 0 (which is likely if
+     * the user manually muted via the system volume controls), then set stream's volume to the
+     * user's default volume setting.
+     *
+     * Also updates the status notification to show the current mute/unmute state.
+     */
     private fun unmute(stream: Int = DEFAULT_STREAM) {
         val flags = if (settings.autoUnmuteShowUi) AudioManager.FLAG_SHOW_UI else 0
         
@@ -187,43 +233,50 @@ class AutoMuteService: Service(),
             audioManager.setStreamVolume(stream, volume, flags)
         }
         
+        // Update status notification mute/unmute state
         updateStatusNotification()
     }
     
+    /**
+     * Mute the given audio stream.
+     *
+     * Also updates the status notification to show the current mute/unmute state.
+     */
     private fun mute(stream: Int = DEFAULT_STREAM) {
         val flags = if (settings.autoMuteShowUi) AudioManager.FLAG_SHOW_UI else 0
         audioManager.adjustStreamVolume(DEFAULT_STREAM, AudioManager.ADJUST_MUTE, flags)
         
+        // Update status notification mute/unmute state
         updateStatusNotification()
     }
     
+    /**
+     * Show the system volume control UI for the given audio stream.
+     */
     private fun showVolumeControl(stream: Int = DEFAULT_STREAM) {
         audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI)
     }
     
-    private fun isVolumeOff(stream: Int = AudioManager.STREAM_MUSIC): Boolean {
+    /**
+     * Check if the given audio stream is muted or the volume is 0.
+     */
+    private fun isVolumeOff(stream: Int = DEFAULT_STREAM): Boolean {
         return audioManager.isStreamMute(stream) || audioManager.getStreamVolume(stream) == 0
     }
     
+    /**
+     * Cancel auto mute if scheduled.
+     */
     private fun cancelAutoMute() {
         handler.removeCallbacks(autoMuteRunnable)
         log("Auto mute cancelled")
     }
     
+    /**
+     * Update the status notification.
+     */
     private fun updateStatusNotification() {
         notifications.updateStatusNotification(isVolumeOff(), playbackMonitor.playbackConfigs)
-    }
-    
-    // Settings
-    
-    override fun onSettingsChanged(settings: Settings, key: String) {
-        when (key) {
-            Settings.AUTO_MUTE_ENABLED_KEY -> {
-                if (!settings.autoMuteEnabled) {
-                    cancelAutoMute()
-                }
-            }
-        }
     }
     
     // Unused
