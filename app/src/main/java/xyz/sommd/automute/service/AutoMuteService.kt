@@ -27,10 +27,13 @@ import android.os.IBinder
 import androidx.content.systemService
 import xyz.sommd.automute.settings.Settings
 import xyz.sommd.automute.utils.AudioPlaybackMonitor
+import xyz.sommd.automute.utils.AudioVolumeMonitor
 import xyz.sommd.automute.utils.log
 import java.util.concurrent.TimeUnit
 
-class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, Settings.ChangeListener {
+class AutoMuteService: Service(),
+        AudioPlaybackMonitor.Listener, AudioVolumeMonitor.Listener, Settings.ChangeListener {
+    
     enum class AudioType {
         MUSIC,
         MEDIA,
@@ -62,6 +65,7 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, Settings.Change
     private lateinit var handler: Handler
     private lateinit var audioManager: AudioManager
     private lateinit var playbackMonitor: AudioPlaybackMonitor
+    private lateinit var volumeMonitor: AudioVolumeMonitor
     
     private val autoMuteRunnable = Runnable {
         val stream = AudioManager.STREAM_MUSIC
@@ -73,6 +77,7 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, Settings.Change
             
             val flags = if (settings.autoMuteShowUi) AudioManager.FLAG_SHOW_UI else 0
             audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_MUTE, flags)
+            updateStatusNotification()
         }
     }
     
@@ -86,11 +91,14 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, Settings.Change
         handler = Handler()
         audioManager = systemService()
         playbackMonitor = AudioPlaybackMonitor(this)
+        volumeMonitor = AudioVolumeMonitor(this, this, intArrayOf(AudioManager.STREAM_MUSIC))
         
         settings.addChangeListener(this)
         audioManager.registerAudioPlaybackCallback(playbackMonitor, handler)
+        volumeMonitor.start()
         
-        startForeground(Notifications.STATUS_ID, notifications.createStatusNotification())
+        val statusNotification = notifications.createStatusNotification(isVolumeOff())
+        startForeground(Notifications.STATUS_ID, statusNotification)
     }
     
     override fun onDestroy() {
@@ -98,10 +106,11 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, Settings.Change
         
         settings.removeChangeListener(this)
         audioManager.unregisterAudioPlaybackCallback(playbackMonitor)
+        volumeMonitor.stop()
         cancelAutoMute()
     }
     
-    // AudioMonitor
+    // AudioPlaybackMonitor
     
     override fun audioPlaybackStarted(config: AudioPlaybackConfiguration) {
         val audioType = AudioType.from(config.audioAttributes)
@@ -139,8 +148,13 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, Settings.Change
     }
     
     override fun audioPlaybackChanged(configs: List<AudioPlaybackConfiguration>) {
-        // Update notification
-        notifications.updateStatusNotification(configs.map { AudioType.from(it.audioAttributes) })
+        updateStatusNotification()
+    }
+    
+    // AudioVolumeMonitor
+    
+    override fun onVolumeChange(stream: Int, volume: Int) {
+        updateStatusNotification()
     }
     
     // Methods
@@ -195,6 +209,10 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, Settings.Change
     private fun cancelAutoMute() {
         handler.removeCallbacks(autoMuteRunnable)
         log("Auto mute cancelled")
+    }
+    
+    private fun updateStatusNotification() {
+        notifications.updateStatusNotification(isVolumeOff(), playbackMonitor.playbackConfigs)
     }
     
     // Settings

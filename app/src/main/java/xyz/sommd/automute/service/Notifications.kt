@@ -28,6 +28,7 @@ import androidx.content.systemService
 import xyz.sommd.automute.App
 import xyz.sommd.automute.R
 import xyz.sommd.automute.settings.SettingsActivity
+import xyz.sommd.automute.utils.log
 
 class Notifications(private val context: Context) {
     companion object {
@@ -54,30 +55,37 @@ class Notifications(private val context: Context) {
         notifManager.createNotificationChannel(statusChannel)
     }
     
-    fun updateStatusNotification(playbackConfigs: List<AutoMuteService.AudioType>) {
-        notifManager.notify(STATUS_ID, createStatusNotification(playbackConfigs))
+    fun updateStatusNotification(muted: Boolean, playbackConfigs: Set<AudioPlaybackConfiguration>) {
+        log("Updating status notification")
+        
+        notifManager.notify(STATUS_ID, createStatusNotification(muted, playbackConfigs))
     }
     
-    fun createStatusNotification(audioStreams: List<AutoMuteService.AudioType> = emptyList()):
+    fun createStatusNotification(muted: Boolean,
+                                 playbackConfigs: Set<AudioPlaybackConfiguration> = emptySet()):
             Notification {
-        val typeCounts = audioStreams.groupBy { it }.mapValues { it.value.size }
-        val totalStreams = audioStreams.size
+        val streamTypes = playbackConfigs.map { AutoMuteService.AudioType.from(it.audioAttributes) }
+        val typeCounts = streamTypes.groupBy { it }.mapValues { it.value.size }
+        val totalStreams = playbackConfigs.size
         val totalTypes = typeCounts.size
         
         return Notification.Builder(context, STATUS_CHANNEL).apply {
-            setSmallIcon(R.drawable.ic_notif_status)
+            setSmallIcon(
+                    when {
+                        muted -> R.drawable.ic_notif_status_muted
+                        totalStreams == 0 -> R.drawable.ic_notif_status_unmuted
+                        else -> R.drawable.ic_notif_status_playing
+                    }
+            )
             
             // Always the total number of streams playing
             setContentTitle(res.getQuantityString(R.plurals.notif_status_total_streams,
                                                   totalStreams, totalStreams))
             
             if (totalTypes == 1) {
-                // 1 type implies audioStreams.size >= 1
-                val type = audioStreams.first()
-                val count = audioStreams.size
-                
-                // Count of audio only type
-                setContentText(getTypeCountText(type, count))
+                // Count of only audio type
+                val type = streamTypes.first()
+                setContentText(getTypeCountText(type, totalStreams))
             } else {
                 // Number of different audio types
                 setContentText(res.getQuantityString(R.plurals.notif_status_total_types,
