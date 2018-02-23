@@ -120,11 +120,33 @@ class Notifications(private val context: Context) {
             setContentIntent(PendingIntent.getActivity(context, 0, Intent(
                     context, SettingsActivity::class.java
             ), 0))
+            
+            // Mute/unmute action
+            val actionIcon: Int
+            val actionText: Int
+            val actionAction: String
+            if (muted) {
+                actionIcon = R.drawable.ic_notif_status_action_unmute
+                actionText = R.string.notif_status_action_unmute
+                actionAction = AutoMuteService.ACTION_UNMUTE
+            } else {
+                actionIcon = R.drawable.ic_notif_status_action_mute
+                actionText = R.string.notif_status_action_mute
+                actionAction = AutoMuteService.ACTION_MUTE
+            }
+            
+            addAction(Notification.Action.Builder(
+                    actionIcon, res.getText(actionText),
+                    PendingIntent.getService(context, 0, Intent(
+                            actionAction, null, context, AutoMuteService::class.java
+                    ), 0)
+            ).build())
         }.build()
     }
     
     private fun getTypeCountText(typeOrdinal: Int, typeCount: Int): CharSequence {
         val typeName = res.getStringArray(R.array.audio_type_names)[typeOrdinal]
-        return res.getQuantityString(R.plurals.notif_status_type_count, typeCount, typeCount, typeName)
+        return res.getQuantityString(R.plurals.notif_status_type_count, typeCount,
+                                     typeCount, typeName)
     }
 }

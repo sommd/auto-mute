@@ -120,6 +120,8 @@
         <item quantity="one">%1$d %2$s audio stream playing</item>
         <item quantity="other">%1$d %2$s audio streams playing</item>
     </plurals>
+    <string name="notif_status_action_mute">Mute</string>
+    <string name="notif_status_action_unmute">Unmute</string>
     
     <!-- Other -->
     <string-array name="audio_type_names">
