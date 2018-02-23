@@ -71,12 +71,12 @@ class AutoMuteService: Service(),
         
         // Create audio monitors
         handler = Handler()
-        playbackMonitor = AudioPlaybackMonitor(this)
+        playbackMonitor = AudioPlaybackMonitor(this, this, handler)
         volumeMonitor = AudioVolumeMonitor(this, this, intArrayOf(DEFAULT_STREAM), handler)
         
         // Setup listeners
         settings.addChangeListener(this)
-        audioManager.registerAudioPlaybackCallback(playbackMonitor, handler)
+        playbackMonitor.start()
         volumeMonitor.start()
         
         // Show foreground status notification
@@ -104,7 +104,7 @@ class AutoMuteService: Service(),
         
         // Remove listeners
         settings.removeChangeListener(this)
-        audioManager.unregisterAudioPlaybackCallback(playbackMonitor)
+        playbackMonitor.stop()
         volumeMonitor.stop()
         
         // Cancel scheduled auto mute
