@@ -24,7 +24,11 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.media.AudioPlaybackConfiguration
+import android.util.SparseIntArray
 import androidx.content.systemService
+import androidx.util.getOrDefault
+import androidx.util.set
+import androidx.util.size
 import xyz.sommd.automute.App
 import xyz.sommd.automute.R
 import xyz.sommd.automute.settings.SettingsActivity
@@ -64,8 +68,14 @@ class Notifications(private val context: Context) {
     fun createStatusNotification(muted: Boolean,
                                  playbackConfigs: Set<AudioPlaybackConfiguration> = emptySet()):
             Notification {
-        val streamTypes = playbackConfigs.map { AutoMuteService.AudioType.from(it.audioAttributes) }
-        val typeCounts = streamTypes.groupBy { it }.mapValues { it.value.size }
+        
+        // Count number of streams of each type
+        val typeCounts = SparseIntArray(0)
+        for (config in playbackConfigs) {
+            val ordinal = AutoMuteService.AudioType.from(config.audioAttributes).ordinal
+            typeCounts[ordinal] = typeCounts.getOrDefault(ordinal, 0) + 1
+        }
+        
         val totalStreams = playbackConfigs.size
         val totalTypes = typeCounts.size
         
@@ -84,8 +94,9 @@ class Notifications(private val context: Context) {
             
             if (totalTypes == 1) {
                 // Count of only audio type
-                val type = streamTypes.first()
-                setContentText(getTypeCountText(type, totalStreams))
+                val typeOrdinal = typeCounts.keyAt(0)
+                val typeCount = typeCounts.valueAt(0)
+                setContentText(getTypeCountText(typeOrdinal, typeCount))
             } else {
                 // Number of different audio types
                 setContentText(res.getQuantityString(R.plurals.notif_status_total_types,
@@ -95,9 +106,10 @@ class Notifications(private val context: Context) {
                     val style = Notification.InboxStyle()
                     
                     // Counts of each audio type
-                    for (type in typeCounts.keys.sorted()) {
-                        val count = typeCounts[type] ?: 0
-                        style.addLine(getTypeCountText(type, count))
+                    for (i in 0 until typeCounts.size) {
+                        val typeOrdinal = typeCounts.keyAt(i)
+                        val typeCount = typeCounts.valueAt(i)
+                        style.addLine(getTypeCountText(typeOrdinal, typeCount))
                     }
                     
                     setStyle(style)
@@ -111,8 +123,8 @@ class Notifications(private val context: Context) {
         }.build()
     }
     
-    private fun getTypeCountText(type: AutoMuteService.AudioType, count: Int): CharSequence {
-        val typeName = res.getStringArray(R.array.audio_type_names)[type.ordinal]
-        return res.getQuantityString(R.plurals.notif_status_type_count, count, count, typeName)
+    private fun getTypeCountText(typeOrdinal: Int, typeCount: Int): CharSequence {
+        val typeName = res.getStringArray(R.array.audio_type_names)[typeOrdinal]
+        return res.getQuantityString(R.plurals.notif_status_type_count, typeCount, typeCount, typeName)
     }
 }
