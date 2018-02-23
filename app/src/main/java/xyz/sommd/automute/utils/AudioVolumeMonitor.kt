@@ -25,12 +25,14 @@ import android.os.Handler
 import android.provider.Settings
 import android.util.SparseIntArray
 import androidx.content.systemService
+import androidx.util.getOrDefault
 import androidx.util.set
 
-class AudioVolumeMonitor(private val context: Context,
+class AudioVolumeMonitor(context: Context,
                          private val listener: Listener,
                          private val streams: IntArray = ALL_STREAMS,
                          handler: Handler = Handler()): ContentObserver(handler) {
+    
     companion object {
         val ALL_STREAMS = intArrayOf(
                 AudioManager.STREAM_VOICE_CALL,
@@ -48,34 +50,37 @@ class AudioVolumeMonitor(private val context: Context,
         fun onVolumeChange(stream: Int, volume: Int) {}
     }
     
+    private val contentResolver = context.contentResolver
     private val audioManager = context.systemService<AudioManager>()
+    
     private val streamVolumes = SparseIntArray()
     
     fun start(notifyNow: Boolean = false) {
-        for (stream in streams) {
-            val volume = audioManager.getStreamVolume(stream)
-            streamVolumes[stream] = volume
-        
-            if (notifyNow) {
-                listener.onVolumeChange(stream, volume)
-            }
-        }
-        
-        context.contentResolver.registerContentObserver(Settings.System.CONTENT_URI, true, this)
+        updateVolumes(notifyNow)
+        contentResolver.registerContentObserver(Settings.System.CONTENT_URI, true, this)
     }
     
     fun stop() {
-        context.contentResolver.unregisterContentObserver(this)
+        contentResolver.unregisterContentObserver(this)
+        streamVolumes.clear()
     }
     
     override fun onChange(selfChange: Boolean, uri: Uri?) {
+        updateVolumes(true)
+    }
+    
+    private fun updateVolumes(notify: Boolean) {
+        // Get volume of each stream
         for (stream in streams) {
             val volume = audioManager.getStreamVolume(stream)
             
-            // Notify listener if volume changed
-            if (volume != streamVolumes[stream]) {
+            // Update volume if previous value is different or unknown
+            if (volume != streamVolumes.getOrDefault(stream, -1)) {
                 streamVolumes[stream] = volume
-                listener.onVolumeChange(stream, volume)
+                
+                if (notify) {
+                    listener.onVolumeChange(stream, volume)
+                }
             }
         }
     }
