@@ -60,6 +60,14 @@ class AutoMuteService: Service(),
         }
     }
     
+    companion object {
+        const val ACTION_MUTE = "xyz.sommd.automute.action.MUTE"
+        const val ACTION_UNMUTE = "xyz.sommd.automute.action.UNMUTE"
+        const val ACTION_SHOW = "xyz.sommd.automute.action.SHOW"
+        
+        private const val DEFAULT_STREAM = AudioManager.STREAM_MUSIC
+    }
+    
     private lateinit var settings: Settings
     private lateinit var notifications: Notifications
     private lateinit var handler: Handler
@@ -68,16 +76,11 @@ class AutoMuteService: Service(),
     private lateinit var volumeMonitor: AudioVolumeMonitor
     
     private val autoMuteRunnable = Runnable {
-        val stream = AudioManager.STREAM_MUSIC
-        
-        if (isVolumeOff(stream)) {
+        if (isVolumeOff()) {
             log("Already muted, not auto muting")
         } else {
             log("Auto muting now")
-            
-            val flags = if (settings.autoMuteShowUi) AudioManager.FLAG_SHOW_UI else 0
-            audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_MUTE, flags)
-            updateStatusNotification()
+            mute()
         }
     }
     
@@ -99,6 +102,18 @@ class AutoMuteService: Service(),
         
         val statusNotification = notifications.createStatusNotification(isVolumeOff())
         startForeground(Notifications.STATUS_ID, statusNotification)
+    }
+    
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        log("Received command: ${intent.action}")
+        
+        when (intent.action) {
+            ACTION_MUTE -> mute()
+            ACTION_UNMUTE -> unmute()
+            ACTION_SHOW -> showVolumeControl()
+        }
+        
+        return START_STICKY
     }
     
     override fun onDestroy() {
@@ -124,7 +139,7 @@ class AutoMuteService: Service(),
             
             // Unmute Stream
             val stream = config.audioAttributes.volumeControlStream
-            unmute(unmuteMode, stream)
+            autoUnmute(unmuteMode, stream)
         }
     }
     
@@ -167,39 +182,50 @@ class AutoMuteService: Service(),
         else -> null
     }
     
-    private fun unmute(mode: Settings.UnmuteMode, stream: Int) {
+    private fun autoUnmute(mode: Settings.UnmuteMode, stream: Int) {
         // Use STREAM_MUSIC if stream is USE_DEFAULT_STREAM_TYPE
         val stream = if (stream == AudioManager.USE_DEFAULT_STREAM_TYPE) {
-            AudioManager.STREAM_MUSIC
+            DEFAULT_STREAM
         } else {
             stream
         }
         
-        // Only unmute if volume is off
+        // Only autoUnmute if volume is off
         if (isVolumeOff(stream)) {
-            val flags = if (settings.autoUnmuteShowUi) AudioManager.FLAG_SHOW_UI else 0
-            
             when (mode) {
-                Settings.UnmuteMode.ALWAYS -> {
-                    // Unmute stream
-                    audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_UNMUTE, flags)
-                    
-                    // Set to default volume if volume is 0
-                    if (isVolumeOff(stream)) {
-                        log("Audio unmuted to 0, setting default volume")
-                        
-                        val maxVolume = audioManager.getStreamMaxVolume(stream)
-                        val volume = (settings.autoUnmuteDefaultVolume * maxVolume).toInt()
-                        audioManager.setStreamVolume(stream, volume, flags)
-                    }
-                }
-                Settings.UnmuteMode.SHOW_UI -> {
-                    // Show volume UI
-                    audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_SAME,
-                                                    flags or AudioManager.FLAG_SHOW_UI)
-                }
+                Settings.UnmuteMode.ALWAYS -> unmute(stream)
+                Settings.UnmuteMode.SHOW_UI -> showVolumeControl(stream)
             }
         }
+    }
+    
+    private fun unmute(stream: Int = DEFAULT_STREAM) {
+        val flags = if (settings.autoUnmuteShowUi) AudioManager.FLAG_SHOW_UI else 0
+        
+        // Unmute stream
+        audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_UNMUTE, flags)
+        
+        // Set to default volume if volume is 0
+        if (isVolumeOff(stream)) {
+            log("Audio unmuted to 0, setting default volume")
+            
+            val maxVolume = audioManager.getStreamMaxVolume(stream)
+            val volume = (settings.autoUnmuteDefaultVolume * maxVolume).toInt()
+            audioManager.setStreamVolume(stream, volume, flags)
+        }
+        
+        updateStatusNotification()
+    }
+    
+    private fun mute(stream: Int = DEFAULT_STREAM) {
+        val flags = if (settings.autoMuteShowUi) AudioManager.FLAG_SHOW_UI else 0
+        audioManager.adjustStreamVolume(DEFAULT_STREAM, AudioManager.ADJUST_MUTE, flags)
+        
+        updateStatusNotification()
+    }
+    
+    private fun showVolumeControl(stream: Int = DEFAULT_STREAM) {
+        audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI)
     }
     
     private fun isVolumeOff(stream: Int = AudioManager.STREAM_MUSIC): Boolean {
