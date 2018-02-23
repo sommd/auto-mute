@@ -66,9 +66,7 @@ class Notifications(private val context: Context) {
     }
     
     fun createStatusNotification(muted: Boolean,
-                                 playbackConfigs: Set<AudioPlaybackConfiguration> = emptySet()):
-            Notification {
-        
+                                 playbackConfigs: Set<AudioPlaybackConfiguration>): Notification {
         // Count number of streams of each type
         val typeCounts = SparseIntArray(0)
         for (config in playbackConfigs) {

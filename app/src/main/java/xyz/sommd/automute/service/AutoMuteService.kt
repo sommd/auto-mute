@@ -80,7 +80,8 @@ class AutoMuteService: Service(),
         volumeMonitor.start()
         
         // Show foreground status notification
-        val statusNotification = notifications.createStatusNotification(isVolumeOff())
+        val statusNotification = notifications.createStatusNotification(
+                isVolumeOff(), playbackMonitor.playbackConfigs)
         startForeground(Notifications.STATUS_ID, statusNotification)
     }
     
