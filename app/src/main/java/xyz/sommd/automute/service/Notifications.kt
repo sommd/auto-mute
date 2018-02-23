@@ -67,13 +67,7 @@ class Notifications(private val context: Context) {
     
     fun createStatusNotification(muted: Boolean,
                                  playbackConfigs: Set<AudioPlaybackConfiguration>): Notification {
-        // Count number of streams of each type
-        val typeCounts = SparseIntArray(0)
-        for (config in playbackConfigs) {
-            val ordinal = AudioType.from(config.audioAttributes).ordinal
-            typeCounts[ordinal] = typeCounts.getOrDefault(ordinal, 0) + 1
-        }
-        
+        val typeCounts = countAudioTypes(playbackConfigs)
         val totalStreams = playbackConfigs.size
         val totalTypes = typeCounts.size
         
@@ -120,39 +114,46 @@ class Notifications(private val context: Context) {
             ), 0))
             
             // Mute/unmute action
-            val actionIcon: Int
-            val actionText: Int
-            val actionAction: String
-            if (muted) {
-                actionIcon = R.drawable.ic_notif_status_action_unmute
-                actionText = R.string.notif_status_action_unmute
-                actionAction = AutoMuteService.ACTION_UNMUTE
+            addAction(if (muted) {
+                buildAction(R.drawable.ic_notif_status_action_unmute,
+                            R.string.notif_status_action_unmute,
+                            AutoMuteService.ACTION_UNMUTE)
             } else {
-                actionIcon = R.drawable.ic_notif_status_action_mute
-                actionText = R.string.notif_status_action_mute
-                actionAction = AutoMuteService.ACTION_MUTE
-            }
+                buildAction(R.drawable.ic_notif_status_action_mute,
+                            R.string.notif_status_action_mute,
+                            AutoMuteService.ACTION_MUTE)
+            })
             
-            addAction(Notification.Action.Builder(
-                    actionIcon, res.getText(actionText),
-                    PendingIntent.getService(context, 0, Intent(
-                            actionAction, null, context, AutoMuteService::class.java
-                    ), 0)
-            ).build())
-            
-            addAction(Notification.Action.Builder(
-                    R.drawable.ic_notif_status_action_show,
-                    res.getText(R.string.notif_status_action_show),
-                    PendingIntent.getService(context, 0, Intent(
-                            AutoMuteService.ACTION_SHOW, null, context, AutoMuteService::class.java
-                    ), 0)
-            ).build())
+            // Show volume action
+            addAction(buildAction(R.drawable.ic_notif_status_action_show,
+                                  R.string.notif_status_action_show,
+                                  AutoMuteService.ACTION_SHOW))
         }.build()
+    }
+    
+    private fun countAudioTypes(playbackConfigs: Set<AudioPlaybackConfiguration>): SparseIntArray {
+        // Count number of streams of each type
+        val typeCounts = SparseIntArray(0)
+        for (config in playbackConfigs) {
+            val ordinal = AudioType.from(config.audioAttributes).ordinal
+            typeCounts[ordinal] = typeCounts.getOrDefault(ordinal, 0) + 1
+        }
+        
+        return typeCounts
     }
     
     private fun getTypeCountText(typeOrdinal: Int, typeCount: Int): CharSequence {
         val typeName = res.getStringArray(R.array.audio_type_names)[typeOrdinal]
         return res.getQuantityString(R.plurals.notif_status_type_count, typeCount,
                                      typeCount, typeName)
+    }
+    
+    private fun buildAction(icon: Int, title: Int, action: String): Notification.Action {
+        return Notification.Action.Builder(
+                icon, res.getText(title),
+                PendingIntent.getService(context, 0, Intent(
+                        action, null, context, AutoMuteService::class.java
+                ), 0)
+        ).build()
     }
 }
