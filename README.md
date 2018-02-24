@@ -1,19 +1,21 @@
 # Auto Mute [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-<img align="right" height="96px" alt="App Icon" src="/app/src/main/ic_launcher-web.png">
+<img align="right" height="96px" alt="App Icon" src="app/src/main/ic_launcher-web.png">
 
 Automatically mute or unmute your media volume based on the type of audio playing for Android 8.0 and up.
 
 Auto Mute can be configured to automatically unmute media audio or show the media volume control for music, media, assistant and game audio. It can also automatically mute after audio stops playing.
 
-[Download the latest release.](https://github.com/sommd/auto-mute/releases/latest)
+[<img height="92px" alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png">](https://play.google.com/store/apps/details?id=xyz.sommd.automute&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
+
+[Or download the latest release.](https://github.com/sommd/auto-mute/releases/latest)
 
 ## Screenshots
 
 <p align="center">
-    <img width="290px" alt="Auto Mute Settings Screenshot" src="/.readme/screenshots/auto_mute_settings.png">
-    <img width="290px" alt="Auto Unmute Settings Screenshot" src="/.readme/screenshots/auto_unmute_settings.png">
-    <img width="290px" alt="Status Notification Screenshot" src="/.readme/screenshots/status_notification.png">
+    <img width="290px" alt="Auto Mute Settings Screenshot" src=".readme/screenshots/auto_mute_settings.png">
+    <img width="290px" alt="Auto Unmute Settings Screenshot" src=".readme/screenshots/auto_unmute_settings.png">
+    <img width="290px" alt="Status Notification Screenshot" src=".readme/screenshots/status_notification.png">
 </p>
 
 ## FAQ
@@ -61,3 +63,5 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ```
 
 See [LICENSE](/LICENSE).
+
+Google Play and the Google Play logo are trademarks of Google LLC.
