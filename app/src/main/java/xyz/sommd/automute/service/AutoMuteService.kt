@@ -245,7 +245,7 @@ class AutoMuteService: Service(),
      */
     private fun mute(stream: Int = DEFAULT_STREAM) {
         val flags = if (settings.autoMuteShowUi) AudioManager.FLAG_SHOW_UI else 0
-        audioManager.adjustStreamVolume(DEFAULT_STREAM, AudioManager.ADJUST_MUTE, flags)
+        audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_MUTE, flags)
         
         // Update status notification mute/unmute state
         updateStatusNotification()
