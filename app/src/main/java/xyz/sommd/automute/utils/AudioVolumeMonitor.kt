@@ -17,9 +17,7 @@
 
 package xyz.sommd.automute.utils
 
-import android.content.ContentProvider
-import android.content.ContentResolver
-import android.content.Context
+import android.content.*
 import android.database.ContentObserver
 import android.media.AudioManager
 import android.net.Uri
@@ -43,10 +41,10 @@ import xyz.sommd.automute.utils.AudioVolumeMonitor.Listener
  * @param streams The audio streams to monitor the volume of, e.g. [AudioManager.STREAM_MUSIC].
  * @param handler The [Handler] to be passed to [ContentObserver].
  */
-class AudioVolumeMonitor(context: Context,
+class AudioVolumeMonitor(private val context: Context,
                          private val listener: Listener,
                          private val streams: IntArray = ALL_STREAMS,
-                         handler: Handler? = null): ContentObserver(handler) {
+                         private val handler: Handler = Handler()): ContentObserver(handler) {
     
     companion object {
         private val ALL_STREAMS = intArrayOf(
@@ -59,6 +57,12 @@ class AudioVolumeMonitor(context: Context,
                 AudioManager.STREAM_DTMF,
                 AudioManager.STREAM_ACCESSIBILITY
         )
+        
+        /**
+         * Amount to delay before updating volume after [AudioManager.ACTION_HEADSET_PLUG]. When
+         * updating immediately, volume may not have changed yet.
+         */
+        private const val HEADSET_PLUG_DELAY_MS = 100L
     }
     
     interface Listener {
@@ -74,6 +78,19 @@ class AudioVolumeMonitor(context: Context,
     /** Previous stream volumes to keep track of which volumes changed. */
     private val streamVolumes = SparseIntArray()
     
+    /** [BroadcastReceiver] for receiving [AudioManager.ACTION_HEADSET_PLUG]. */
+    private val receiver = object: BroadcastReceiver() {
+        private val updateRunnable = Runnable {
+            updateVolumes(true)
+        }
+        
+        override fun onReceive(context: Context, intent: Intent) {
+            this@AudioVolumeMonitor.log("Headset plugged/unplugged")
+            
+            handler.postDelayed(updateRunnable, HEADSET_PLUG_DELAY_MS)
+        }
+    }
+    
     /**
      * Register this [AudioVolumeMonitor] to start monitor for stream volume changes.
      *
@@ -82,7 +99,9 @@ class AudioVolumeMonitor(context: Context,
      */
     fun start(notifyNow: Boolean = false) {
         updateVolumes(notifyNow)
+        
         contentResolver.registerContentObserver(Settings.System.CONTENT_URI, true, this)
+        context.registerReceiver(receiver, IntentFilter(AudioManager.ACTION_HEADSET_PLUG))
     }
     
     /**
@@ -90,10 +109,14 @@ class AudioVolumeMonitor(context: Context,
      */
     fun stop() {
         contentResolver.unregisterContentObserver(this)
+        context.unregisterReceiver(receiver)
+        
         streamVolumes.clear()
     }
     
     override fun onChange(selfChange: Boolean, uri: Uri?) {
+        log("Volume changed by user")
+        
         updateVolumes(true)
     }
     
