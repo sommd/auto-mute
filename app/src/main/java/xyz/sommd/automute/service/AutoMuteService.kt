@@ -71,6 +71,9 @@ class AutoMuteService: Service(),
         }
     }
     
+    private val headphonesPluggedIn: Boolean
+        get() = !audioManager.isSpeakerphoneOn
+    
     // Service
     
     override fun onCreate() {
@@ -173,7 +176,10 @@ class AutoMuteService: Service(),
     override fun audioPlaybackStopped(config: AudioPlaybackConfiguration) {
         log("Playback stopped: ${config.audioAttributes}")
         
-        if (settings.autoMuteEnabled) {
+        val autoMute = settings.autoMuteEnabled &&
+                !(settings.autoMuteHeadphonesDisabled && headphonesPluggedIn)
+        
+        if (autoMute) {
             // Check if any audio types are playing that we care about
             val audioPlaying = playbackMonitor.playbackConfigs
                     .any { AudioType.from(it.audioAttributes) != AudioType.UNKNOWN }

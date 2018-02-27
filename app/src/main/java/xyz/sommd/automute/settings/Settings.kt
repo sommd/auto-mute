@@ -40,6 +40,7 @@ class Settings(private val context: Context): SharedPreferences.OnSharedPreferen
         
         const val AUTO_MUTE_ENABLED_KEY = "auto_mute_enabled"
         const val AUTO_MUTE_DELAY_KEY = "auto_mute_delay"
+        const val AUTO_MUTE_HEADPHONES_DISABLED_KEY = "auto_mute_headphones_disabled"
         const val AUTO_MUTE_HEADPHONES_UNPLUGGED_KEY = "auto_mute_headphones_unplugged"
         const val AUTO_MUTE_SHOW_UI_KEY = "auto_mute_show_ui"
         
@@ -100,6 +101,10 @@ class Settings(private val context: Context): SharedPreferences.OnSharedPreferen
     var autoMuteDelay: Long
         get() = sharedPrefs.getString(AUTO_MUTE_DELAY_KEY, "30").toLong()
         set(value) = sharedPrefs.edit { putString(AUTO_MUTE_DELAY_KEY, value.toString()) }
+    
+    var autoMuteHeadphonesDisabled: Boolean
+        get() = sharedPrefs.getBoolean(AUTO_MUTE_HEADPHONES_DISABLED_KEY, true)
+        set(value) = sharedPrefs.edit { putBoolean(AUTO_MUTE_HEADPHONES_DISABLED_KEY, value) }
     
     var autoMuteHeadphonesUnplugged: Boolean
         get() = sharedPrefs.getBoolean(AUTO_MUTE_HEADPHONES_UNPLUGGED_KEY, true)

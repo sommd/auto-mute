@@ -61,6 +61,10 @@
     <string name="pref_auto_mute_show_ui_summary_on">Show volume control when muting.</string>
     <string name="pref_auto_mute_show_ui_summary_off">Don\'t show anything when muting.</string>
     
+    <string name="pref_auto_mute_headphones_disabled_title">Headphones Disabled</string>
+    <string name="pref_auto_mute_headphones_disabled_summary_on">Don\'t auto mute with headphones plugged in.</string>
+    <string name="pref_auto_mute_headphones_disabled_summary_off">Auto mute with headphones plugged in.</string>
+    
     <string name="pref_auto_mute_headphones_unplugged_title">Headphones Unplugged</string>
     <string name="pref_auto_mute_headphones_unplugged_summary_on">Automatically mute when headphones unplugged.</string>
     <string name="pref_auto_mute_headphones_unplugged_summary_off">Do nothing when headphones unplugged.</string>
