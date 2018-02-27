@@ -35,6 +35,7 @@ ext {
 
 android {
     compileSdkVersion 27
+
     defaultConfig {
         applicationId "xyz.sommd.automute"
         minSdkVersion 26
@@ -50,10 +51,17 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     buildTypes {
         debug {
             versionNameSuffix "-$versionRelease-$versionCommit"
         }
+
         release {
             minifyEnabled true
             shrinkResources true
