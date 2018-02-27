@@ -72,7 +72,7 @@ class AutoMuteService: Service(),
     }
     
     private val headphonesPluggedIn: Boolean
-        get() = !audioManager.isSpeakerphoneOn
+        get() = audioManager.isWiredHeadsetOn || audioManager.isBluetoothA2dpOn
     
     // Service
     
@@ -176,22 +176,23 @@ class AutoMuteService: Service(),
     override fun audioPlaybackStopped(config: AudioPlaybackConfiguration) {
         log("Playback stopped: ${config.audioAttributes}")
         
-        val autoMute = settings.autoMuteEnabled &&
-                !(settings.autoMuteHeadphonesDisabled && headphonesPluggedIn)
-        
-        if (autoMute) {
-            // Check if any audio types are playing that we care about
-            val audioPlaying = playbackMonitor.playbackConfigs
-                    .any { AudioType.from(it.audioAttributes) != AudioType.UNKNOWN }
-            
-            // Schedule auto mute if no audio playing
-            if (!audioPlaying) {
-                val delay = TimeUnit.SECONDS.toMillis(settings.autoMuteDelay)
-                handler.postDelayed(autoMuteRunnable, delay)
-                
-                log("Audio stopped, auto mute in ${delay}ms")
+        if (settings.autoMuteEnabled) {
+            if (settings.autoMuteHeadphonesDisabled && headphonesPluggedIn) {
+                log("Headphones plugged in, not auto muting")
             } else {
-                log("Audio still playing, not auto muting")
+                // Check if any audio types are playing that we care about
+                val audioPlaying = playbackMonitor.playbackConfigs
+                        .any { AudioType.from(it.audioAttributes) != AudioType.UNKNOWN }
+                
+                // Schedule auto mute if no audio playing
+                if (!audioPlaying) {
+                    val delay = TimeUnit.SECONDS.toMillis(settings.autoMuteDelay)
+                    handler.postDelayed(autoMuteRunnable, delay)
+                    
+                    log("Audio stopped, auto mute in ${delay}ms")
+                } else {
+                    log("Audio still playing, not auto muting")
+                }
             }
         }
     }
