@@ -18,7 +18,10 @@
 package xyz.sommd.automute.service
 
 import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
@@ -49,13 +52,22 @@ class AutoMuteService: Service(),
     private lateinit var playbackMonitor: AudioPlaybackMonitor
     private lateinit var volumeMonitor: AudioVolumeMonitor
     
-    /** Runnable to be posted when volume should be auto muted. */
+    /** [Runnable] to be posted when volume should be auto muted. */
     private val autoMuteRunnable = Runnable {
         if (isVolumeOff()) {
             log("Already muted, not auto muting")
         } else {
             log("Auto muting now")
             mute()
+        }
+    }
+    
+    /** [BroadcastReceiver] for receiving [AudioManager.ACTION_AUDIO_BECOMING_NOISY].  */
+    private val receiver = object: BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (settings.autoMuteHeadphonesUnplugged) {
+                mute()
+            }
         }
     }
     
@@ -78,6 +90,7 @@ class AutoMuteService: Service(),
         settings.addChangeListener(this)
         playbackMonitor.start()
         volumeMonitor.start()
+        registerReceiver(receiver, IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY))
         
         // Show foreground status notification
         val statusNotification = notifications.createStatusNotification(
@@ -107,6 +120,7 @@ class AutoMuteService: Service(),
         settings.removeChangeListener(this)
         playbackMonitor.stop()
         volumeMonitor.stop()
+        unregisterReceiver(receiver)
         
         // Cancel scheduled auto mute
         cancelAutoMute()

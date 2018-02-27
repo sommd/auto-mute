@@ -55,8 +55,14 @@
             android:title="@string/pref_auto_mute_delay_title" />
         
         <SwitchPreference
+            android:defaultValue="true"
+            android:key="auto_mute_headphones_unplugged"
+            android:summaryOff="@string/pref_auto_mute_headphones_unplugged_summary_off"
+            android:summaryOn="@string/pref_auto_mute_headphones_unplugged_summary_on"
+            android:title="@string/pref_auto_mute_headphones_unplugged_title" />
+        
+        <SwitchPreference
             android:defaultValue="false"
-            android:dependency="auto_mute_enabled"
             android:key="auto_mute_show_ui"
             android:summaryOff="@string/pref_auto_mute_show_ui_summary_off"
             android:summaryOn="@string/pref_auto_mute_show_ui_summary_on"
