@@ -30,6 +30,7 @@ import androidx.content.systemService
 import xyz.sommd.automute.settings.Settings
 import xyz.sommd.automute.utils.AudioPlaybackMonitor
 import xyz.sommd.automute.utils.AudioVolumeMonitor
+import xyz.sommd.automute.utils.isVolumeOff
 import xyz.sommd.automute.utils.log
 import java.util.concurrent.TimeUnit
 
@@ -54,7 +55,7 @@ class AutoMuteService: Service(),
     
     /** [Runnable] to be posted when volume should be auto muted. */
     private val autoMuteRunnable = Runnable {
-        if (isVolumeOff()) {
+        if (audioManager.isVolumeOff()) {
             log("Already muted, not auto muting")
         } else {
             log("Auto muting now")
@@ -96,8 +97,7 @@ class AutoMuteService: Service(),
         registerReceiver(receiver, IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY))
         
         // Show foreground status notification
-        val statusNotification = notifications.createStatusNotification(
-                isVolumeOff(), playbackMonitor.playbackConfigs)
+        val statusNotification = notifications.createStatusNotification()
         startForeground(Notifications.STATUS_ID, statusNotification)
     }
     
@@ -150,7 +150,7 @@ class AutoMuteService: Service(),
                     .let { if (it == AudioManager.USE_DEFAULT_STREAM_TYPE) DEFAULT_STREAM else it }
             
             // Unmute stream only if volume is off
-            if (isVolumeOff(stream)) {
+            if (audioManager.isVolumeOff(stream)) {
                 when (unmuteMode) {
                     Settings.UnmuteMode.ALWAYS -> unmute(stream)
                     Settings.UnmuteMode.SHOW_UI -> showVolumeControl(stream)
@@ -247,7 +247,7 @@ class AutoMuteService: Service(),
         audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_UNMUTE, flags)
         
         // Set to default volume if volume is 0
-        if (isVolumeOff(stream)) {
+        if (audioManager.isVolumeOff(stream)) {
             log("Audio unmuted to 0, setting default volume")
             
             val maxVolume = audioManager.getStreamMaxVolume(stream)
@@ -280,13 +280,6 @@ class AutoMuteService: Service(),
     }
     
     /**
-     * Check if the given audio stream is muted or the volume is 0.
-     */
-    private fun isVolumeOff(stream: Int = DEFAULT_STREAM): Boolean {
-        return audioManager.isStreamMute(stream) || audioManager.getStreamVolume(stream) == 0
-    }
-    
-    /**
      * Cancel auto mute if scheduled.
      */
     private fun cancelAutoMute() {
@@ -298,7 +291,7 @@ class AutoMuteService: Service(),
      * Update the status notification.
      */
     private fun updateStatusNotification() {
-        notifications.updateStatusNotification(isVolumeOff(), playbackMonitor.playbackConfigs)
+        notifications.updateStatusNotification()
     }
     
     // Unused

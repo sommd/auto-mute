@@ -23,6 +23,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.util.SparseIntArray
 import androidx.content.systemService
@@ -31,7 +32,9 @@ import androidx.util.set
 import androidx.util.size
 import xyz.sommd.automute.App
 import xyz.sommd.automute.R
+import xyz.sommd.automute.settings.Settings
 import xyz.sommd.automute.settings.SettingsActivity
+import xyz.sommd.automute.utils.isVolumeOff
 import xyz.sommd.automute.utils.log
 
 class Notifications(private val context: Context) {
@@ -43,7 +46,10 @@ class Notifications(private val context: Context) {
         fun from(context: Context) = App.from(context).notifications
     }
     
+    private val settings = Settings.from(context)
+    
     private val notifManager = context.systemService<NotificationManager>()
+    private val audioManager = context.systemService<AudioManager>()
     private val res = context.resources
     
     fun createChannels() {
@@ -59,17 +65,19 @@ class Notifications(private val context: Context) {
         notifManager.createNotificationChannel(statusChannel)
     }
     
-    fun updateStatusNotification(muted: Boolean, playbackConfigs: Set<AudioPlaybackConfiguration>) {
+    fun updateStatusNotification() {
         log("Updating status notification")
         
-        notifManager.notify(STATUS_ID, createStatusNotification(muted, playbackConfigs))
+        notifManager.notify(STATUS_ID, createStatusNotification())
     }
     
-    fun createStatusNotification(muted: Boolean,
-                                 playbackConfigs: Set<AudioPlaybackConfiguration>): Notification {
+    fun createStatusNotification(): Notification {
+        val playbackConfigs = audioManager.activePlaybackConfigurations
         val typeCounts = countAudioTypes(playbackConfigs)
         val totalStreams = playbackConfigs.size
         val totalTypes = typeCounts.size
+        
+        val muted = audioManager.isVolumeOff()
         
         return Notification.Builder(context, STATUS_CHANNEL).apply {
             setSmallIcon(
@@ -131,7 +139,7 @@ class Notifications(private val context: Context) {
         }.build()
     }
     
-    private fun countAudioTypes(playbackConfigs: Set<AudioPlaybackConfiguration>): SparseIntArray {
+    private fun countAudioTypes(playbackConfigs: List<AudioPlaybackConfiguration>): SparseIntArray {
         // Count number of streams of each type
         val typeCounts = SparseIntArray(0)
         for (config in playbackConfigs) {

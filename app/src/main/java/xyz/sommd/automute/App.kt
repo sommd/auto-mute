@@ -29,19 +29,19 @@ class App: Application(), Settings.ChangeListener {
         fun from(context: Context) = context.applicationContext as App
     }
     
-    lateinit var notifications: Notifications
     lateinit var settings: Settings
+    lateinit var notifications: Notifications
     
     override fun onCreate() {
         super.onCreate()
         
-        notifications = Notifications(this)
         settings = Settings(this)
-        
-        notifications.createChannels()
+        notifications = Notifications(this)
         
         settings.setDefaultValues()
         settings.addChangeListener(this)
+        
+        notifications.createChannels()
         
         if (settings.serviceEnabled) {
             startAutoMuteService()
