@@ -18,10 +18,8 @@
 package xyz.sommd.automute.service
 
 import android.app.Service
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
@@ -78,15 +76,6 @@ class AutoMuteService: Service(),
         }
     }
     
-    /** [BroadcastReceiver] for receiving [AudioManager.ACTION_AUDIO_BECOMING_NOISY].  */
-    private val receiver = object: BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (settings.autoMuteHeadphonesUnplugged) {
-                mute()
-            }
-        }
-    }
-    
     private val headphonesPluggedIn: Boolean
         get() = audioManager.isWiredHeadsetOn || audioManager.isBluetoothA2dpOn
     
@@ -112,7 +101,6 @@ class AutoMuteService: Service(),
         settings.addChangeListener(this)
         playbackMonitor.start()
         volumeMonitor.start()
-        registerReceiver(receiver, IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY))
         
         // Show foreground status notification
         val statusNotification = notifications.createStatusNotification()
@@ -141,7 +129,6 @@ class AutoMuteService: Service(),
         settings.removeChangeListener(this)
         playbackMonitor.stop()
         volumeMonitor.stop()
-        unregisterReceiver(receiver)
         
         // Cancel scheduled auto mute
         cancelAutoMute()
@@ -230,6 +217,17 @@ class AutoMuteService: Service(),
      */
     override fun onVolumeChange(stream: Int, volume: Int) {
         updateStatusNotification()
+    }
+    
+    /**
+     * Mutes volume if [Settings.autoMuteHeadphonesUnplugged] is enabled.
+     */
+    override fun onAudioBecomingNoisy() {
+        if (settings.autoMuteHeadphonesUnplugged) {
+            log("Headphones unplugged, muting")
+            
+            mute()
+        }
     }
     
     // Settings

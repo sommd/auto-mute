@@ -70,6 +70,13 @@ class AudioVolumeMonitor(private val context: Context,
          * Called when the volume of [stream] is changed.
          */
         fun onVolumeChange(stream: Int, volume: Int) {}
+        
+        /**
+         * Called when audio is about to become 'noisy' due to a change in audio outputs.
+         *
+         * @see AudioManager.ACTION_AUDIO_BECOMING_NOISY
+         */
+        fun onAudioBecomingNoisy()
     }
     
     private val contentResolver = context.contentResolver
@@ -78,15 +85,32 @@ class AudioVolumeMonitor(private val context: Context,
     /** Previous stream volumes to keep track of which volumes changed. */
     private val streamVolumes = SparseIntArray()
     
-    /** [BroadcastReceiver] for receiving [AudioManager.ACTION_HEADSET_PLUG]. */
+    /**
+     * [BroadcastReceiver] for receiving [AudioManager.ACTION_HEADSET_PLUG] and
+     * [AudioManager.ACTION_AUDIO_BECOMING_NOISY].
+     */
     private val receiver = object: BroadcastReceiver() {
         private val updateRunnable = Runnable {
             updateVolumes(true)
         }
         
+        private val noisyRunnable = Runnable {
+            listener.onAudioBecomingNoisy()
+        }
+        
         override fun onReceive(context: Context, intent: Intent) {
-            this@AudioVolumeMonitor.log("Headset plugged/unplugged")
+            this@AudioVolumeMonitor.log("Audio output changing")
             
+            // Notify audio becoming noisy
+            if (intent.action == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
+                this@AudioVolumeMonitor.log("Audio becoming noisy")
+                
+                handler.post(noisyRunnable)
+            }
+            
+            // Cancel existing runnable to prevent unnecessary updates
+            handler.removeCallbacks(updateRunnable)
+            // Update volumes and notify
             handler.postDelayed(updateRunnable, HEADSET_PLUG_DELAY_MS)
         }
     }
@@ -101,7 +125,10 @@ class AudioVolumeMonitor(private val context: Context,
         updateVolumes(notifyNow)
         
         contentResolver.registerContentObserver(Settings.System.CONTENT_URI, true, this)
-        context.registerReceiver(receiver, IntentFilter(AudioManager.ACTION_HEADSET_PLUG))
+        context.registerReceiver(receiver, IntentFilter().apply {
+            addAction(AudioManager.ACTION_HEADSET_PLUG)
+            addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+        })
     }
     
     /**
