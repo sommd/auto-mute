@@ -144,9 +144,5 @@
             android:enabled="false"
             android:key="app_version"
             android:summary="@string/pref_about_app_version_summary" />
-        
-        <Preference
-            android:enabled="false"
-            android:summary="@string/pref_about_copyright_summary" />
     </PreferenceCategory>
 </PreferenceScreen>
