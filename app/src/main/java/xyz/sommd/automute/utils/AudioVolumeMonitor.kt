@@ -24,9 +24,9 @@ import android.net.Uri
 import android.os.Handler
 import android.provider.Settings
 import android.util.SparseIntArray
-import androidx.content.systemService
-import androidx.util.getOrDefault
-import androidx.util.set
+import androidx.core.content.systemService
+import androidx.core.util.getOrDefault
+import androidx.core.util.set
 import xyz.sommd.automute.utils.AudioVolumeMonitor.Listener
 
 /**

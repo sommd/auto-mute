@@ -20,7 +20,7 @@ package xyz.sommd.automute.settings
 import android.content.Context
 import android.content.SharedPreferences
 import android.support.v7.preference.PreferenceManager
-import androidx.content.edit
+import androidx.core.content.edit
 import xyz.sommd.automute.App
 import xyz.sommd.automute.R
 

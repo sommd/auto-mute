@@ -26,7 +26,7 @@ import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
 import android.os.IBinder
-import androidx.content.systemService
+import androidx.core.content.systemService
 import xyz.sommd.automute.settings.Settings
 import xyz.sommd.automute.utils.AudioPlaybackMonitor
 import xyz.sommd.automute.utils.AudioVolumeMonitor

@@ -26,10 +26,10 @@ import android.content.Intent
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.util.SparseIntArray
-import androidx.content.systemService
-import androidx.util.getOrDefault
-import androidx.util.set
-import androidx.util.size
+import androidx.core.content.systemService
+import androidx.core.util.getOrDefault
+import androidx.core.util.set
+import androidx.core.util.size
 import xyz.sommd.automute.App
 import xyz.sommd.automute.R
 import xyz.sommd.automute.settings.Settings
