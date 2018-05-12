@@ -8,6 +8,7 @@
 /.gradle/
 /build/
 /local.properties
+/gradle.properties
 
 # Other
 .DS_Store
