@@ -16,7 +16,7 @@
  */
 
 buildscript {
-    // Library versions
+    // Dependency versions
     ext.sdkVersion = 27
     ext.kotlinVersion = '1.2.30'
     ext.supportVersion = '27.1.1'
