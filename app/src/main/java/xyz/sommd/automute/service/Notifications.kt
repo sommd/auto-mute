@@ -23,6 +23,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Icon
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.util.SparseIntArray
@@ -158,7 +159,7 @@ class Notifications(private val context: Context) {
     
     private fun buildAction(icon: Int, title: Int, action: String): Notification.Action {
         return Notification.Action.Builder(
-                icon, res.getText(title),
+                Icon.createWithResource(context, icon), res.getText(title),
                 PendingIntent.getService(context, 0, Intent(
                         action, null, context, AutoMuteService::class.java
                 ), 0)
