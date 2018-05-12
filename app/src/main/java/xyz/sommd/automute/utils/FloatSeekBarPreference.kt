@@ -20,6 +20,7 @@ package xyz.sommd.automute.utils
 import android.content.Context
 import android.support.v7.preference.SeekBarPreference
 import android.util.AttributeSet
+import xyz.sommd.automute.R
 import kotlin.math.roundToInt
 
 /**
@@ -30,15 +31,13 @@ import kotlin.math.roundToInt
  * `0.5`.
  */
 class FloatSeekBarPreference: SeekBarPreference {
-    constructor(context: Context): super(context)
-    
-    constructor(context: Context, attrs: AttributeSet?): super(context, attrs)
-    
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int):
-            super(context, attrs, defStyleAttr)
-    
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int):
-            super(context, attrs, defStyleAttr, defStyleRes)
+    @JvmOverloads
+    constructor(
+            context: Context,
+            attrs: AttributeSet? = null,
+            defStyleAttr: Int = R.attr.seekBarPreferenceStyle,
+            defStyleRes: Int = 0
+    ): super(context, attrs, defStyleAttr, defStyleRes)
     
     var floatValue: Float
         get() = toFloat(value)
