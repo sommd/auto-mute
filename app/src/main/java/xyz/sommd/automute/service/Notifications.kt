@@ -61,7 +61,7 @@ class Notifications(private val context: Context) {
     }
     
     fun updateStatusNotification() {
-        log("Updating status notification")
+        log { "Updating status notification" }
         
         notifManager.notify(STATUS_ID, createStatusNotification())
     }

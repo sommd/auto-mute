@@ -69,9 +69,9 @@ class AutoMuteService: Service(),
     /** [Runnable] to be posted when volume should be auto muted. */
     private val autoMuteRunnable = Runnable {
         if (audioManager.isVolumeOff()) {
-            log("Already muted, not auto muting")
+            log { "Already muted, not auto muting" }
         } else {
-            log("Auto muting now")
+            log { "Auto muting now" }
             mute()
         }
     }
@@ -82,7 +82,7 @@ class AutoMuteService: Service(),
     // Service
     
     override fun onCreate() {
-        log("Starting")
+        log { "Starting" }
         
         // Get services
         settings = Settings(this)
@@ -111,7 +111,7 @@ class AutoMuteService: Service(),
      * Handle actions sent from status notification (or other places).
      */
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        log("Received command: ${intent.action}")
+        log { "Received command: ${intent.action}" }
         
         when (intent.action) {
             ACTION_MUTE -> mute()
@@ -123,7 +123,7 @@ class AutoMuteService: Service(),
     }
     
     override fun onDestroy() {
-        log("Stopping")
+        log { "Stopping" }
         
         // Remove listeners
         settings.removeChangeListener(this)
@@ -144,7 +144,7 @@ class AutoMuteService: Service(),
         val audioType = config.audioAttributes.audioType
         val unmuteMode = getAutoUnmuteMode(audioType)
         
-        log("Playback started: $audioType, $unmuteMode, ${config.audioAttributes}")
+        log { "Playback started: $audioType, $unmuteMode, ${config.audioAttributes}" }
         
         if (unmuteMode != null) {
             // Always cancel auto mute, even if not auto unmuting, because audio is now playing
@@ -179,11 +179,11 @@ class AutoMuteService: Service(),
      * Auto mute based on user's settings if there are no more audio streams playing.
      */
     override fun audioPlaybackStopped(config: AudioPlaybackConfiguration) {
-        log("Playback stopped: ${config.audioAttributes}")
+        log { "Playback stopped: ${config.audioAttributes}" }
         
         if (settings.autoMuteEnabled) {
             if (settings.autoMuteHeadphonesDisabled && headphonesPluggedIn) {
-                log("Headphones plugged in, not auto muting")
+                log { "Headphones plugged in, not auto muting" }
             } else {
                 // Check if any audio types are playing that we care about
                 val audioPlaying = playbackMonitor.playbackConfigs
@@ -194,9 +194,9 @@ class AutoMuteService: Service(),
                     val delay = TimeUnit.SECONDS.toMillis(settings.autoMuteDelay)
                     handler.postDelayed(autoMuteRunnable, delay)
                     
-                    log("Audio stopped, auto mute in ${delay}ms")
+                    log { "Audio stopped, auto mute in ${delay}ms" }
                 } else {
-                    log("Audio still playing, not auto muting")
+                    log { "Audio still playing, not auto muting" }
                 }
             }
         }
@@ -224,7 +224,7 @@ class AutoMuteService: Service(),
      */
     override fun onAudioBecomingNoisy() {
         if (settings.autoMuteHeadphonesUnplugged) {
-            log("Headphones unplugged, muting")
+            log { "Headphones unplugged, muting" }
             
             mute()
         }
@@ -264,7 +264,7 @@ class AutoMuteService: Service(),
         
         // Set to default volume if volume is 0
         if (audioManager.isVolumeOff(stream)) {
-            log("Audio unmuted to 0, setting default volume")
+            log { "Audio unmuted to 0, setting default volume" }
             
             val maxVolume = audioManager.getStreamMaxVolume(stream)
             val volume = (settings.autoUnmuteDefaultVolume * maxVolume).toInt()
@@ -300,7 +300,7 @@ class AutoMuteService: Service(),
      */
     private fun cancelAutoMute() {
         handler.removeCallbacks(autoMuteRunnable)
-        log("Auto mute cancelled")
+        log { "Auto mute cancelled" }
     }
     
     /**

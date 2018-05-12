@@ -99,11 +99,11 @@ class AudioVolumeMonitor(private val context: Context,
         }
         
         override fun onReceive(context: Context, intent: Intent) {
-            this@AudioVolumeMonitor.log("Audio output changing")
+            this@AudioVolumeMonitor.log { "Audio output changing" }
             
             // Notify audio becoming noisy
             if (intent.action == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
-                this@AudioVolumeMonitor.log("Audio becoming noisy")
+                this@AudioVolumeMonitor.log { "Audio becoming noisy" }
                 
                 handler.post(noisyRunnable)
             }
@@ -142,7 +142,7 @@ class AudioVolumeMonitor(private val context: Context,
     }
     
     override fun onChange(selfChange: Boolean, uri: Uri?) {
-        log("Volume changed by user")
+        log { "Volume changed by user" }
         
         updateVolumes(true)
     }

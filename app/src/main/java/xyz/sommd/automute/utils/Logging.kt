@@ -20,8 +20,9 @@ package xyz.sommd.automute.utils
 import android.util.Log
 import xyz.sommd.automute.BuildConfig
 
-inline fun <reified T> T.log(message: Any?, level: Int = Log.DEBUG) {
+@Suppress("unused")
+inline fun <reified T> T.log(level: Int = Log.DEBUG, lazyMessage: () -> Any?) {
     if (BuildConfig.DEBUG || level > Log.DEBUG) {
-        Log.println(level, T::class.java.simpleName, message.toString())
+        Log.println(level, T::class.java.simpleName, lazyMessage().toString())
     }
 }
