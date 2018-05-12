@@ -21,7 +21,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.support.v7.preference.PreferenceManager
 import androidx.core.content.edit
-import xyz.sommd.automute.App
 import xyz.sommd.automute.R
 
 class Settings(private val context: Context): SharedPreferences.OnSharedPreferenceChangeListener {
@@ -50,8 +49,6 @@ class Settings(private val context: Context): SharedPreferences.OnSharedPreferen
         const val AUTO_UNMUTE_MEDIA_MODE_KEY = "auto_unmute_media_mode"
         const val AUTO_UNMUTE_ASSISTANT_MODE_KEY = "auto_unmute_assistant_mode"
         const val AUTO_UNMUTE_GAME_MODE_KEY = "auto_unmute_game_mode"
-        
-        fun from(context: Context) = App.from(context).settings
     }
     
     private val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)

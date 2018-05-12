@@ -43,6 +43,21 @@ class AutoMuteService: Service(),
         const val ACTION_SHOW = "xyz.sommd.automute.action.SHOW"
         
         private const val DEFAULT_STREAM = AudioManager.STREAM_MUSIC
+        
+        fun startIfEnabled(context: Context) {
+            val settings = Settings(context)
+            if (settings.serviceEnabled) {
+                start(context)
+            }
+        }
+        
+        fun start(context: Context) {
+            context.startForegroundService(Intent(context, AutoMuteService::class.java))
+        }
+        
+        fun stop(context: Context) {
+            context.stopService(Intent(context, AutoMuteService::class.java))
+        }
     }
     
     private lateinit var settings: Settings
@@ -80,10 +95,13 @@ class AutoMuteService: Service(),
     override fun onCreate() {
         log("Starting")
         
-        // Get global objects/services
-        settings = Settings.from(this)
-        notifications = Notifications.from(this)
+        // Get services
+        settings = Settings(this)
+        notifications = Notifications(this)
         audioManager = systemService()
+        
+        // Setup notifications
+        notifications.createChannels()
         
         // Create audio monitors
         handler = Handler()

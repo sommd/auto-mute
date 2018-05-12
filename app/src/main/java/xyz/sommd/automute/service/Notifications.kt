@@ -31,9 +31,7 @@ import androidx.core.content.systemService
 import androidx.core.util.getOrDefault
 import androidx.core.util.set
 import androidx.core.util.size
-import xyz.sommd.automute.App
 import xyz.sommd.automute.R
-import xyz.sommd.automute.settings.Settings
 import xyz.sommd.automute.settings.SettingsActivity
 import xyz.sommd.automute.utils.isVolumeOff
 import xyz.sommd.automute.utils.log
@@ -43,11 +41,7 @@ class Notifications(private val context: Context) {
         const val STATUS_CHANNEL = "status"
         
         const val STATUS_ID = 1
-        
-        fun from(context: Context) = App.from(context).notifications
     }
-    
-    private val settings = Settings.from(context)
     
     private val notifManager = context.systemService<NotificationManager>()
     private val audioManager = context.systemService<AudioManager>()

@@ -15,14 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package xyz.sommd.automute.utils
+package xyz.sommd.automute.service
 
-import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 
-/** A [BroadcastReceiver] that initialises the [Application] by doing nothing. */
+/** [BroadcastReceiver] to start [AutoMuteService] if it's enabled. */
 class AutoStartReceiver: BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {}
+    override fun onReceive(context: Context, intent: Intent) {
+        AutoMuteService.startIfEnabled(context)
+    }
 }
