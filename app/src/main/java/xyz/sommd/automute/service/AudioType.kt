@@ -24,23 +24,22 @@ enum class AudioType {
     MEDIA,
     ASSISTANT,
     GAME,
-    UNKNOWN;
-    
-    companion object {
-        fun from(audioAttributes: AudioAttributes) = when (audioAttributes.usage) {
-            AudioAttributes.USAGE_GAME -> GAME
-            AudioAttributes.USAGE_ASSISTANT,
-            AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE -> ASSISTANT
-            AudioAttributes.USAGE_MEDIA -> when (audioAttributes.contentType) {
-                AudioAttributes.CONTENT_TYPE_MUSIC -> MUSIC
-                else -> MEDIA
-            }
-            AudioAttributes.USAGE_UNKNOWN -> when (audioAttributes.contentType) {
-                AudioAttributes.CONTENT_TYPE_MUSIC -> MUSIC
-                AudioAttributes.CONTENT_TYPE_MOVIE -> MEDIA
-                else -> UNKNOWN
-            }
-            else -> UNKNOWN
-        }
-    }
+    UNKNOWN
 }
+
+val AudioAttributes.audioType: AudioType
+    get() = when (usage) {
+        AudioAttributes.USAGE_GAME -> AudioType.GAME
+        AudioAttributes.USAGE_ASSISTANT,
+        AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE -> AudioType.ASSISTANT
+        AudioAttributes.USAGE_MEDIA -> when (contentType) {
+            AudioAttributes.CONTENT_TYPE_MUSIC -> AudioType.MUSIC
+            else -> AudioType.MEDIA
+        }
+        AudioAttributes.USAGE_UNKNOWN -> when (contentType) {
+            AudioAttributes.CONTENT_TYPE_MUSIC -> AudioType.MUSIC
+            AudioAttributes.CONTENT_TYPE_MOVIE -> AudioType.MEDIA
+            else -> AudioType.UNKNOWN
+        }
+        else -> AudioType.UNKNOWN
+    }

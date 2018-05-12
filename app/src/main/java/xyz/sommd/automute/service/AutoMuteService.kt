@@ -154,7 +154,7 @@ class AutoMuteService: Service(),
      */
     override fun audioPlaybackStarted(config: AudioPlaybackConfiguration) {
         // Get audio type and unmute mode
-        val audioType = AudioType.from(config.audioAttributes)
+        val audioType = config.audioAttributes.audioType
         val unmuteMode = getAutoUnmuteMode(audioType)
         
         log("Playback started: $audioType, $unmuteMode, ${config.audioAttributes}")
@@ -200,7 +200,7 @@ class AutoMuteService: Service(),
             } else {
                 // Check if any audio types are playing that we care about
                 val audioPlaying = playbackMonitor.playbackConfigs
-                        .any { AudioType.from(it.audioAttributes) != AudioType.UNKNOWN }
+                        .any { it.audioAttributes.audioType != AudioType.UNKNOWN }
                 
                 // Schedule auto mute if no audio playing
                 if (!audioPlaying) {

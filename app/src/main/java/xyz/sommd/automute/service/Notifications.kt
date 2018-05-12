@@ -138,7 +138,7 @@ class Notifications(private val context: Context) {
         // Count number of streams of each type
         val typeCounts = SparseIntArray(0)
         for (config in playbackConfigs) {
-            val ordinal = AudioType.from(config.audioAttributes).ordinal
+            val ordinal = config.audioAttributes.audioType.ordinal
             typeCounts[ordinal] = typeCounts.getOrDefault(ordinal, 0) + 1
         }
         
