@@ -18,7 +18,10 @@
 package xyz.sommd.automute.utils
 
 import android.util.Log
+import xyz.sommd.automute.BuildConfig
 
 inline fun <reified T> T.log(message: Any?, level: Int = Log.DEBUG) {
-    Log.println(level, T::class.java.simpleName, message.toString())
+    if (BuildConfig.DEBUG || level > Log.DEBUG) {
+        Log.println(level, T::class.java.simpleName, message.toString())
+    }
 }
