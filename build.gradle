@@ -16,13 +16,12 @@
  */
 
 buildscript {
-    // Dependency versions
-    ext.sdkVersion = 27
-    ext.kotlinVersion = '1.2.30'
-    ext.supportVersion = '27.1.1'
-
-    // Project version info
     ext {
+        // Dependency versions
+        sdkVersion = [min: 26, target: 27]
+        kotlinVersion = '1.2.30'
+        supportVersion = '27.1.1'
+
         // Get version string from git tag
         def describe = ['git', 'describe', '--tags', '--long'].execute().text.trim()
         def m = (describe =~ /v(\d+)\.(\d+)\.(\d+)-(\d+)-(.+)/)
@@ -34,6 +33,7 @@ buildscript {
         def release = m[0][4].toInteger()
         def commit = m[0][5]
 
+        // Project version info
         projectVersion = [
                 code  : major * 1_00_00_000 +
                         minor * 1_00_000 +
@@ -55,11 +55,50 @@ buildscript {
     }
 }
 
-allprojects {
+subprojects {
+    apply plugin: 'com.android.application'
+    apply plugin: 'kotlin-android'
+
     repositories {
         google()
         jcenter()
     }
+
+    android {
+        compileSdkVersion sdkVersion.target
+
+        defaultConfig {
+            minSdkVersion sdkVersion.min
+            targetSdkVersion sdkVersion.target
+
+            versionCode projectVersion.code
+            versionName projectVersion.name
+
+            testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        }
+
+        buildTypes {
+            debug {
+                versionNameSuffix projectVersion.suffix
+            }
+
+            release {
+                minifyEnabled true
+                shrinkResources true
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            }
+        }
+    }
+
+    dependencies {
+        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+
+        implementation 'androidx.core:core-ktx:0.3'
+        implementation "com.android.support:appcompat-v7:$supportVersion"
+
+        testImplementation 'junit:junit:4.12'
+    }
+
 }
 
 task clean(type: Delete) {

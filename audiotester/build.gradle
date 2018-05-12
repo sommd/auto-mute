@@ -15,43 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion sdkVersion
-
     defaultConfig {
         applicationId "xyz.sommd.audiotester"
-        minSdkVersion 26
-        targetSdkVersion sdkVersion
-
-        versionCode projectVersion.code
-        versionName projectVersion.name
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        debug {
-            versionNameSuffix projectVersion.suffix
-        }
-
-        release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
     }
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-
-    implementation 'androidx.core:core-ktx:0.3'
-    implementation "com.android.support:appcompat-v7:$supportVersion"
     implementation "com.android.support:recyclerview-v7:$supportVersion"
-
-    testImplementation 'junit:junit:4.12'
 }
