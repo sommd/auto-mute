@@ -15,17 +15,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-apply plugin: 'kotlin-kapt'
+package xyz.sommd.automute.di
 
-android {
-    defaultConfig {
-        applicationId "xyz.sommd.automute"
-    }
-}
+import android.app.NotificationManager
+import android.content.Context
+import android.media.AudioManager
+import androidx.core.content.systemService
+import dagger.Module
+import dagger.Provides
+import javax.inject.Singleton
 
-dependencies {
-    implementation "com.android.support:preference-v14:$supportVersion"
-
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+@Module
+class SystemServiceModule {
+    @Singleton
+    @Provides
+    fun audioManager(context: Context): AudioManager = context.systemService()
+    
+    @Singleton
+    @Provides
+    fun notificationManager(context: Context): NotificationManager = context.systemService()
 }

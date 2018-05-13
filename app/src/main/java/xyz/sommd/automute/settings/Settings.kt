@@ -22,8 +22,12 @@ import android.content.SharedPreferences
 import android.support.v7.preference.PreferenceManager
 import androidx.core.content.edit
 import xyz.sommd.automute.R
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class Settings(private val context: Context): SharedPreferences.OnSharedPreferenceChangeListener {
+@Singleton
+class Settings @Inject constructor(private val context: Context):
+        SharedPreferences.OnSharedPreferenceChangeListener {
     interface ChangeListener {
         fun onSettingsChanged(settings: Settings, key: String)
     }

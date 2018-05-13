@@ -35,16 +35,21 @@ import xyz.sommd.automute.R
 import xyz.sommd.automute.settings.SettingsActivity
 import xyz.sommd.automute.utils.isVolumeOff
 import xyz.sommd.automute.utils.log
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class Notifications(private val context: Context) {
+@Singleton
+class Notifications @Inject constructor(
+        private val context: Context,
+        private val notifManager: NotificationManager = context.systemService(),
+        private val audioManager: AudioManager = context.systemService()
+) {
     companion object {
         const val STATUS_CHANNEL = "status"
         
         const val STATUS_ID = 1
     }
     
-    private val notifManager = context.systemService<NotificationManager>()
-    private val audioManager = context.systemService<AudioManager>()
     private val res = context.resources
     
     fun createChannels() {

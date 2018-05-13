@@ -24,13 +24,14 @@ import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
 import android.os.IBinder
-import androidx.core.content.systemService
+import xyz.sommd.automute.di.Injection
 import xyz.sommd.automute.settings.Settings
 import xyz.sommd.automute.utils.AudioPlaybackMonitor
 import xyz.sommd.automute.utils.AudioVolumeMonitor
 import xyz.sommd.automute.utils.isVolumeOff
 import xyz.sommd.automute.utils.log
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class AutoMuteService: Service(),
         AudioPlaybackMonitor.Listener, AudioVolumeMonitor.Listener, Settings.ChangeListener {
@@ -43,8 +44,7 @@ class AutoMuteService: Service(),
         private const val DEFAULT_STREAM = AudioManager.STREAM_MUSIC
         
         fun startIfEnabled(context: Context) {
-            val settings = Settings(context)
-            if (settings.serviceEnabled) {
+            if (Injection.settings.serviceEnabled) {
                 start(context)
             }
         }
@@ -58,9 +58,12 @@ class AutoMuteService: Service(),
         }
     }
     
-    private lateinit var settings: Settings
-    private lateinit var notifications: Notifications
-    private lateinit var audioManager: AudioManager
+    @Inject
+    lateinit var settings: Settings
+    @Inject
+    lateinit var notifications: Notifications
+    @Inject
+    lateinit var audioManager: AudioManager
     
     private lateinit var handler: Handler
     private lateinit var playbackMonitor: AudioPlaybackMonitor
@@ -82,12 +85,9 @@ class AutoMuteService: Service(),
     // Service
     
     override fun onCreate() {
-        log { "Starting" }
+        Injection.inject(this)
         
-        // Get services
-        settings = Settings(this)
-        notifications = Notifications(this)
-        audioManager = systemService()
+        log { "Starting" }
         
         // Setup notifications
         notifications.createChannels()

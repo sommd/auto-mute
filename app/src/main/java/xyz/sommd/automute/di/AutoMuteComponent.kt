@@ -15,17 +15,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-apply plugin: 'kotlin-kapt'
+package xyz.sommd.automute.di
 
-android {
-    defaultConfig {
-        applicationId "xyz.sommd.automute"
-    }
-}
+import dagger.Component
+import xyz.sommd.automute.service.AutoMuteService
+import xyz.sommd.automute.service.Notifications
+import xyz.sommd.automute.settings.Settings
+import xyz.sommd.automute.settings.SettingsActivity
+import javax.inject.Singleton
 
-dependencies {
-    implementation "com.android.support:preference-v14:$supportVersion"
-
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+@Singleton
+@Component(modules = [ContextModule::class, SystemServiceModule::class])
+interface AutoMuteComponent {
+    // Singletons
+    val settings: Settings
+    val notifications: Notifications
+    
+    // Injectors
+    fun inject(autoMuteService: AutoMuteService)
+    fun inject(autoMuteService: SettingsActivity.SettingsFragment)
 }

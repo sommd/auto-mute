@@ -22,7 +22,9 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.PreferenceFragmentCompat
 import xyz.sommd.automute.BuildConfig
 import xyz.sommd.automute.R
+import xyz.sommd.automute.di.Injection
 import xyz.sommd.automute.service.AutoMuteService
+import javax.inject.Inject
 
 class SettingsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,14 +42,12 @@ class SettingsActivity: AppCompatActivity() {
     }
     
     class SettingsFragment: PreferenceFragmentCompat(), Settings.ChangeListener {
-        private lateinit var settings: Settings
+        @Inject
+        lateinit var settings: Settings
         
         override fun onCreate(savedInstanceState: Bundle?) {
+            Injection.inject(this)
             super.onCreate(savedInstanceState)
-            
-            // Setup Settings
-            settings = Settings(context!!)
-            settings.setDefaultValues()
         }
         
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

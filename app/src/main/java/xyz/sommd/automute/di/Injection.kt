@@ -15,17 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-apply plugin: 'kotlin-kapt'
+package xyz.sommd.automute.di
 
-android {
-    defaultConfig {
-        applicationId "xyz.sommd.automute"
-    }
-}
+import xyz.sommd.automute.AutoMuteApplication
 
-dependencies {
-    implementation "com.android.support:preference-v14:$supportVersion"
-
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
-}
+object Injection: AutoMuteComponent by AutoMuteApplication.component
