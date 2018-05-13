@@ -92,10 +92,22 @@ class AudioVolumeMonitor(
     /** Previous stream volumes to keep track of which volumes changed. */
     private val streamVolumes = SparseIntArray()
     
+    /** [Uri]s for volume settings in [Settings.System]. */
+    private val volumeUris: List<Uri> = mutableListOf<Uri>().apply {
+        contentResolver.query(Settings.System.CONTENT_URI, arrayOf("name"), null, null).use { c ->
+            while (c.moveToNext()) {
+                val name = c.getString(0)
+                if ("volume" in name) {
+                    add(Settings.System.getUriFor(name))
+                }
+            }
+        }
+    }
+    
     /** [ContentObserver] for monitoring [Settings.System]. */
     private val contentObserver = object: ContentObserver(handler) {
         override fun onChange(selfChange: Boolean, uri: Uri) {
-            this@AudioVolumeMonitor.log { "System setting changed: $uri" }
+            this@AudioVolumeMonitor.log { "Volume setting changed: $uri" }
             
             updateVolumes(true)
         }
@@ -146,8 +158,13 @@ class AudioVolumeMonitor(
             updateVolumes(notifyNow)
         }
         
-        // Register contentObserver and receiver on handler thread
-        contentResolver.registerContentObserver(Settings.System.CONTENT_URI, true, contentObserver)
+        // Register contentObserver for each volumeUri
+        log { "Registering observers for $volumeUris" }
+        for (uri in volumeUris) {
+            contentResolver.registerContentObserver(uri, false, contentObserver)
+        }
+        
+        // Register deviceDallback and receiver on handler thread
         audioManager.registerAudioDeviceCallback(deviceCallback, handler)
         context.registerReceiver(receiver, AUDIO_BECOMING_NOISY_INTENT_FILTER, null, handler)
     }
