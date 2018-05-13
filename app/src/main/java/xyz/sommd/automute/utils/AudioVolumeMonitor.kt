@@ -81,12 +81,6 @@ class AudioVolumeMonitor(
         /** [IntentFilter] for [receiver]. */
         private val AUDIO_BECOMING_NOISY_INTENT_FILTER =
                 IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-        
-        /**
-         * Amount to delay before updating volume after [AudioManager.ACTION_HEADSET_PLUG]. When
-         * updating immediately, volume may not have changed yet.
-         */
-        private const val HEADSET_PLUG_DELAY_MS = 100L
     }
     
     /** Previous stream volumes to keep track of which volumes changed. */
@@ -115,20 +109,14 @@ class AudioVolumeMonitor(
     
     /** [AudioDeviceCallback] to monitor for [AudioDeviceInfo] changes. */
     private val deviceCallback = object: AudioDeviceCallback() {
-        private val updateRunnable = Runnable {
-            updateVolumes(true)
+        override fun onAudioDevicesAdded(devices: Array<AudioDeviceInfo>) {
+            this@AudioVolumeMonitor.log { "Devices added: ${devices.map { it.productName }}" }
+            devicesUpdated(devices)
         }
         
-        override fun onAudioDevicesAdded(addedDevices: Array<out AudioDeviceInfo>) {
-            this@AudioVolumeMonitor.log { "Devices added: ${addedDevices.contentToString()}" }
-            
-            handler.postDelayed(updateRunnable, HEADSET_PLUG_DELAY_MS)
-        }
-        
-        override fun onAudioDevicesRemoved(removedDevices: Array<out AudioDeviceInfo>) {
-            this@AudioVolumeMonitor.log { "Devices removed: ${removedDevices.contentToString()}" }
-            
-            handler.postDelayed(updateRunnable, HEADSET_PLUG_DELAY_MS)
+        override fun onAudioDevicesRemoved(devices: Array<AudioDeviceInfo>) {
+            this@AudioVolumeMonitor.log { "Devices removed: ${devices.map { it.productName }}" }
+            devicesUpdated(devices)
         }
     }
     
@@ -164,7 +152,7 @@ class AudioVolumeMonitor(
             contentResolver.registerContentObserver(uri, false, contentObserver)
         }
         
-        // Register deviceDallback and receiver on handler thread
+        // Register deviceCallback and receiver on handler thread
         audioManager.registerAudioDeviceCallback(deviceCallback, handler)
         context.registerReceiver(receiver, AUDIO_BECOMING_NOISY_INTENT_FILTER, null, handler)
     }
@@ -182,6 +170,13 @@ class AudioVolumeMonitor(
         streamVolumes.clear()
     }
     
+    /** Updates volumes if output devices are added or removed. */
+    private fun devicesUpdated(devices: Array<AudioDeviceInfo>) {
+        if (devices.any { it.isSink }) {
+            updateVolumes(true)
+        }
+    }
+    
     /** Update [streamVolumes] and notify [listener] of any changes if [notify] is `true`. */
     private fun updateVolumes(notify: Boolean) {
         // Get volume of each stream
@@ -190,6 +185,8 @@ class AudioVolumeMonitor(
             
             // Update volume if previous value is different or unknown
             if (volume != streamVolumes.getOrDefault(stream, -1)) {
+                log { "Audio stream $stream changed to $volume" }
+                
                 streamVolumes[stream] = volume
                 
                 if (notify) {
