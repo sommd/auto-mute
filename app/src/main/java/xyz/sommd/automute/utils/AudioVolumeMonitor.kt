@@ -19,6 +19,8 @@ package xyz.sommd.automute.utils
 
 import android.content.*
 import android.database.ContentObserver
+import android.media.AudioDeviceCallback
+import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Handler
@@ -77,10 +79,8 @@ class AudioVolumeMonitor(
         )
         
         /** [IntentFilter] for [receiver]. */
-        private val RECEIVER_INTENT_FILTER = IntentFilter().apply {
-            addAction(AudioManager.ACTION_HEADSET_PLUG)
-            addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-        }
+        private val AUDIO_BECOMING_NOISY_INTENT_FILTER =
+                IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
         
         /**
          * Amount to delay before updating volume after [AudioManager.ACTION_HEADSET_PLUG]. When
@@ -95,29 +95,38 @@ class AudioVolumeMonitor(
     /** [ContentObserver] for monitoring [Settings.System]. */
     private val contentObserver = object: ContentObserver(handler) {
         override fun onChange(selfChange: Boolean, uri: Uri) {
+            this@AudioVolumeMonitor.log { "System setting changed: $uri" }
+            
             updateVolumes(true)
         }
     }
     
-    /**
-     * [BroadcastReceiver] for receiving [AudioManager.ACTION_HEADSET_PLUG] and
-     * [AudioManager.ACTION_AUDIO_BECOMING_NOISY].
-     */
-    private val receiver = object: BroadcastReceiver() {
+    /** [AudioDeviceCallback] to monitor for [AudioDeviceInfo] changes. */
+    private val deviceCallback = object: AudioDeviceCallback() {
         private val updateRunnable = Runnable {
             updateVolumes(true)
         }
         
-        override fun onReceive(context: Context, intent: Intent) {
-            // Notify audio becoming noisy
-            if (intent.action == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
-                listener?.onAudioBecomingNoisy()
-            }
+        override fun onAudioDevicesAdded(addedDevices: Array<out AudioDeviceInfo>) {
+            this@AudioVolumeMonitor.log { "Devices added: ${addedDevices.contentToString()}" }
             
-            // Cancel existing runnable to prevent unnecessary updates
-            handler.removeCallbacks(updateRunnable)
-            // Update volumes and notify
             handler.postDelayed(updateRunnable, HEADSET_PLUG_DELAY_MS)
+        }
+        
+        override fun onAudioDevicesRemoved(removedDevices: Array<out AudioDeviceInfo>) {
+            this@AudioVolumeMonitor.log { "Devices removed: ${removedDevices.contentToString()}" }
+            
+            handler.postDelayed(updateRunnable, HEADSET_PLUG_DELAY_MS)
+        }
+    }
+    
+    /** [BroadcastReceiver] for receiving [AudioManager.ACTION_AUDIO_BECOMING_NOISY]. */
+    private val receiver = object: BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            this@AudioVolumeMonitor.log { "Audio becoming noisy" }
+            
+            // Notify audio becoming noisy
+            listener?.onAudioBecomingNoisy()
         }
     }
     
@@ -139,7 +148,8 @@ class AudioVolumeMonitor(
         
         // Register contentObserver and receiver on handler thread
         contentResolver.registerContentObserver(Settings.System.CONTENT_URI, true, contentObserver)
-        context.registerReceiver(receiver, RECEIVER_INTENT_FILTER, null, handler)
+        audioManager.registerAudioDeviceCallback(deviceCallback, handler)
+        context.registerReceiver(receiver, AUDIO_BECOMING_NOISY_INTENT_FILTER, null, handler)
     }
     
     /**
@@ -148,6 +158,7 @@ class AudioVolumeMonitor(
     fun stop() {
         // Stop listening
         contentResolver.unregisterContentObserver(contentObserver)
+        audioManager.unregisterAudioDeviceCallback(deviceCallback)
         context.unregisterReceiver(receiver)
         
         // Clear stream volumes
