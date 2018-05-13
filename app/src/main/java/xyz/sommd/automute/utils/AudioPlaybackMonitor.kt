@@ -21,7 +21,9 @@ import android.content.Context
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
+import android.os.Looper
 import androidx.core.content.systemService
+import javax.inject.Inject
 
 /**
  * Class for monitoring [AudioPlaybackConfiguration]s.
@@ -29,15 +31,13 @@ import androidx.core.content.systemService
  * Unlike [AudioManager.AudioPlaybackCallback], [AudioPlaybackMonitor] uses an interface and
  * notifies it when an [AudioPlaybackConfiguration] is started or stopped.
  *
- * @param context The [Context] to get the [AudioManager] service from.
- * @param listener The [Listener] to notify changes of.
- * @param handler The [Handler] to pass to [AudioManager.registerAudioPlaybackCallback].
+ * @param audioManager The [AudioManager] to use.
+ * @param handler The [Handler] for the thread on which to execute the [listener].
  */
-class AudioPlaybackMonitor(context: Context,
-                           private val listener: Listener,
-                           private val handler: Handler? = null):
-        AudioManager.AudioPlaybackCallback() {
-    
+class AudioPlaybackMonitor @Inject constructor(
+        private val audioManager: AudioManager,
+        private val handler: Handler = Handler(Looper.getMainLooper())
+) {
     interface Listener {
         /**
          * Called when a new [AudioPlaybackConfiguration] is added.
@@ -56,55 +56,80 @@ class AudioPlaybackMonitor(context: Context,
         fun audioPlaybackChanged(configs: List<AudioPlaybackConfiguration>) {}
     }
     
-    private val audioManager = context.systemService<AudioManager>()
-    
-    /** Mutable [Set] to keep track of current [AudioPlaybackConfiguration]s. */
+    /** [MutableSet] to keep track of current [AudioPlaybackConfiguration]s. */
     private val _playbackConfigs = mutableSetOf<AudioPlaybackConfiguration>()
-    /** Read only [Set] of all current [AudioPlaybackConfiguration]s. */
+    
+    /** [AudioManager.AudioPlaybackCallback] to monitor for [AudioPlaybackConfiguration] changes. */
+    private val playbackConfigCallback = object: AudioManager.AudioPlaybackCallback() {
+        override fun onPlaybackConfigChanged(configs: List<AudioPlaybackConfiguration>) {
+            updatePlaybackConfigurations(configs)
+        }
+    }
+    
+    /** [Set] of all current [AudioPlaybackConfiguration]s. */
     val playbackConfigs: Set<AudioPlaybackConfiguration> = _playbackConfigs
+    /** The [Listener] to notify changes of. */
+    var listener: Listener? = null
+    
+    /**
+     * Create [AudioPlaybackMonitor] from a [Context].
+     *
+     * @param context The [Context] to obtain the [AudioManager] from.
+     */
+    constructor(context: Context, handler: Handler = Handler(Looper.getMainLooper())):
+            this(context.systemService<AudioManager>(), handler)
     
     /**
      * Register this [AudioPlaybackMonitor] to start monitoring [AudioPlaybackConfiguration]
      * changes.
      *
      * @param notifyNow If `true`, the [Listener] will be notified of any current
-     * [AudioPlaybackConfiguration]s. Note: the [Listener] will be called on the current [Thread],
-     * not via the [Handler].
+     * [AudioPlaybackConfiguration]s. The [Listener] will be called on the [handler] thread.
      */
     fun start(notifyNow: Boolean = false) {
         if (notifyNow) {
-            onPlaybackConfigChanged(audioManager.activePlaybackConfigurations)
+            handler.postOrRunNow {
+                // playbackConfigs should be empty so this will notify for all playback configs
+                updatePlaybackConfigurations(audioManager.activePlaybackConfigurations)
+            }
         } else {
+            // Add playback configs to track only future changes
             _playbackConfigs.addAll(audioManager.activePlaybackConfigurations)
         }
         
-        audioManager.registerAudioPlaybackCallback(this, handler)
+        // Register playbackConfigCallback on handler thread
+        audioManager.registerAudioPlaybackCallback(playbackConfigCallback, handler)
     }
     
     /**
      * Stop monitoring [AudioPlaybackConfiguration] changes.
      */
     fun stop() {
-        audioManager.unregisterAudioPlaybackCallback(this)
+        // Stop listening and clear current playback configs
+        audioManager.unregisterAudioPlaybackCallback(playbackConfigCallback)
         _playbackConfigs.clear()
     }
     
-    override fun onPlaybackConfigChanged(newConfigs: List<AudioPlaybackConfiguration>) {
+    /** Update [playbackConfigs] and notify [listener] of any changes. */
+    private fun updatePlaybackConfigurations(newConfigs: List<AudioPlaybackConfiguration>) {
+        // Add new playback configs and call Listener.audioPlaybackStarted for each
         for (config in newConfigs) {
             if (config !in _playbackConfigs) {
                 _playbackConfigs.add(config)
-                listener.audioPlaybackStarted(config)
+                listener?.audioPlaybackStarted(config)
             }
         }
         
+        // Remove old playback configs and call Listener.audioPlaybackStopped for each
         val iter = _playbackConfigs.iterator()
         for (config in iter) {
             if (config !in newConfigs) {
                 iter.remove()
-                listener.audioPlaybackStopped(config)
+                listener?.audioPlaybackStopped(config)
             }
         }
         
-        listener.audioPlaybackChanged(newConfigs)
+        // Notify audio playbacks changed
+        listener?.audioPlaybackChanged(newConfigs)
     }
 }

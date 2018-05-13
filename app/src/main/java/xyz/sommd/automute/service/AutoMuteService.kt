@@ -94,11 +94,15 @@ class AutoMuteService: Service(),
         
         // Create audio monitors
         handler = Handler()
-        playbackMonitor = AudioPlaybackMonitor(this, this, handler)
-        volumeMonitor = AudioVolumeMonitor(this, this, intArrayOf(DEFAULT_STREAM), handler)
+        playbackMonitor = AudioPlaybackMonitor(this, handler)
+        volumeMonitor = AudioVolumeMonitor(this, intArrayOf(DEFAULT_STREAM), handler)
         
         // Setup listeners
+        playbackMonitor.listener = this
+        volumeMonitor.listener = this
         settings.addChangeListener(this)
+        
+        // Start listeners
         playbackMonitor.start()
         volumeMonitor.start()
         

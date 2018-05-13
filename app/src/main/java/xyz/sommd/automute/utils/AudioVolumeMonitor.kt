@@ -22,49 +22,33 @@ import android.database.ContentObserver
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.SparseIntArray
 import androidx.core.content.systemService
 import androidx.core.util.getOrDefault
 import androidx.core.util.set
-import xyz.sommd.automute.utils.AudioVolumeMonitor.Listener
 
 /**
  * Class for monitoring the volume level changes of audio streams.
  *
- * Note: this class may not be completely reliable as it relies of the [Settings] [ContentProvider],
- * which may not be notified when volume levels are changed. It also won't be notified of streams
- * being muted/unmuted.
+ * Note: this class may not be completely reliable as it relies on the [Settings.System]
+ * [ContentProvider], which may not be notified when volume levels are changed. It also won't be
+ * notified of streams being muted/unmuted.
  *
- * @param context The [Context] to get the [ContentResolver] and [AudioManager] from.
- * @param listener The [Listener] to be notified of volume changes.
+ * @param context The [Context] to use.
  * @param streams The audio streams to monitor the volume of, e.g. [AudioManager.STREAM_MUSIC].
- * @param handler The [Handler] to be passed to [ContentObserver].
+ * @param handler The [Handler] for the thread on which to execute the [listener].
+ * @param audioManager The [AudioManager] to use.
+ * @param audioManager The [ContentResolver] to use.
  */
-class AudioVolumeMonitor(private val context: Context,
-                         private val listener: Listener,
-                         private val streams: IntArray = ALL_STREAMS,
-                         private val handler: Handler = Handler()): ContentObserver(handler) {
-    
-    companion object {
-        private val ALL_STREAMS = intArrayOf(
-                AudioManager.STREAM_VOICE_CALL,
-                AudioManager.STREAM_SYSTEM,
-                AudioManager.STREAM_RING,
-                AudioManager.STREAM_MUSIC,
-                AudioManager.STREAM_ALARM,
-                AudioManager.STREAM_NOTIFICATION,
-                AudioManager.STREAM_DTMF,
-                AudioManager.STREAM_ACCESSIBILITY
-        )
-        
-        /**
-         * Amount to delay before updating volume after [AudioManager.ACTION_HEADSET_PLUG]. When
-         * updating immediately, volume may not have changed yet.
-         */
-        private const val HEADSET_PLUG_DELAY_MS = 100L
-    }
-    
+class AudioVolumeMonitor(
+        private val context: Context,
+        private val streams: IntArray = ALL_STREAMS,
+        private val handler: Handler = Handler(Looper.getMainLooper()),
+        private val audioManager: AudioManager = context.systemService(),
+        private val contentResolver: ContentResolver = context.contentResolver
+) {
     interface Listener {
         /**
          * Called when the volume of [stream] is changed.
@@ -79,11 +63,41 @@ class AudioVolumeMonitor(private val context: Context,
         fun onAudioBecomingNoisy()
     }
     
-    private val contentResolver = context.contentResolver
-    private val audioManager = context.systemService<AudioManager>()
+    companion object {
+        /** All available audio streams. */
+        private val ALL_STREAMS = intArrayOf(
+                AudioManager.STREAM_VOICE_CALL,
+                AudioManager.STREAM_SYSTEM,
+                AudioManager.STREAM_RING,
+                AudioManager.STREAM_MUSIC,
+                AudioManager.STREAM_ALARM,
+                AudioManager.STREAM_NOTIFICATION,
+                AudioManager.STREAM_DTMF,
+                AudioManager.STREAM_ACCESSIBILITY
+        )
+        
+        /** [IntentFilter] for [receiver]. */
+        private val RECEIVER_INTENT_FILTER = IntentFilter().apply {
+            addAction(AudioManager.ACTION_HEADSET_PLUG)
+            addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+        }
+        
+        /**
+         * Amount to delay before updating volume after [AudioManager.ACTION_HEADSET_PLUG]. When
+         * updating immediately, volume may not have changed yet.
+         */
+        private const val HEADSET_PLUG_DELAY_MS = 100L
+    }
     
     /** Previous stream volumes to keep track of which volumes changed. */
     private val streamVolumes = SparseIntArray()
+    
+    /** [ContentObserver] for monitoring [Settings.System]. */
+    private val contentObserver = object: ContentObserver(handler) {
+        override fun onChange(selfChange: Boolean, uri: Uri) {
+            updateVolumes(true)
+        }
+    }
     
     /**
      * [BroadcastReceiver] for receiving [AudioManager.ACTION_HEADSET_PLUG] and
@@ -94,18 +108,10 @@ class AudioVolumeMonitor(private val context: Context,
             updateVolumes(true)
         }
         
-        private val noisyRunnable = Runnable {
-            listener.onAudioBecomingNoisy()
-        }
-        
         override fun onReceive(context: Context, intent: Intent) {
-            this@AudioVolumeMonitor.log { "Audio output changing" }
-            
             // Notify audio becoming noisy
             if (intent.action == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
-                this@AudioVolumeMonitor.log { "Audio becoming noisy" }
-                
-                handler.post(noisyRunnable)
+                listener?.onAudioBecomingNoisy()
             }
             
             // Cancel existing runnable to prevent unnecessary updates
@@ -115,38 +121,40 @@ class AudioVolumeMonitor(private val context: Context,
         }
     }
     
+    /** The [Listener] to be notified of volume changes. */
+    var listener: Listener? = null
+    
     /**
      * Register this [AudioVolumeMonitor] to start monitor for stream volume changes.
      *
      * @param notifyNow If `true`, the [Listener] will be notified of the current stream volumes.
-     * Note: the [Listener] will be called on the current [Thread], not via the [Handler].
+     * The [Listener] will be called on the [handler] thread.
      */
     fun start(notifyNow: Boolean = false) {
-        updateVolumes(notifyNow)
+        handler.postOrRunNow {
+            // streamVolumes should be empty so this will notify for all stream volumes (if
+            // notifyNow is true)
+            updateVolumes(notifyNow)
+        }
         
-        contentResolver.registerContentObserver(Settings.System.CONTENT_URI, true, this)
-        context.registerReceiver(receiver, IntentFilter().apply {
-            addAction(AudioManager.ACTION_HEADSET_PLUG)
-            addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-        })
+        // Register contentObserver and receiver on handler thread
+        contentResolver.registerContentObserver(Settings.System.CONTENT_URI, true, contentObserver)
+        context.registerReceiver(receiver, RECEIVER_INTENT_FILTER, null, handler)
     }
     
     /**
      * Stop monitoring stream volume changes.
      */
     fun stop() {
-        contentResolver.unregisterContentObserver(this)
+        // Stop listening
+        contentResolver.unregisterContentObserver(contentObserver)
         context.unregisterReceiver(receiver)
         
+        // Clear stream volumes
         streamVolumes.clear()
     }
     
-    override fun onChange(selfChange: Boolean, uri: Uri?) {
-        log { "Volume changed by user" }
-        
-        updateVolumes(true)
-    }
-    
+    /** Update [streamVolumes] and notify [listener] of any changes if [notify] is `true`. */
     private fun updateVolumes(notify: Boolean) {
         // Get volume of each stream
         for (stream in streams) {
@@ -157,11 +165,9 @@ class AudioVolumeMonitor(private val context: Context,
                 streamVolumes[stream] = volume
                 
                 if (notify) {
-                    listener.onVolumeChange(stream, volume)
+                    listener?.onVolumeChange(stream, volume)
                 }
             }
         }
     }
-    
-    override fun onChange(selfChange: Boolean) = onChange(selfChange, null)
 }
