@@ -26,8 +26,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class Settings @Inject constructor(private val context: Context):
-        SharedPreferences.OnSharedPreferenceChangeListener {
+class Settings @Inject constructor(
+        context: Context,
+        private val sharedPrefs: SharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(context)
+): SharedPreferences.OnSharedPreferenceChangeListener {
     interface ChangeListener {
         fun onSettingsChanged(settings: Settings, key: String)
     }
@@ -55,27 +58,16 @@ class Settings @Inject constructor(private val context: Context):
         const val AUTO_UNMUTE_GAME_MODE_KEY = "auto_unmute_game_mode"
     }
     
-    private val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
     private val listeners = mutableSetOf<ChangeListener>()
     
     init {
-        sharedPrefs.registerOnSharedPreferenceChangeListener(this)
-    }
-    
-    fun setDefaultValues() {
         PreferenceManager.setDefaultValues(context, R.xml.preferences, false)
+        
+        sharedPrefs.registerOnSharedPreferenceChangeListener(this)
     }
     
     fun addChangeListener(listener: ChangeListener) {
         listeners.add(listener)
-    }
-    
-    inline fun addChangeListener(crossinline listener: (Settings, String) -> Any?) {
-        addChangeListener(object: ChangeListener {
-            override fun onSettingsChanged(settings: Settings, key: String) {
-                listener(settings, key)
-            }
-        })
     }
     
     fun removeChangeListener(listener: ChangeListener) {

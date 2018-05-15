@@ -22,6 +22,7 @@ import android.content.Context
 import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
+import android.support.v7.preference.PreferenceManager
 import androidx.core.content.systemService
 import dagger.Module
 import dagger.Provides
@@ -44,6 +45,11 @@ object AndroidModule {
     @Provides
     @Singleton
     fun contentResolver(context: Context) = context.contentResolver
+    
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun sharedPreferences(context: Context) = PreferenceManager.getDefaultSharedPreferences(context)
     
     @JvmStatic
     @Provides
