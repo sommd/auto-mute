@@ -26,7 +26,7 @@ import xyz.sommd.automute.di.Injection
 class AutoStartReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (Injection.settings.serviceEnabled) {
-            AutoMuteService.start(context)
+            AutoMuteService.start(context, intent.action == Intent.ACTION_BOOT_COMPLETED)
         }
     }
 }

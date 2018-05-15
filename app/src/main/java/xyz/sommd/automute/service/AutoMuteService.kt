@@ -41,10 +41,14 @@ class AutoMuteService: Service(),
         const val ACTION_UNMUTE = "xyz.sommd.automute.action.UNMUTE"
         const val ACTION_SHOW = "xyz.sommd.automute.action.SHOW"
         
+        /** Extra to signal that the service was started on boot by [AutoMuteService]. */
+        const val EXTRA_BOOT = "xyz.sommd.automute.extra.BOOT"
+        
         private const val DEFAULT_STREAM = AudioManager.STREAM_MUSIC
         
-        fun start(context: Context) {
-            context.startForegroundService(Intent(context, AutoMuteService::class.java))
+        fun start(context: Context, boot: Boolean = false) {
+            context.startForegroundService(Intent(context, AutoMuteService::class.java)
+                                                   .putExtra(EXTRA_BOOT, boot))
         }
         
         fun stop(context: Context) {
@@ -107,15 +111,25 @@ class AutoMuteService: Service(),
     }
     
     /**
-     * Handle actions sent from status notification (or other places).
+     * Handle actions sent from status notification (or other places) or mute on boot.
      */
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        log { "Received command: ${intent.action}" }
-        
-        when (intent.action) {
-            ACTION_MUTE -> mute()
-            ACTION_UNMUTE -> unmute()
-            ACTION_SHOW -> showVolumeControl()
+        if (intent.getBooleanExtra(EXTRA_BOOT, false) && settings.autoMuteEnabled) {
+            if (settings.autoMuteHeadphonesDisabled && headphonesPluggedIn) {
+                log { "Not muting on boot, headphones plugged in" }
+            } else {
+                log { "Muting on boot" }
+                
+                mute()
+            }
+        } else if (intent.action != null) {
+            log { "Received command: ${intent.action}" }
+            
+            when (intent.action) {
+                ACTION_MUTE -> mute()
+                ACTION_UNMUTE -> unmute()
+                ACTION_SHOW -> showVolumeControl()
+            }
         }
         
         return START_STICKY
