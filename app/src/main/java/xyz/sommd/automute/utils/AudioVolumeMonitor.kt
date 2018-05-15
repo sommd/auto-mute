@@ -136,7 +136,7 @@ class AudioVolumeMonitor(
             this@AudioVolumeMonitor.log { "Audio becoming noisy" }
             
             // Notify audio becoming noisy
-            listener?.onAudioBecomingNoisy()
+            listener.onAudioBecomingNoisy()
         }
     }
     
