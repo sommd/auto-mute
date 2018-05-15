@@ -19,71 +19,15 @@ package xyz.sommd.automute.settings
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.preference.PreferenceFragmentCompat
-import xyz.sommd.automute.BuildConfig
-import xyz.sommd.automute.di.Injection
 import xyz.sommd.automute.R
-import xyz.sommd.automute.service.AutoMuteService
-import javax.inject.Inject
+import xyz.sommd.automute.utils.log
 
 class SettingsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Add preferences fragment
-        if (supportFragmentManager.findFragmentById(android.R.id.content) == null) {
-            supportFragmentManager.beginTransaction()
-                    .add(android.R.id.content, SettingsFragment())
-                    .commit()
-        }
-    }
-    
-    class SettingsFragment: PreferenceFragmentCompat(), Settings.ChangeListener {
-        @Inject
-        lateinit var settings: Settings
+        setContentView(R.layout.activity_settings)
         
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            
-            Injection.inject(this)
-            
-            if (settings.serviceEnabled) {
-                AutoMuteService.start(requireContext())
-            }
-        }
-        
-        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            setPreferencesFromResource(R.xml.preferences, rootKey)
-            
-            // Set app version string
-            findPreference("app_version").summary = resources.getString(
-                    R.string.pref_about_app_version_summary,
-                    BuildConfig.VERSION_NAME, BuildConfig.BUILD_TYPE)
-        }
-        
-        override fun onStart() {
-            super.onStart()
-            
-            settings.addChangeListener(this)
-        }
-        
-        override fun onStop() {
-            super.onStop()
-            
-            settings.removeChangeListener(this)
-        }
-        
-        override fun onSettingsChanged(settings: Settings, key: String) {
-            when (key) {
-                Settings.SERVICE_ENABLED_KEY -> {
-                    // Start or stop the AutoMuteService
-                    if (settings.serviceEnabled) {
-                        AutoMuteService.start(requireContext())
-                    } else {
-                        AutoMuteService.stop(requireContext())
-                    }
-                }
-            }
-        }
+        log { savedInstanceState }
     }
 }

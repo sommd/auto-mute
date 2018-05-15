@@ -22,7 +22,7 @@ import dagger.BindsInstance
 import dagger.Component
 import xyz.sommd.automute.service.AutoMuteService
 import xyz.sommd.automute.settings.Settings
-import xyz.sommd.automute.settings.SettingsActivity
+import xyz.sommd.automute.settings.SettingsFragment
 import javax.inject.Singleton
 
 @Singleton
@@ -43,5 +43,5 @@ interface AutoMuteComponent {
     
     // Injectors
     fun inject(target: AutoMuteService)
-    fun inject(target: SettingsActivity.SettingsFragment)
+    fun inject(target: SettingsFragment)
 }
