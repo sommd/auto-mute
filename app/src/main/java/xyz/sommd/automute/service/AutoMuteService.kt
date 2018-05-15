@@ -76,9 +76,6 @@ class AutoMuteService: Service(),
         }
     }
     
-    private val headphonesPluggedIn: Boolean
-        get() = audioManager.isWiredHeadsetOn || audioManager.isBluetoothA2dpOn
-    
     @Inject
     fun createMonitors(playbackMonitorFactory: AudioPlaybackMonitorFactory,
                        volumeMonitorFactory: AudioVolumeMonitorFactory) {
@@ -113,7 +110,7 @@ class AutoMuteService: Service(),
      */
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         if (intent.getBooleanExtra(EXTRA_BOOT, false) && settings.autoMuteEnabled) {
-            if (settings.autoMuteHeadphonesDisabled && headphonesPluggedIn) {
+            if (settings.autoMuteHeadphonesDisabled && audioManager.areHeadphonesPluggedIn) {
                 log { "Not muting on boot, headphones plugged in" }
             } else {
                 log { "Muting on boot" }
@@ -193,7 +190,7 @@ class AutoMuteService: Service(),
         log { "Playback stopped: ${config.audioAttributes}" }
         
         if (settings.autoMuteEnabled) {
-            if (settings.autoMuteHeadphonesDisabled && headphonesPluggedIn) {
+            if (settings.autoMuteHeadphonesDisabled && audioManager.areHeadphonesPluggedIn) {
                 log { "Headphones plugged in, not auto muting" }
             } else {
                 // Check if any audio types are playing that we care about

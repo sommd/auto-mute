@@ -25,3 +25,6 @@ import android.media.AudioManager
 fun AudioManager.isVolumeOff(stream: Int = AudioManager.STREAM_MUSIC): Boolean {
     return isStreamMute(stream) || getStreamVolume(stream) == 0
 }
+
+val AudioManager.areHeadphonesPluggedIn: Boolean
+    get() = isWiredHeadsetOn || isBluetoothA2dpOn
