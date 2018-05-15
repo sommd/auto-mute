@@ -24,6 +24,7 @@ buildscript {
         kotlinVersion = '1.2.30'
         supportVersion = '27.1.1'
         daggerVersion = '2.16'
+        autoFactoryVersion = '1.0-beta5'
 
         // Get version string from git tag
         def describe = ['git', 'describe', '--tags', '--long', '--dirty'].execute().text.trim()

@@ -21,8 +21,9 @@ import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
 import android.os.Looper
+import com.google.auto.factory.AutoFactory
+import com.google.auto.factory.Provided
 import xyz.sommd.automute.utils.AudioPlaybackMonitor.Listener
-import javax.inject.Inject
 
 /**
  * Class for monitoring [AudioPlaybackConfiguration]s.
@@ -34,9 +35,12 @@ import javax.inject.Inject
  * @param listener The [Listener] to be notified of volume changes.
  * @param handler The [Handler] for the thread on which to execute the [listener].
  */
+@AutoFactory
 class AudioPlaybackMonitor(
+        @Provided
         private val audioManager: AudioManager,
         private val listener: Listener,
+        @Provided
         private val handler: Handler = Handler(Looper.getMainLooper())
 ) {
     interface Listener {
@@ -55,11 +59,6 @@ class AudioPlaybackMonitor(
          * [AudioPlaybackConfiguration]s.
          */
         fun audioPlaybackChanged(configs: List<AudioPlaybackConfiguration>) {}
-    }
-    
-    class Factory @Inject constructor(private val audioManager: AudioManager,
-                                      private val handler: Handler) {
-        fun create(listener: Listener) = AudioPlaybackMonitor(audioManager, listener, handler)
     }
     
     /** [MutableSet] to keep track of current [AudioPlaybackConfiguration]s. */

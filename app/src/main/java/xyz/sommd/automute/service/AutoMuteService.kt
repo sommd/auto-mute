@@ -26,10 +26,7 @@ import android.os.Handler
 import android.os.IBinder
 import xyz.sommd.automute.di.Injection
 import xyz.sommd.automute.settings.Settings
-import xyz.sommd.automute.utils.AudioPlaybackMonitor
-import xyz.sommd.automute.utils.AudioVolumeMonitor
-import xyz.sommd.automute.utils.isVolumeOff
-import xyz.sommd.automute.utils.log
+import xyz.sommd.automute.utils.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -83,8 +80,8 @@ class AutoMuteService: Service(),
         get() = audioManager.isWiredHeadsetOn || audioManager.isBluetoothA2dpOn
     
     @Inject
-    fun createMonitors(playbackMonitorFactory: AudioPlaybackMonitor.Factory,
-                       volumeMonitorFactory: AudioVolumeMonitor.Factory) {
+    fun createMonitors(playbackMonitorFactory: AudioPlaybackMonitorFactory,
+                       volumeMonitorFactory: AudioVolumeMonitorFactory) {
         playbackMonitor = playbackMonitorFactory.create(this)
         volumeMonitor = volumeMonitorFactory.create(this, DEFAULT_STREAMS)
     }

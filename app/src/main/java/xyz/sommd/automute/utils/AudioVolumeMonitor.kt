@@ -30,7 +30,8 @@ import android.util.SparseIntArray
 import androidx.core.content.systemService
 import androidx.core.util.getOrDefault
 import androidx.core.util.set
-import javax.inject.Inject
+import com.google.auto.factory.AutoFactory
+import com.google.auto.factory.Provided
 
 /**
  * Class for monitoring the volume level changes of audio streams.
@@ -45,12 +46,17 @@ import javax.inject.Inject
  * @param audioManager The [AudioManager] to use.
  * @param audioManager The [ContentResolver] to use.
  */
+@AutoFactory
 class AudioVolumeMonitor(
+        @Provided
         private val context: Context,
         private val listener: Listener,
         private val streams: IntArray = ALL_STREAMS,
+        @Provided
         private val handler: Handler = Handler(Looper.getMainLooper()),
+        @Provided
         private val audioManager: AudioManager = context.systemService(),
+        @Provided
         private val resolver: ContentResolver = context.contentResolver
 ) {
     interface Listener {
@@ -65,14 +71,6 @@ class AudioVolumeMonitor(
          * @see AudioManager.ACTION_AUDIO_BECOMING_NOISY
          */
         fun onAudioBecomingNoisy()
-    }
-    
-    class Factory @Inject constructor(private val context: Context,
-                                      private val handler: Handler,
-                                      private val audioManager: AudioManager,
-                                      private val resolver: ContentResolver) {
-        fun create(listener: Listener, streams: IntArray = ALL_STREAMS) =
-                AudioVolumeMonitor(context, listener, streams, handler, audioManager, resolver)
     }
     
     companion object {
