@@ -43,12 +43,6 @@ class AutoMuteService: Service(),
         
         private const val DEFAULT_STREAM = AudioManager.STREAM_MUSIC
         
-        fun startIfEnabled(context: Context) {
-            if (Injection.settings.serviceEnabled) {
-                start(context)
-            }
-        }
-        
         fun start(context: Context) {
             context.startForegroundService(Intent(context, AutoMuteService::class.java))
         }
@@ -64,8 +58,9 @@ class AutoMuteService: Service(),
     lateinit var notifications: Notifications
     @Inject
     lateinit var audioManager: AudioManager
+    @Inject
+    lateinit var handler: Handler
     
-    private lateinit var handler: Handler
     private lateinit var playbackMonitor: AudioPlaybackMonitor
     private lateinit var volumeMonitor: AudioVolumeMonitor
     
@@ -82,27 +77,27 @@ class AutoMuteService: Service(),
     private val headphonesPluggedIn: Boolean
         get() = audioManager.isWiredHeadsetOn || audioManager.isBluetoothA2dpOn
     
+    @Inject
+    fun createMonitors(playbackMonitorFactory: AudioPlaybackMonitor.Factory,
+                       volumeMonitorFactory: AudioVolumeMonitor.Factory) {
+        playbackMonitor = playbackMonitorFactory.create(this)
+        volumeMonitor = volumeMonitorFactory.create(this)
+    }
+    
     // Service
     
     override fun onCreate() {
-        Injection.inject(this)
-        
         log { "Starting" }
+        
+        Injection.inject(this)
         
         // Setup notifications
         notifications.createChannels()
         
-        // Create audio monitors
-        handler = Handler()
-        playbackMonitor = AudioPlaybackMonitor(this, handler)
-        volumeMonitor = AudioVolumeMonitor(this, intArrayOf(DEFAULT_STREAM), handler)
-        
-        // Setup listeners
-        playbackMonitor.listener = this
-        volumeMonitor.listener = this
+        // Setup settings
         settings.addChangeListener(this)
         
-        // Start listeners
+        // Start monitors
         playbackMonitor.start()
         volumeMonitor.start()
         

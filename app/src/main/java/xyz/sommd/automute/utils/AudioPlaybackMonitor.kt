@@ -17,12 +17,11 @@
 
 package xyz.sommd.automute.utils
 
-import android.content.Context
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
 import android.os.Looper
-import androidx.core.content.systemService
+import xyz.sommd.automute.utils.AudioPlaybackMonitor.Listener
 import javax.inject.Inject
 
 /**
@@ -32,10 +31,12 @@ import javax.inject.Inject
  * notifies it when an [AudioPlaybackConfiguration] is started or stopped.
  *
  * @param audioManager The [AudioManager] to use.
+ * @param listener The [Listener] to be notified of volume changes.
  * @param handler The [Handler] for the thread on which to execute the [listener].
  */
-class AudioPlaybackMonitor @Inject constructor(
+class AudioPlaybackMonitor(
         private val audioManager: AudioManager,
+        private val listener: Listener,
         private val handler: Handler = Handler(Looper.getMainLooper())
 ) {
     interface Listener {
@@ -56,6 +57,11 @@ class AudioPlaybackMonitor @Inject constructor(
         fun audioPlaybackChanged(configs: List<AudioPlaybackConfiguration>) {}
     }
     
+    class Factory @Inject constructor(private val audioManager: AudioManager,
+                                      private val handler: Handler) {
+        fun create(listener: Listener) = AudioPlaybackMonitor(audioManager, listener, handler)
+    }
+    
     /** [MutableSet] to keep track of current [AudioPlaybackConfiguration]s. */
     private val _playbackConfigs = mutableSetOf<AudioPlaybackConfiguration>()
     
@@ -68,16 +74,6 @@ class AudioPlaybackMonitor @Inject constructor(
     
     /** [Set] of all current [AudioPlaybackConfiguration]s. */
     val playbackConfigs: Set<AudioPlaybackConfiguration> = _playbackConfigs
-    /** The [Listener] to notify changes of. */
-    var listener: Listener? = null
-    
-    /**
-     * Create [AudioPlaybackMonitor] from a [Context].
-     *
-     * @param context The [Context] to obtain the [AudioManager] from.
-     */
-    constructor(context: Context, handler: Handler = Handler(Looper.getMainLooper())):
-            this(context.systemService<AudioManager>(), handler)
     
     /**
      * Register this [AudioPlaybackMonitor] to start monitoring [AudioPlaybackConfiguration]
@@ -116,7 +112,7 @@ class AudioPlaybackMonitor @Inject constructor(
         for (config in newConfigs) {
             if (config !in _playbackConfigs) {
                 _playbackConfigs.add(config)
-                listener?.audioPlaybackStarted(config)
+                listener.audioPlaybackStarted(config)
             }
         }
         
@@ -125,11 +121,11 @@ class AudioPlaybackMonitor @Inject constructor(
         for (config in iter) {
             if (config !in newConfigs) {
                 iter.remove()
-                listener?.audioPlaybackStopped(config)
+                listener.audioPlaybackStopped(config)
             }
         }
         
         // Notify audio playbacks changed
-        listener?.audioPlaybackChanged(newConfigs)
+        listener.audioPlaybackChanged(newConfigs)
     }
 }

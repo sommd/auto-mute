@@ -30,6 +30,7 @@ import android.util.SparseIntArray
 import androidx.core.content.systemService
 import androidx.core.util.getOrDefault
 import androidx.core.util.set
+import javax.inject.Inject
 
 /**
  * Class for monitoring the volume level changes of audio streams.
@@ -46,10 +47,11 @@ import androidx.core.util.set
  */
 class AudioVolumeMonitor(
         private val context: Context,
+        private val listener: Listener,
         private val streams: IntArray = ALL_STREAMS,
         private val handler: Handler = Handler(Looper.getMainLooper()),
         private val audioManager: AudioManager = context.systemService(),
-        private val contentResolver: ContentResolver = context.contentResolver
+        private val resolver: ContentResolver = context.contentResolver
 ) {
     interface Listener {
         /**
@@ -63,6 +65,14 @@ class AudioVolumeMonitor(
          * @see AudioManager.ACTION_AUDIO_BECOMING_NOISY
          */
         fun onAudioBecomingNoisy()
+    }
+    
+    class Factory @Inject constructor(private val context: Context,
+                                      private val handler: Handler,
+                                      private val audioManager: AudioManager,
+                                      private val resolver: ContentResolver) {
+        fun create(listener: Listener, streams: IntArray = ALL_STREAMS) =
+                AudioVolumeMonitor(context, listener, streams, handler, audioManager, resolver)
     }
     
     companion object {
@@ -88,7 +98,7 @@ class AudioVolumeMonitor(
     
     /** [Uri]s for volume settings in [Settings.System]. */
     private val volumeUris: List<Uri> = mutableListOf<Uri>().apply {
-        contentResolver.query(Settings.System.CONTENT_URI, arrayOf("name"), null, null).use { c ->
+        resolver.query(Settings.System.CONTENT_URI, arrayOf("name"), null, null).use { c ->
             while (c.moveToNext()) {
                 val name = c.getString(0)
                 if ("volume" in name) {
@@ -130,9 +140,6 @@ class AudioVolumeMonitor(
         }
     }
     
-    /** The [Listener] to be notified of volume changes. */
-    var listener: Listener? = null
-    
     /**
      * Register this [AudioVolumeMonitor] to start monitor for stream volume changes.
      *
@@ -149,7 +156,7 @@ class AudioVolumeMonitor(
         // Register contentObserver for each volumeUri
         log { "Registering observers for $volumeUris" }
         for (uri in volumeUris) {
-            contentResolver.registerContentObserver(uri, false, contentObserver)
+            resolver.registerContentObserver(uri, false, contentObserver)
         }
         
         // Register deviceCallback and receiver on handler thread
@@ -162,7 +169,7 @@ class AudioVolumeMonitor(
      */
     fun stop() {
         // Stop listening
-        contentResolver.unregisterContentObserver(contentObserver)
+        resolver.unregisterContentObserver(contentObserver)
         audioManager.unregisterAudioDeviceCallback(deviceCallback)
         context.unregisterReceiver(receiver)
         
@@ -190,7 +197,7 @@ class AudioVolumeMonitor(
                 streamVolumes[stream] = volume
                 
                 if (notify) {
-                    listener?.onVolumeChange(stream, volume)
+                    listener.onVolumeChange(stream, volume)
                 }
             }
         }

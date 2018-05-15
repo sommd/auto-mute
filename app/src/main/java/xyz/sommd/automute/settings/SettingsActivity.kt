@@ -21,17 +21,14 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.PreferenceFragmentCompat
 import xyz.sommd.automute.BuildConfig
-import xyz.sommd.automute.R
 import xyz.sommd.automute.di.Injection
+import xyz.sommd.automute.R
 import xyz.sommd.automute.service.AutoMuteService
 import javax.inject.Inject
 
 class SettingsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        // Start service
-        AutoMuteService.startIfEnabled(this)
         
         // Add preferences fragment
         if (supportFragmentManager.findFragmentById(android.R.id.content) == null) {
@@ -46,8 +43,13 @@ class SettingsActivity: AppCompatActivity() {
         lateinit var settings: Settings
         
         override fun onCreate(savedInstanceState: Bundle?) {
-            Injection.inject(this)
             super.onCreate(savedInstanceState)
+            
+            Injection.inject(this)
+            
+            if (settings.serviceEnabled) {
+                AutoMuteService.start(requireContext())
+            }
         }
         
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -76,9 +78,9 @@ class SettingsActivity: AppCompatActivity() {
                 Settings.SERVICE_ENABLED_KEY -> {
                     // Start or stop the AutoMuteService
                     if (settings.serviceEnabled) {
-                        AutoMuteService.start(context!!)
+                        AutoMuteService.start(requireContext())
                     } else {
-                        AutoMuteService.stop(context!!)
+                        AutoMuteService.stop(requireContext())
                     }
                 }
             }

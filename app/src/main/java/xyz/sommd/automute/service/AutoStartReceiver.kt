@@ -20,10 +20,13 @@ package xyz.sommd.automute.service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import xyz.sommd.automute.di.Injection
 
 /** [BroadcastReceiver] to start [AutoMuteService] if it's enabled. */
 class AutoStartReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        AutoMuteService.startIfEnabled(context)
+        if (Injection.settings.serviceEnabled) {
+            AutoMuteService.start(context)
+        }
     }
 }
