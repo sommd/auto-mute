@@ -1,3 +1,5 @@
+import java.util.regex.Matcher
+
 /*
  * Copyright (C) 2018 David Sommerich
  *
@@ -24,25 +26,58 @@ buildscript {
         daggerVersion = '2.16'
 
         // Get version string from git tag
-        def describe = ['git', 'describe', '--tags', '--long'].execute().text.trim()
-        def m = (describe =~ /v(\d+)\.(\d+)\.(\d+)-(\d+)-(.+)/)
+        def describe = ['git', 'describe', '--tags', '--long', '--dirty'].execute().text.trim()
 
-        // Parse version tag
-        def major = m[0][1].toInteger()
-        def minor = m[0][2].toInteger()
-        def patch = m[0][3].toInteger()
-        def release = m[0][4].toInteger()
-        def commit = m[0][5]
+        // Parse version string
+        def major = minor = patch = release = revision = 0
+        def commit = "unknown"
+        def dirty = true
+        def m = describe =~ /v(\d+)\.(\d+)\.(\d+)(-(alpha|beta).(\d+))?-(\d+)-([^-]+)(-(dirty))?/
+        if (m.matches()) {
+            // Version
+            major = m.group(1).toInteger()
+            minor = m.group(2).toInteger()
+            patch = m.group(3).toInteger()
+
+            // Release: 'alpha', 'beta' or null
+            release = m.group(5)
+            // Revision: alpha/beta number or null
+            revision = m.group(6).toInteger() ?: 0
+
+            // Commits since last release
+            commits = m.group(7).toInteger()
+            // Commit hash
+            commit = m.group(8)
+
+            // Dirty?
+            dirty = m.group(9) != null
+
+            logger.quiet("Parsed version as: v$major.$minor.$patch " +
+                    "${release != null ? "$release.$revision " : ""}" +
+                    "$commits-$commit ${dirty ? "dirty" : "clean"}")
+        } else {
+            logger.error("Unable to parse version: $describe")
+        }
 
         // Project version info
         projectVersion = [
-                code  : major * 1_00_00_000 +
-                        minor * 1_00_000 +
-                        patch * 1_000 +
-                        release,
-                name  : "$major.$minor.$patch",
-                suffix: "-$release-$commit"
+                // Format: MAJOR_MINOR_PATCH_RELEASE_REVISION_COMMITS
+                //             X____XX____XX_______X________X______XX
+                // Max:       21____00____00_______0________0______00
+                code  : major * 1_00_00_0_0_00 +
+                        minor * 1_00_0_0_00 +
+                        patch * 1_0_0_00 +
+                        ['alpha', 'beta', null].indexOf(release) * 1_0_00 +
+                        revision * 1_00 +
+                        commits,
+                name  : "$major.$minor.$patch" +
+                        (release != null ? "-$release.$revision" : ""),
+                suffix: "-$commits-$commit" +
+                        (dirty ? "-dirty" : "")
         ]
+
+        logger.quiet("Version code: $projectVersion.code (${2100000000 - projectVersion.code} below max)")
+        logger.quiet("Version: $projectVersion.name$projectVersion.suffix")
     }
 
     repositories {
