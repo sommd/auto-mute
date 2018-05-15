@@ -45,6 +45,7 @@ class AutoMuteService: Service(),
         const val EXTRA_BOOT = "xyz.sommd.automute.extra.BOOT"
         
         private const val DEFAULT_STREAM = AudioManager.STREAM_MUSIC
+        private val DEFAULT_STREAMS = intArrayOf(DEFAULT_STREAM)
         
         fun start(context: Context, boot: Boolean = false) {
             context.startForegroundService(Intent(context, AutoMuteService::class.java)
@@ -85,7 +86,7 @@ class AutoMuteService: Service(),
     fun createMonitors(playbackMonitorFactory: AudioPlaybackMonitor.Factory,
                        volumeMonitorFactory: AudioVolumeMonitor.Factory) {
         playbackMonitor = playbackMonitorFactory.create(this)
-        volumeMonitor = volumeMonitorFactory.create(this)
+        volumeMonitor = volumeMonitorFactory.create(this, DEFAULT_STREAMS)
     }
     
     // Service
