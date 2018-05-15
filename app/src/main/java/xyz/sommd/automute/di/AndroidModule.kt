@@ -20,18 +20,33 @@ package xyz.sommd.automute.di
 import android.app.NotificationManager
 import android.content.Context
 import android.media.AudioManager
+import android.os.Handler
+import android.os.Looper
 import androidx.core.content.systemService
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
+/** Provides Android framework objects. */
 @Module
-class SystemServiceModule {
-    @Singleton
+object AndroidModule {
+    @JvmStatic
     @Provides
+    @Singleton
     fun audioManager(context: Context): AudioManager = context.systemService()
     
-    @Singleton
+    @JvmStatic
     @Provides
+    @Singleton
     fun notificationManager(context: Context): NotificationManager = context.systemService()
+    
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun contentResolver(context: Context) = context.contentResolver
+    
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun mainThreadHandler() = Handler(Looper.getMainLooper())
 }

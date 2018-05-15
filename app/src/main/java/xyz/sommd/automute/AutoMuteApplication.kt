@@ -19,7 +19,6 @@ package xyz.sommd.automute
 
 import android.app.Application
 import xyz.sommd.automute.di.AutoMuteComponent
-import xyz.sommd.automute.di.ContextModule
 import xyz.sommd.automute.di.DaggerAutoMuteComponent
 
 class AutoMuteApplication: Application() {
@@ -31,7 +30,7 @@ class AutoMuteApplication: Application() {
     override fun onCreate() {
         super.onCreate()
         component = DaggerAutoMuteComponent.builder()
-                .contextModule(ContextModule(this))
+                .context(this)
                 .build()
     }
 }
