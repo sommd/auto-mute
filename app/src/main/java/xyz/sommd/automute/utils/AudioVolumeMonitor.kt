@@ -17,7 +17,8 @@
 
 package xyz.sommd.automute.utils
 
-import android.content.*
+import android.content.ContentProvider
+import android.content.Context
 import android.database.ContentObserver
 import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
@@ -29,7 +30,11 @@ import android.provider.Settings
 import android.util.SparseArray
 import android.util.SparseIntArray
 import androidx.core.content.systemService
-import androidx.core.util.*
+import androidx.core.net.toUri
+import androidx.core.util.contains
+import androidx.core.util.forEach
+import androidx.core.util.isEmpty
+import androidx.core.util.set
 import javax.inject.Inject
 
 /**
@@ -90,16 +95,11 @@ class AudioVolumeMonitor @Inject constructor(
     private val streamListeners = SparseArray<MutableList<Listener>>()
     
     /** [Uri]s for volume settings in [Settings.System]. */
-    private val volumeUris: List<Uri> = mutableListOf<Uri>().apply {
-        resolver.query(Settings.System.CONTENT_URI, arrayOf("name"), null, null).use { c ->
-            while (c.moveToNext()) {
-                val name = c.getString(0)
-                if ("volume" in name) {
-                    add(Settings.System.getUriFor(name))
-                }
-            }
-        }
-    }
+    private val volumeUris: List<Uri> =
+            resolver.query(Settings.System.CONTENT_URI, arrayOf("name"), null, null)
+                    .map { it.getString(0) }
+                    .filter { "volume" in it }
+                    .map { Uri.withAppendedPath(Settings.System.CONTENT_URI, it) }
     
     /** [ContentObserver] for monitoring [Settings.System]. */
     private val contentObserver = object: ContentObserver(handler) {
