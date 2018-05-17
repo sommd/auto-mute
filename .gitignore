@@ -1,6 +1,7 @@
 # Android Studio
 /.idea/libraries/
 /.idea/caches/
+/.idea/dictionaries/
 /.idea/workspace.xml
 *.iml
 
