@@ -26,12 +26,11 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.util.SparseArray
 import android.util.SparseIntArray
 import androidx.core.content.systemService
-import androidx.core.util.getOrDefault
-import androidx.core.util.set
-import com.google.auto.factory.AutoFactory
-import com.google.auto.factory.Provided
+import androidx.core.util.*
+import javax.inject.Inject
 
 /**
  * Class for monitoring the volume level changes of audio streams.
@@ -42,22 +41,11 @@ import com.google.auto.factory.Provided
  *
  * @param context The [Context] to use.
  * @param streams The audio streams to monitor the volume of, e.g. [AudioManager.STREAM_MUSIC].
- * @param handler The [Handler] for the thread on which to execute the [listener].
- * @param audioManager The [AudioManager] to use.
- * @param audioManager The [ContentResolver] to use.
+ * @param handler The [Handler] for the thread on which to execute listeners.
  */
-@AutoFactory
-class AudioVolumeMonitor(
-        @Provided
+class AudioVolumeMonitor @Inject constructor(
         private val context: Context,
-        private val listener: Listener,
-        private val streams: IntArray = ALL_STREAMS,
-        @Provided
-        private val handler: Handler = Handler(Looper.getMainLooper()),
-        @Provided
-        private val audioManager: AudioManager = context.systemService(),
-        @Provided
-        private val resolver: ContentResolver = context.contentResolver
+        private val handler: Handler = Handler(Looper.getMainLooper())
 ) {
     interface Listener {
         /**
@@ -70,6 +58,8 @@ class AudioVolumeMonitor(
          *
          * @see AudioManager.ACTION_AUDIO_BECOMING_NOISY
          */
+        // TODO: Remove
+        @Deprecated("Not supported any more")
         fun onAudioBecomingNoisy()
     }
     
@@ -85,14 +75,19 @@ class AudioVolumeMonitor(
                 AudioManager.STREAM_DTMF,
                 AudioManager.STREAM_ACCESSIBILITY
         )
-        
-        /** [IntentFilter] for [receiver]. */
-        private val AUDIO_BECOMING_NOISY_INTENT_FILTER =
-                IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
     }
+    
+    private val audioManager = context.systemService<AudioManager>()
+    private val resolver = context.contentResolver
     
     /** Previous stream volumes to keep track of which volumes changed. */
     private val streamVolumes = SparseIntArray()
+    
+    /**
+     * [Listener]s to be notified of volume changes for each stream. Streams are added and removed
+     * as listeners are added and removed so we know which streams we need to track the changes of.
+     */
+    private val streamListeners = SparseArray<MutableList<Listener>>()
     
     /** [Uri]s for volume settings in [Settings.System]. */
     private val volumeUris: List<Uri> = mutableListOf<Uri>().apply {
@@ -111,7 +106,7 @@ class AudioVolumeMonitor(
         override fun onChange(selfChange: Boolean, uri: Uri) {
             this@AudioVolumeMonitor.log { "Volume setting changed: $uri" }
             
-            updateVolumes(true)
+            updateVolumes()
         }
     }
     
@@ -128,75 +123,92 @@ class AudioVolumeMonitor(
         }
     }
     
-    /** [BroadcastReceiver] for receiving [AudioManager.ACTION_AUDIO_BECOMING_NOISY]. */
-    private val receiver = object: BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            this@AudioVolumeMonitor.log { "Audio becoming noisy" }
-            
-            // Notify audio becoming noisy
-            listener.onAudioBecomingNoisy()
+    /**
+     * Add a [Listener] to be notified of volume changes for the given [streams].
+     */
+    fun addListener(listener: Listener, streams: IntArray = ALL_STREAMS) {
+        // Start monitor if this is the first listener
+        if (streamListeners.isEmpty()) {
+            start()
+        }
+        
+        // Add listener to volume streams
+        for (stream in streams) {
+            // Create new list or add to existing
+            if (stream !in streamListeners) {
+                streamListeners[stream] = mutableListOf(listener)
+                
+                // Record current volume to only track changes in the future
+                streamVolumes[stream] = audioManager.getStreamVolume(stream)
+            } else {
+                streamListeners[stream].add(listener)
+            }
+        }
+    }
+    
+    /**
+     * Remove the [Listener].
+     */
+    fun removeListener(listener: Listener) {
+        // Remove listener from all streams
+        streamListeners.forEach { _, listeners -> listeners.remove(listener) }
+        
+        // Remove streams with no streamListeners
+        // Modifying streamListeners while iterating won't work, so iterate over ALL_STREAMS
+        ALL_STREAMS.forEach { stream ->
+            if (streamListeners[stream]?.isEmpty() == true) {
+                streamListeners.remove(stream)
+            }
+        }
+        
+        // Stop monitor if no more listeners
+        if (streamListeners.isEmpty()) {
+            stop()
         }
     }
     
     /**
      * Register this [AudioVolumeMonitor] to start monitor for stream volume changes.
-     *
-     * @param notifyNow If `true`, the [Listener] will be notified of the current stream volumes.
-     * The [Listener] will be called on the [handler] thread.
      */
-    fun start(notifyNow: Boolean = false) {
-        handler.postOrRunNow {
-            // streamVolumes should be empty so this will notify for all stream volumes (if
-            // notifyNow is true)
-            updateVolumes(notifyNow)
-        }
-        
+    private fun start() {
         // Register contentObserver for each volumeUri
         log { "Registering observers for $volumeUris" }
-        for (uri in volumeUris) {
-            resolver.registerContentObserver(uri, false, contentObserver)
-        }
+        volumeUris.forEach { resolver.registerContentObserver(it, false, contentObserver) }
         
         // Register deviceCallback and receiver on handler thread
         audioManager.registerAudioDeviceCallback(deviceCallback, handler)
-        context.registerReceiver(receiver, AUDIO_BECOMING_NOISY_INTENT_FILTER, null, handler)
     }
     
     /**
      * Stop monitoring stream volume changes.
      */
-    fun stop() {
+    private fun stop() {
         // Stop listening
         resolver.unregisterContentObserver(contentObserver)
         audioManager.unregisterAudioDeviceCallback(deviceCallback)
-        context.unregisterReceiver(receiver)
-        
-        // Clear stream volumes
-        streamVolumes.clear()
     }
     
     /** Updates volumes if output devices are added or removed. */
     private fun devicesUpdated(devices: Array<AudioDeviceInfo>) {
         if (devices.any { it.isSink }) {
-            updateVolumes(true)
+            updateVolumes()
         }
     }
     
-    /** Update [streamVolumes] and notify [listener] of any changes if [notify] is `true`. */
-    private fun updateVolumes(notify: Boolean) {
+    /** Update [streamVolumes] and notify [streamListeners] of any changes. */
+    private fun updateVolumes() {
         // Get volume of each stream
-        for (stream in streams) {
+        streamListeners.forEach { stream, listeners ->
             val volume = audioManager.getStreamVolume(stream)
             
-            // Update volume if previous value is different or unknown
-            if (volume != streamVolumes.getOrDefault(stream, -1)) {
-                log { "Audio stream $stream changed to $volume" }
+            // Update volume if previous value is different
+            if (volume != streamVolumes[volume]) {
+                log { "Audio stream $stream volume changed from ${streamVolumes[stream]} to $volume" }
                 
                 streamVolumes[stream] = volume
                 
-                if (notify) {
-                    listener.onVolumeChange(stream, volume)
-                }
+                // Notify listeners
+                listeners.forEach { it.onVolumeChange(stream, volume) }
             }
         }
     }
