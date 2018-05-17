@@ -30,7 +30,6 @@ import android.provider.Settings
 import android.util.SparseArray
 import android.util.SparseIntArray
 import androidx.core.content.systemService
-import androidx.core.net.toUri
 import androidx.core.util.contains
 import androidx.core.util.forEach
 import androidx.core.util.isEmpty
@@ -126,7 +125,7 @@ class AudioVolumeMonitor @Inject constructor(
     /**
      * Add a [Listener] to be notified of volume changes for the given [streams].
      */
-    fun addListener(listener: Listener, streams: IntArray = ALL_STREAMS) {
+    fun addListener(listener: Listener, vararg streams: Int = ALL_STREAMS) {
         // Start monitor if this is the first listener
         if (streamListeners.isEmpty()) {
             start()
