@@ -202,7 +202,7 @@ class AudioVolumeMonitor @Inject constructor(
             val volume = audioManager.getStreamVolume(stream)
             
             // Update volume if previous value is different
-            if (volume != streamVolumes[volume]) {
+            if (volume != streamVolumes[stream]) {
                 log { "Audio stream $stream volume changed from ${streamVolumes[stream]} to $volume" }
                 
                 streamVolumes[stream] = volume
