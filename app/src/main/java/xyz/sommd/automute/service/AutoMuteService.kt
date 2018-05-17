@@ -41,8 +41,6 @@ class AutoMuteService: Service(),
         /** Extra to signal that the service was started on boot by [AutoMuteService]. */
         const val EXTRA_BOOT = "xyz.sommd.automute.extra.BOOT"
         
-        private val STREAM_DEFAULTS = intArrayOf(STREAM_DEFAULT)
-        
         fun start(context: Context, boot: Boolean = false) {
             context.startForegroundService(Intent(context, AutoMuteService::class.java)
                                                    .putExtra(EXTRA_BOOT, boot))
@@ -93,7 +91,7 @@ class AutoMuteService: Service(),
         
         // Start monitors
         playbackMonitor.addListener(this)
-        volumeMonitor.addListener(this)
+        volumeMonitor.addListener(this, STREAM_DEFAULT)
         
         // Show foreground status notification
         val statusNotification = notifications.createStatusNotification()
