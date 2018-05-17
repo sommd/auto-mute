@@ -21,9 +21,8 @@ import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
 import android.os.Looper
-import com.google.auto.factory.AutoFactory
-import com.google.auto.factory.Provided
-import xyz.sommd.automute.utils.AudioPlaybackMonitor.Listener
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Class for monitoring [AudioPlaybackConfiguration]s.
@@ -32,15 +31,11 @@ import xyz.sommd.automute.utils.AudioPlaybackMonitor.Listener
  * notifies it when an [AudioPlaybackConfiguration] is started or stopped.
  *
  * @param audioManager The [AudioManager] to use.
- * @param listener The [Listener] to be notified of volume changes.
- * @param handler The [Handler] for the thread on which to execute the [listener].
+ * @param handler The [Handler] for the thread on which to execute listeners.
  */
-@AutoFactory
-class AudioPlaybackMonitor(
-        @Provided
+@Singleton
+class AudioPlaybackMonitor @Inject constructor(
         private val audioManager: AudioManager,
-        private val listener: Listener,
-        @Provided
         private val handler: Handler = Handler(Looper.getMainLooper())
 ) {
     interface Listener {
@@ -71,26 +66,42 @@ class AudioPlaybackMonitor(
         }
     }
     
+    /** [Listener]s to be notified of playback changes. */
+    private val listeners = mutableListOf<Listener>()
+    
     /** [Set] of all current [AudioPlaybackConfiguration]s. */
     val playbackConfigs: Set<AudioPlaybackConfiguration> = _playbackConfigs
     
     /**
+     * Add a [Listener] to be notified of [AudioPlaybackConfiguration] changes.
+     */
+    fun addListener(listener: Listener) {
+        // Start monitor if this is the first listener
+        if (listeners.isEmpty()) {
+            start()
+        }
+        
+        listeners.add(listener)
+    }
+    
+    /**
+     * Remove the [Listener].
+     */
+    fun removeListener(listener: Listener) {
+        listeners.remove(listener)
+        
+        if (listeners.isEmpty()) {
+            stop()
+        }
+    }
+    
+    /**
      * Register this [AudioPlaybackMonitor] to start monitoring [AudioPlaybackConfiguration]
      * changes.
-     *
-     * @param notifyNow If `true`, the [Listener] will be notified of any current
-     * [AudioPlaybackConfiguration]s. The [Listener] will be called on the [handler] thread.
      */
-    fun start(notifyNow: Boolean = false) {
-        if (notifyNow) {
-            handler.postOrRunNow {
-                // playbackConfigs should be empty so this will notify for all playback configs
-                updatePlaybackConfigurations(audioManager.activePlaybackConfigurations)
-            }
-        } else {
-            // Add playback configs to track only future changes
-            _playbackConfigs.addAll(audioManager.activePlaybackConfigurations)
-        }
+    private fun start() {
+        // Add playback configs to track only future changes
+        _playbackConfigs.addAll(audioManager.activePlaybackConfigurations)
         
         // Register playbackConfigCallback on handler thread
         audioManager.registerAudioPlaybackCallback(playbackConfigCallback, handler)
@@ -99,19 +110,19 @@ class AudioPlaybackMonitor(
     /**
      * Stop monitoring [AudioPlaybackConfiguration] changes.
      */
-    fun stop() {
+    private fun stop() {
         // Stop listening and clear current playback configs
         audioManager.unregisterAudioPlaybackCallback(playbackConfigCallback)
         _playbackConfigs.clear()
     }
     
-    /** Update [playbackConfigs] and notify [listener] of any changes. */
+    /** Update [playbackConfigs] and notify [listeners] of any changes. */
     private fun updatePlaybackConfigurations(newConfigs: List<AudioPlaybackConfiguration>) {
         // Add new playback configs and call Listener.audioPlaybackStarted for each
         for (config in newConfigs) {
             if (config !in _playbackConfigs) {
                 _playbackConfigs.add(config)
-                listener.audioPlaybackStarted(config)
+                listeners.forEach { it.audioPlaybackStarted(config) }
             }
         }
         
@@ -120,11 +131,11 @@ class AudioPlaybackMonitor(
         for (config in iter) {
             if (config !in newConfigs) {
                 iter.remove()
-                listener.audioPlaybackStopped(config)
+                listeners.forEach { it.audioPlaybackStopped(config) }
             }
         }
         
         // Notify audio playbacks changed
-        listener.audioPlaybackChanged(newConfigs)
+        listeners.forEach { it.audioPlaybackChanged(newConfigs) }
     }
 }

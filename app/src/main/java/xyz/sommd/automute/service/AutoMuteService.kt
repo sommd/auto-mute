@@ -61,8 +61,9 @@ class AutoMuteService: Service(),
     lateinit var audioManager: AudioManager
     @Inject
     lateinit var handler: Handler
+    @Inject
+    lateinit var playbackMonitor: AudioPlaybackMonitor
     
-    private lateinit var playbackMonitor: AudioPlaybackMonitor
     private lateinit var volumeMonitor: AudioVolumeMonitor
     
     /** [Runnable] to be posted when volume should be auto muted. */
@@ -76,9 +77,7 @@ class AutoMuteService: Service(),
     }
     
     @Inject
-    fun createMonitors(playbackMonitorFactory: AudioPlaybackMonitorFactory,
-                       volumeMonitorFactory: AudioVolumeMonitorFactory) {
-        playbackMonitor = playbackMonitorFactory.create(this)
+    fun createMonitors(volumeMonitorFactory: AudioVolumeMonitorFactory) {
         volumeMonitor = volumeMonitorFactory.create(this, STREAM_DEFAULTS)
     }
     
@@ -96,7 +95,7 @@ class AutoMuteService: Service(),
         settings.addChangeListener(this)
         
         // Start monitors
-        playbackMonitor.start()
+        playbackMonitor.addListener(this)
         volumeMonitor.start()
         
         // Show foreground status notification
@@ -134,7 +133,7 @@ class AutoMuteService: Service(),
         
         // Remove listeners
         settings.removeChangeListener(this)
-        playbackMonitor.stop()
+        playbackMonitor.removeListener(this)
         volumeMonitor.stop()
         
         // Cancel scheduled auto mute
