@@ -39,19 +39,9 @@ android {
     }
 }
 
-kapt {
-    // For auto-factory to work
-    correctErrorTypes = true
-}
-
 dependencies {
     implementation "com.android.support:preference-v14:$supportVersion"
 
     implementation "com.google.dagger:dagger:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
-
-    compileOnly "com.google.auto.factory:auto-factory:$autoFactoryVersion"
-    compileOnly "javax.annotation:jsr250-api:1.0"
-    kapt "com.google.auto.factory:auto-factory:$autoFactoryVersion"
-    annotationProcessor "com.google.auto.factory:auto-factory:$autoFactoryVersion"
 }
