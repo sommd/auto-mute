@@ -46,7 +46,7 @@ private fun getFlags(show: Boolean) = if (show) AudioManager.FLAG_SHOW_UI else 0
 fun AudioManager.setVolume(fraction: Float, stream: Int = STREAM_DEFAULT, show: Boolean = false) {
     val volume = (fraction * getStreamMaxVolume(stream)).roundToInt()
     val flags = getFlags(show)
-    setStreamVolume(volume, stream, flags)
+    setStreamVolume(stream, volume, flags)
 }
 
 /**
