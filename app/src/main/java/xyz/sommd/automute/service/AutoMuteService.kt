@@ -135,7 +135,7 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, AudioVolumeMoni
     /**
      * Updates the status notification to show the currently playing audio streams.
      */
-    override fun audioPlaybackChanged(configs: List<AudioPlaybackConfiguration>) {
+    override fun onAudioPlaybacksChanged(configs: Set<AudioPlaybackConfiguration>) {
         updateStatusNotification()
     }
     

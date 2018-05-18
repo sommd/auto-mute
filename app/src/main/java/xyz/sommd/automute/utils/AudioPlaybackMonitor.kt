@@ -42,18 +42,18 @@ class AudioPlaybackMonitor @Inject constructor(
         /**
          * Called when a new [AudioPlaybackConfiguration] is added.
          */
-        fun audioPlaybackStarted(config: AudioPlaybackConfiguration) {}
+        fun onAudioPlaybackStarted(config: AudioPlaybackConfiguration) {}
         
         /**
          * Called when an [AudioPlaybackConfiguration] is removed.
          */
-        fun audioPlaybackStopped(config: AudioPlaybackConfiguration) {}
+        fun onAudioPlaybackStopped(config: AudioPlaybackConfiguration) {}
         
         /**
-         * Called after [audioPlaybackStarted] and [audioPlaybackStopped] with all
+         * Called after [onAudioPlaybackStarted] and [onAudioPlaybackStopped] with all
          * [AudioPlaybackConfiguration]s.
          */
-        fun audioPlaybackChanged(configs: List<AudioPlaybackConfiguration>) {}
+        fun onAudioPlaybacksChanged(configs: Set<AudioPlaybackConfiguration>) {}
     }
     
     /** [MutableSet] to keep track of current [AudioPlaybackConfiguration]s. */
@@ -118,24 +118,24 @@ class AudioPlaybackMonitor @Inject constructor(
     
     /** Update [playbackConfigs] and notify [listeners] of any changes. */
     private fun updatePlaybackConfigurations(newConfigs: List<AudioPlaybackConfiguration>) {
-        // Add new playback configs and call Listener.audioPlaybackStarted for each
+        // Add new playback configs and call Listener.onAudioPlaybackStarted for each
         for (config in newConfigs) {
             if (config !in _playbackConfigs) {
                 _playbackConfigs.add(config)
-                listeners.forEach { it.audioPlaybackStarted(config) }
+                listeners.forEach { it.onAudioPlaybackStarted(config) }
             }
         }
         
-        // Remove old playback configs and call Listener.audioPlaybackStopped for each
+        // Remove old playback configs and call Listener.onAudioPlaybackStopped for each
         val iter = _playbackConfigs.iterator()
         for (config in iter) {
             if (config !in newConfigs) {
                 iter.remove()
-                listeners.forEach { it.audioPlaybackStopped(config) }
+                listeners.forEach { it.onAudioPlaybackStopped(config) }
             }
         }
         
         // Notify audio playbacks changed
-        listeners.forEach { it.audioPlaybackChanged(newConfigs) }
+        listeners.forEach { it.onAudioPlaybacksChanged(playbackConfigs) }
     }
 }

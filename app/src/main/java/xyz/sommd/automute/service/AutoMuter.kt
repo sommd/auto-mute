@@ -112,7 +112,7 @@ class AutoMuter @Inject constructor(
     
     // Auto unmute
     
-    override fun audioPlaybackStarted(config: AudioPlaybackConfiguration) {
+    override fun onAudioPlaybackStarted(config: AudioPlaybackConfiguration) {
         // Get audio type
         val audioAttr = config.audioAttributes
         val audioType = audioAttr.audioType
@@ -167,7 +167,7 @@ class AutoMuter @Inject constructor(
     
     // Auto mute
     
-    override fun audioPlaybackStopped(config: AudioPlaybackConfiguration) {
+    override fun onAudioPlaybackStopped(config: AudioPlaybackConfiguration) {
         log { "Playback stopped (type=${config.audioAttributes.audioType}, attr=${config.audioAttributes})" }
         
         if (!settings.autoMuteEnabled) {
