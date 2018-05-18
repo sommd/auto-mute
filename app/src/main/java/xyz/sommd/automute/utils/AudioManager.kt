@@ -31,12 +31,6 @@ const val STREAM_DEFAULT = AudioManager.STREAM_MUSIC
 fun AudioManager.isVolumeOff(stream: Int = AudioManager.STREAM_MUSIC) =
         isStreamMute(stream) || getStreamVolume(stream) == 0
 
-/**
- * Check if headphones (or an other external audio device) is plugged in.
- */
-val AudioManager.areHeadphonesPluggedIn: Boolean
-    get() = isWiredHeadsetOn || isBluetoothA2dpOn
-
 private fun getFlags(show: Boolean) = if (show) AudioManager.FLAG_SHOW_UI else 0
 
 /**

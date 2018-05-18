@@ -27,11 +27,12 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class AutoMuter @Inject constructor(
-        private val settings: Settings,
         private val audioManager: AudioManager,
         private val playbackMonitor: AudioPlaybackMonitor,
+        private val outputMonitor: AudioOutputMonitor,
+        private val settings: Settings,
         private val handler: Handler = Handler(Looper.getMainLooper())
-): AudioPlaybackMonitor.Listener {
+): AudioPlaybackMonitor.Listener, AudioOutputMonitor.Listener {
     interface Listener {
         /**
          * Called when volume [stream] muted by [AutoMuter], either automatically or by [mute].
@@ -54,6 +55,7 @@ class AutoMuter @Inject constructor(
     fun start() {
         // Start listening
         playbackMonitor.addListener(this)
+        outputMonitor.addListener(this)
     }
     
     /**
@@ -62,6 +64,7 @@ class AutoMuter @Inject constructor(
     fun stop() {
         // Stop listening
         playbackMonitor.removeListener(this)
+        outputMonitor.removeListener(this)
         
         // Cancel scheduled auto mute
         cancelAutoMute()
@@ -101,7 +104,7 @@ class AutoMuter @Inject constructor(
     fun onBoot() {
         if (!settings.autoMuteEnabled) {
             log { "Auto mute disabled, not muting on boot" }
-        } else if (settings.autoMuteHeadphonesDisabled && audioManager.areHeadphonesPluggedIn) {
+        } else if (settings.autoMuteHeadphonesDisabled && outputMonitor.isOutputExternal) {
             log { "Headphones plugged in, not muting on boot" }
         } else {
             log { "Muting on boot" }
@@ -172,8 +175,8 @@ class AutoMuter @Inject constructor(
         
         if (!settings.autoMuteEnabled) {
             log { "Auto mute disabled, not auto muting" }
-        } else if (settings.autoMuteHeadphonesDisabled && audioManager.areHeadphonesPluggedIn) {
-            log { "Headphones plugged in, not auto muting" }
+        } else if (settings.autoMuteHeadphonesDisabled && outputMonitor.isOutputExternal) {
+            log { "Audio output external, not auto muting" }
         } else {
             // Check if any audio types are playing that we care about
             val audioPlaying = playbackMonitor.playbackConfigs
@@ -187,6 +190,14 @@ class AutoMuter @Inject constructor(
             } else {
                 log { "Audio still playing, not auto muting" }
             }
+        }
+    }
+    
+    override fun onAudioOutputInternal() {
+        if (settings.autoMuteHeadphonesUnplugged) {
+            log { "Audio output external, muting" }
+            
+            mute()
         }
     }
     
