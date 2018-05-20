@@ -55,16 +55,7 @@ class AudioVolumeMonitor @Inject constructor(
         /**
          * Called when the volume of [stream] is changed.
          */
-        fun onVolumeChange(stream: Int, volume: Int) {}
-        
-        /**
-         * Called when audio is about to become 'noisy' due to a change in audio outputs.
-         *
-         * @see AudioManager.ACTION_AUDIO_BECOMING_NOISY
-         */
-        // TODO: Remove
-        @Deprecated("Not supported any more")
-        fun onAudioBecomingNoisy()
+        fun onVolumeChange(stream: Int, volume: Int)
     }
     
     companion object {

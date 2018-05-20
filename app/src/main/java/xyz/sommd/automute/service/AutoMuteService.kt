@@ -49,14 +49,10 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, AudioVolumeMoni
     }
     
     @Inject
-    lateinit var settings: Settings
-    @Inject
     lateinit var notifications: Notifications
     
     @Inject
     lateinit var audioManager: AudioManager
-    @Inject
-    lateinit var handler: Handler
     
     @Inject
     lateinit var playbackMonitor: AudioPlaybackMonitor
@@ -147,17 +143,6 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, AudioVolumeMoni
      */
     override fun onVolumeChange(stream: Int, volume: Int) {
         updateStatusNotification()
-    }
-    
-    /**
-     * Mutes volume if [Settings.autoMuteHeadphonesUnplugged] is enabled.
-     */
-    override fun onAudioBecomingNoisy() {
-        if (settings.autoMuteHeadphonesUnplugged) {
-            log { "Headphones unplugged, muting" }
-            
-            autoMuter.mute()
-        }
     }
     
     /**
