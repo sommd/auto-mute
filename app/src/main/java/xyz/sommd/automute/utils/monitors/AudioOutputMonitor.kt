@@ -36,7 +36,7 @@ import javax.inject.Inject
 class AudioOutputMonitor @Inject constructor(
         private val audioManager: AudioManager,
         private val handler: Handler = Handler(Looper.getMainLooper())
-) {
+): AbstractMonitor<AudioOutputMonitor.Listener>() {
     interface Listener {
         /**
          * Called when audio output switches from internal to external.
@@ -51,8 +51,6 @@ class AudioOutputMonitor @Inject constructor(
     
     /** The ID's of all current external audio outputs. */
     private val externalOutputs = mutableSetOf<Int>()
-    
-    private val listeners = mutableSetOf<Listener>()
     
     /** Callback for audio devices being added/removed. */
     private val audioDeviceCallback = object: AudioDeviceCallback() {
@@ -74,33 +72,9 @@ class AudioOutputMonitor @Inject constructor(
         get() = externalOutputs.isNotEmpty()
     
     /**
-     * Add a [Listener] to be notified of internal/external output changes.
-     */
-    fun addListener(listener: Listener) {
-        // Start if this is the first listener
-        if (listeners.isEmpty()) {
-            start()
-        }
-        
-        listeners.add(listener)
-    }
-    
-    /**
-     * Remove a [Listener].
-     */
-    fun removeListener(listener: Listener) {
-        listeners.remove(listener)
-        
-        // Stop if this was the last listener
-        if (listeners.isEmpty()) {
-            stop()
-        }
-    }
-    
-    /**
      * Start monitoring audio devices.
      */
-    private fun start() {
+    override fun start() {
         // Get current external outputs to only track future changes
         externalOutputs.addAll(audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
                                        .filter { it.isExternal }
@@ -113,7 +87,7 @@ class AudioOutputMonitor @Inject constructor(
     /**
      * Stop monitoring audio devices.
      */
-    private fun stop() {
+    override fun stop() {
         // Stop listener and clear external devices
         audioManager.unregisterAudioDeviceCallback(audioDeviceCallback)
         externalOutputs.clear()

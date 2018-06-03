@@ -37,7 +37,7 @@ import javax.inject.Singleton
 class AudioPlaybackMonitor @Inject constructor(
         private val audioManager: AudioManager,
         private val handler: Handler = Handler(Looper.getMainLooper())
-) {
+): AbstractMonitor<AudioPlaybackMonitor.Listener>() {
     interface Listener {
         /**
          * Called when a new [AudioPlaybackConfiguration] is added.
@@ -66,40 +66,14 @@ class AudioPlaybackMonitor @Inject constructor(
         }
     }
     
-    /** [Listener]s to be notified of playback changes. */
-    private val listeners = mutableListOf<Listener>()
-    
     /** [Set] of all current [AudioPlaybackConfiguration]s. */
     val playbackConfigs: Set<AudioPlaybackConfiguration> = _playbackConfigs
-    
-    /**
-     * Add a [Listener] to be notified of [AudioPlaybackConfiguration] changes.
-     */
-    fun addListener(listener: Listener) {
-        // Start monitor if this is the first listener
-        if (listeners.isEmpty()) {
-            start()
-        }
-        
-        listeners.add(listener)
-    }
-    
-    /**
-     * Remove the [Listener].
-     */
-    fun removeListener(listener: Listener) {
-        listeners.remove(listener)
-        
-        if (listeners.isEmpty()) {
-            stop()
-        }
-    }
     
     /**
      * Register this [AudioPlaybackMonitor] to start monitoring [AudioPlaybackConfiguration]
      * changes.
      */
-    private fun start() {
+    override fun start() {
         // Add playback configs to track only future changes
         _playbackConfigs.addAll(audioManager.activePlaybackConfigurations)
         
@@ -110,7 +84,7 @@ class AudioPlaybackMonitor @Inject constructor(
     /**
      * Stop monitoring [AudioPlaybackConfiguration] changes.
      */
-    private fun stop() {
+    override fun stop() {
         // Stop listening and clear current playback configs
         audioManager.unregisterAudioPlaybackCallback(playbackConfigCallback)
         _playbackConfigs.clear()
