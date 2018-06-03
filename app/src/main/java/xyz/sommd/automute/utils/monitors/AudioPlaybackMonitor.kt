@@ -21,6 +21,7 @@ import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
 import android.os.Looper
+import xyz.sommd.automute.utils.log
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -38,6 +39,11 @@ class AudioPlaybackMonitor @Inject constructor(
         private val audioManager: AudioManager,
         private val handler: Handler = Handler(Looper.getMainLooper())
 ): AbstractMonitor<AudioPlaybackMonitor.Listener>() {
+    companion object {
+        /** Interval to run [recheckRunnable] in milliseconds. */
+        const val RECHECK_INTERVAL = 30_000L
+    }
+    
     interface Listener {
         /**
          * Called when a new [AudioPlaybackConfiguration] is added.
@@ -66,6 +72,9 @@ class AudioPlaybackMonitor @Inject constructor(
         }
     }
     
+    /** [Runnable] to continuously check [AudioManager.getActivePlaybackConfigurations]. */
+    private val recheckRunnable = Runnable { recheck() }
+    
     /** [Set] of all current [AudioPlaybackConfiguration]s. */
     val playbackConfigs: Set<AudioPlaybackConfiguration> = _playbackConfigs
     
@@ -85,6 +94,9 @@ class AudioPlaybackMonitor @Inject constructor(
      * Stop monitoring [AudioPlaybackConfiguration] changes.
      */
     override fun stop() {
+        // Stop rechecking
+        stopRechecking()
+        
         // Stop listening and clear current playback configs
         audioManager.unregisterAudioPlaybackCallback(playbackConfigCallback)
         _playbackConfigs.clear()
@@ -111,5 +123,47 @@ class AudioPlaybackMonitor @Inject constructor(
         
         // Notify audio playbacks changed
         listeners.forEach { it.onAudioPlaybacksChanged(playbackConfigs) }
+        
+        if (playbackConfigs.isNotEmpty()) {
+            // Start rechecking now that audio is playing
+            startRechecking()
+        } else {
+            // Stop rechecking since no more audio is playing
+            stopRechecking()
+        }
+    }
+    
+    /**
+     * Recheck [AudioManager.getActivePlaybackConfigurations] to make sure audio is still playing.
+     * This is a workaround for [AOSP issue 93227199](https://issuetracker.google.com/issues/93227199).
+     */
+    private fun recheck() {
+        log { "Rechecking audio playback configurations" }
+        
+        // Recheck playback configs
+        val playbackConfigs = audioManager.activePlaybackConfigurations
+        updatePlaybackConfigurations(playbackConfigs)
+        
+        // Continue rechecking if audio is still playing
+        if (playbackConfigs.isNotEmpty()) {
+            handler.postDelayed(recheckRunnable, RECHECK_INTERVAL)
+        }
+    }
+    
+    /**
+     * Schedule [recheckRunnable] to be run after [RECHECK_INTERVAL].
+     */
+    private fun startRechecking() {
+        // Cancel the current recheck if scheduled
+        handler.removeCallbacks(recheckRunnable)
+        
+        handler.postDelayed(recheckRunnable, RECHECK_INTERVAL)
+    }
+    
+    /**
+     * Cancel [recheckRunnable] if it is scheduled.
+     */
+    private fun stopRechecking() {
+        handler.removeCallbacks(recheckRunnable)
     }
 }
