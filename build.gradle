@@ -20,7 +20,7 @@ import java.util.regex.Matcher
 buildscript {
     ext {
         // Dependency versions
-        sdkVersion = [min: 26, target: 27]
+        sdkVersion = [min: 26, target: 'P', compile: 'android-P']
         kotlinVersion = '1.2.30'
         supportVersion = '27.1.1'
         daggerVersion = '2.16'
@@ -102,7 +102,7 @@ subprojects {
     }
 
     android {
-        compileSdkVersion sdkVersion.target
+        compileSdkVersion sdkVersion.compile
 
         defaultConfig {
             minSdkVersion sdkVersion.min
