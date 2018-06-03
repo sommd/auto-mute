@@ -39,11 +39,6 @@ class AudioStream(private val mediaPlayer: MediaPlayer,
     
     fun release() {
         log("Releasing: $mediaPlayer")
-        
-        if (isPlaying) {
-            pause()
-        }
-        
         mediaPlayer.release()
     }
 }
