@@ -22,10 +22,10 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
-import android.os.Handler
 import android.os.IBinder
 import xyz.sommd.automute.di.Injection
-import xyz.sommd.automute.settings.Settings
+import xyz.sommd.automute.utils.monitors.AudioPlaybackMonitor
+import xyz.sommd.automute.utils.monitors.AudioVolumeMonitor
 import xyz.sommd.automute.utils.*
 import javax.inject.Inject
 

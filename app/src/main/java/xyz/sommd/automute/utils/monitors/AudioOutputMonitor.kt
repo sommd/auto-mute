@@ -15,13 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package xyz.sommd.automute.utils
+package xyz.sommd.automute.utils.monitors
 
 import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
+import xyz.sommd.automute.utils.description
+import xyz.sommd.automute.utils.isExternal
+import xyz.sommd.automute.utils.log
 import javax.inject.Inject
 
 /**

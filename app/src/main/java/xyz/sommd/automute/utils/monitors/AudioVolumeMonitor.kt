@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package xyz.sommd.automute.utils
+package xyz.sommd.automute.utils.monitors
 
 import android.content.ContentProvider
 import android.content.Context
@@ -34,6 +34,9 @@ import androidx.core.util.contains
 import androidx.core.util.forEach
 import androidx.core.util.isEmpty
 import androidx.core.util.set
+import xyz.sommd.automute.utils.description
+import xyz.sommd.automute.utils.log
+import xyz.sommd.automute.utils.map
 import javax.inject.Inject
 
 /**

@@ -21,6 +21,8 @@ import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
 import android.os.Looper
+import xyz.sommd.automute.utils.monitors.AudioOutputMonitor
+import xyz.sommd.automute.utils.monitors.AudioPlaybackMonitor
 import xyz.sommd.automute.settings.Settings
 import xyz.sommd.automute.utils.*
 import java.util.concurrent.TimeUnit
