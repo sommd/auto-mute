@@ -46,8 +46,8 @@ class AudioOutputMonitor @Inject constructor(
         fun onAudioOutputInternal() {}
     }
     
-    /** All current external audio outputs. */
-    private val externalOutputs = mutableSetOf<AudioDeviceInfo>()
+    /** The ID's of all current external audio outputs. */
+    private val externalOutputs = mutableSetOf<Int>()
     
     private val listeners = mutableSetOf<Listener>()
     
@@ -100,7 +100,8 @@ class AudioOutputMonitor @Inject constructor(
     private fun start() {
         // Get current external outputs to only track future changes
         externalOutputs.addAll(audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
-                                       .filter { it.isExternal })
+                                       .filter { it.isExternal }
+                                       .map { it.id })
         
         // Start listening
         audioManager.registerAudioDeviceCallback(audioDeviceCallback, handler)
@@ -121,7 +122,8 @@ class AudioOutputMonitor @Inject constructor(
         // Add external outputs to externalOutputs
         for (device in devices) {
             if (device.isSink && device.isExternal) {
-                externalOutputs.add(device)
+                this@AudioOutputMonitor.log { "External output added: ${device.productName}" }
+                externalOutputs.add(device.id)
             }
         }
         
@@ -137,7 +139,9 @@ class AudioOutputMonitor @Inject constructor(
         
         // Remove outputs from externalOutputs
         for (device in devices) {
-            externalOutputs.remove(device)
+            if (externalOutputs.remove(device.id)) {
+                this@AudioOutputMonitor.log { "External output removed: ${device.description}" }
+            }
         }
         
         // Notify listener if isOutputExternal has changed
