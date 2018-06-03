@@ -54,10 +54,12 @@ class AudioOutputMonitor @Inject constructor(
     /** Callback for audio devices being added/removed. */
     private val audioDeviceCallback = object: AudioDeviceCallback() {
         override fun onAudioDevicesAdded(devices: Array<AudioDeviceInfo>) {
+            this@AudioOutputMonitor.log { "Devices added: ${devices.map { it.description }}" }
             devicesAdded(devices)
         }
         
         override fun onAudioDevicesRemoved(devices: Array<AudioDeviceInfo>) {
+            this@AudioOutputMonitor.log { "Devices removed: ${devices.map { it.description }}" }
             devicesRemoved(devices)
         }
     }
@@ -125,6 +127,7 @@ class AudioOutputMonitor @Inject constructor(
         
         // Notify listener if isOutputExternal has changed
         if (oldOutputExternal != isOutputExternal) {
+            this@AudioOutputMonitor.log { "Output now external" }
             listeners.forEach { it.onAudioOutputExternal() }
         }
     }
@@ -139,6 +142,7 @@ class AudioOutputMonitor @Inject constructor(
         
         // Notify listener if isOutputExternal has changed
         if (oldOutputExternal != isOutputExternal) {
+            this@AudioOutputMonitor.log { "Output now internal" }
             listeners.forEach { it.onAudioOutputInternal() }
         }
     }

@@ -40,3 +40,9 @@ private val EXTERNAL_AUDIO_OUTPUT_TYPES = intArrayOf(
  */
 val AudioDeviceInfo.isExternal
     get() = type in EXTERNAL_AUDIO_OUTPUT_TYPES
+
+/**
+ * A description of the audio device, since [AudioDeviceInfo] doesn't implement [toString].
+ */
+val AudioDeviceInfo.description
+    get() = "audio device $id (name=$productName, type=$type, sink=$isSink, source=$isSource)"

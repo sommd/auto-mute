@@ -103,12 +103,12 @@ class AudioVolumeMonitor @Inject constructor(
     /** [AudioDeviceCallback] to monitor for [AudioDeviceInfo] changes. */
     private val deviceCallback = object: AudioDeviceCallback() {
         override fun onAudioDevicesAdded(devices: Array<AudioDeviceInfo>) {
-            this@AudioVolumeMonitor.log { "Devices added: ${devices.map { it.productName }}" }
+            this@AudioVolumeMonitor.log { "Devices added: ${devices.map { it.description }}" }
             devicesUpdated(devices)
         }
         
         override fun onAudioDevicesRemoved(devices: Array<AudioDeviceInfo>) {
-            this@AudioVolumeMonitor.log { "Devices removed: ${devices.map { it.productName }}" }
+            this@AudioVolumeMonitor.log { "Devices removed: ${devices.map { it.description }}" }
             devicesUpdated(devices)
         }
     }
