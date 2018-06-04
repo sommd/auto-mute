@@ -1,5 +1,3 @@
-import java.util.regex.Matcher
-
 /*
  * Copyright (C) 2018 David Sommerich
  *
@@ -24,13 +22,14 @@ buildscript {
         kotlinVersion = '1.2.30'
         supportVersion = '27.1.1'
         daggerVersion = '2.16'
-        autoFactoryVersion = '1.0-beta5'
+        javaVersion = JavaVersion.VERSION_1_8
 
         // Get version string from git tag
         def describe = ['git', 'describe', '--tags', '--long', '--dirty'].execute().text.trim()
 
         // Parse version string
-        def major = minor = patch = release = revision = 0
+        def major = minor = patch = revision = commits = 0
+        def release = null
         def commit = "unknown"
         def dirty = true
         def m = describe =~ /v(\d+)\.(\d+)\.(\d+)(-(alpha|beta).(\d+))?-(\d+)-([^-]+)(-(dirty))?/
@@ -124,6 +123,11 @@ subprojects {
                 shrinkResources true
                 proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             }
+        }
+
+        compileOptions {
+            sourceCompatibility javaVersion
+            targetCompatibility javaVersion
         }
     }
 
