@@ -125,7 +125,7 @@ class AutoMuter @Inject constructor(
         log { "Playback started (type=$audioType, attr=$audioAttr)" }
         
         // Cancel scheduled auto mute if audio we care about is now playing
-        if (audioType != AudioType.UNKNOWN) {
+        if (audioType != AudioType.OTHER) {
             cancelAutoMute()
         }
         
@@ -146,7 +146,7 @@ class AutoMuter @Inject constructor(
         AudioType.MEDIA -> settings.autoUnmuteMediaMode
         AudioType.ASSISTANT -> settings.autoUnmuteAssistantMode
         AudioType.GAME -> settings.autoUnmuteGameMode
-        AudioType.UNKNOWN -> Settings.UnmuteMode.NEVER
+        AudioType.OTHER -> Settings.UnmuteMode.NEVER
     }
     
     private fun autoUnmute(unmuteMode: Settings.UnmuteMode, stream: Int = STREAM_DEFAULT) {
@@ -182,7 +182,7 @@ class AutoMuter @Inject constructor(
         } else {
             // Check if any audio types are playing that we care about
             val audioPlaying = playbackMonitor.playbackConfigs
-                    .any { it.audioAttributes.audioType != AudioType.UNKNOWN }
+                    .any { it.audioAttributes.audioType != AudioType.OTHER }
             
             // Schedule auto mute if no audio playing
             if (!audioPlaying) {

@@ -138,6 +138,6 @@
         <item>media</item>
         <item>assistant</item>
         <item>game</item>
-        <item>unknown</item>
+        <item>other</item>
     </string-array>
 </resources>

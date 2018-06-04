@@ -24,7 +24,7 @@ enum class AudioType {
     MEDIA,
     ASSISTANT,
     GAME,
-    UNKNOWN
+    OTHER
 }
 
 val AudioAttributes.audioType: AudioType
@@ -39,7 +39,7 @@ val AudioAttributes.audioType: AudioType
         AudioAttributes.USAGE_UNKNOWN -> when (contentType) {
             AudioAttributes.CONTENT_TYPE_MUSIC -> AudioType.MUSIC
             AudioAttributes.CONTENT_TYPE_MOVIE -> AudioType.MEDIA
-            else -> AudioType.UNKNOWN
+            else -> AudioType.OTHER
         }
-        else -> AudioType.UNKNOWN
+        else -> AudioType.OTHER
     }
