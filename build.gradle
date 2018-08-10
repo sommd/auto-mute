@@ -42,10 +42,10 @@ buildscript {
             // Release: 'alpha', 'beta' or null
             release = m.group(5)
             // Revision: alpha/beta number or null
-            revision = m.group(6).toInteger() ?: 0
+            revision = m.group(6)?.toInteger() ?: 0
 
             // Commits since last release
-            commits = m.group(7).toInteger()
+            commits = m.group(7)?.toInteger()
             // Commit hash
             commit = m.group(8)
 
