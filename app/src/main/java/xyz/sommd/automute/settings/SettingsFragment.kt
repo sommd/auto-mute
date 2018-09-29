@@ -18,7 +18,7 @@
 package xyz.sommd.automute.settings
 
 import android.os.Bundle
-import android.support.v7.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceFragmentCompat
 import xyz.sommd.automute.BuildConfig
 import xyz.sommd.automute.R
 import xyz.sommd.automute.di.Injection

@@ -22,8 +22,8 @@ import android.content.Context
 import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
-import android.support.v7.preference.PreferenceManager
-import androidx.core.content.systemService
+import androidx.core.content.getSystemService
+import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -34,12 +34,12 @@ object AndroidModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun audioManager(context: Context): AudioManager = context.systemService()
+    fun audioManager(context: Context): AudioManager = context.getSystemService()!!
     
     @JvmStatic
     @Provides
     @Singleton
-    fun notificationManager(context: Context): NotificationManager = context.systemService()
+    fun notificationManager(context: Context): NotificationManager = context.getSystemService()!!
     
     @JvmStatic
     @Provides

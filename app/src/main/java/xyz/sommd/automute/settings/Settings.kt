@@ -19,8 +19,8 @@ package xyz.sommd.automute.settings
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.support.v7.preference.PreferenceManager
 import androidx.core.content.edit
+import androidx.preference.PreferenceManager
 import xyz.sommd.automute.R
 import javax.inject.Inject
 import javax.inject.Singleton

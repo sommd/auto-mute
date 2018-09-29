@@ -29,7 +29,7 @@ import android.os.Looper
 import android.provider.Settings
 import android.util.SparseArray
 import android.util.SparseIntArray
-import androidx.core.content.systemService
+import androidx.core.content.getSystemService
 import androidx.core.util.contains
 import androidx.core.util.forEach
 import androidx.core.util.isEmpty
@@ -75,7 +75,7 @@ class AudioVolumeMonitor @Inject constructor(
         )
     }
     
-    private val audioManager = context.systemService<AudioManager>()
+    private val audioManager = context.getSystemService<AudioManager>()!!
     private val resolver = context.contentResolver
     
     /** Previous stream volumes to keep track of which volumes changed. */

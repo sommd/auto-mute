@@ -18,8 +18,8 @@
 package xyz.sommd.automute.utils
 
 import android.content.Context
-import android.support.v7.preference.SeekBarPreference
 import android.util.AttributeSet
+import androidx.preference.SeekBarPreference
 import xyz.sommd.automute.R
 import kotlin.math.roundToInt
 

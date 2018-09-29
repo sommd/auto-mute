@@ -18,7 +18,7 @@
 package xyz.sommd.automute.settings
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import xyz.sommd.automute.R
 import xyz.sommd.automute.utils.log
 

@@ -27,7 +27,7 @@ import android.graphics.drawable.Icon
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.util.SparseIntArray
-import androidx.core.content.systemService
+import androidx.core.content.getSystemService
 import androidx.core.util.getOrDefault
 import androidx.core.util.set
 import androidx.core.util.size
@@ -41,8 +41,8 @@ import javax.inject.Singleton
 @Singleton
 class Notifications @Inject constructor(
     private val context: Context,
-    private val notifManager: NotificationManager = context.systemService(),
-    private val audioManager: AudioManager = context.systemService()
+    private val notifManager: NotificationManager = context.getSystemService()!!,
+    private val audioManager: AudioManager = context.getSystemService()!!
 ) {
     companion object {
         const val STATUS_CHANNEL = "status"
