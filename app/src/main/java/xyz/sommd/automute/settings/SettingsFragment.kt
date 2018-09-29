@@ -44,9 +44,10 @@ class SettingsFragment: PreferenceFragmentCompat(), Settings.ChangeListener {
         
         // Set app version string
         findPreference("app_version").summary = resources.getString(
-                R.string.pref_about_app_version_summary,
-                BuildConfig.VERSION_NAME,
-                BuildConfig.BUILD_TYPE)
+            R.string.pref_about_app_version_summary,
+            BuildConfig.VERSION_NAME,
+            BuildConfig.BUILD_TYPE
+        )
     }
     
     override fun onStart() {

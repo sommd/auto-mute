@@ -40,9 +40,9 @@ import javax.inject.Singleton
 
 @Singleton
 class Notifications @Inject constructor(
-        private val context: Context,
-        private val notifManager: NotificationManager = context.systemService(),
-        private val audioManager: AudioManager = context.systemService()
+    private val context: Context,
+    private val notifManager: NotificationManager = context.systemService(),
+    private val audioManager: AudioManager = context.systemService()
 ) {
     companion object {
         const val STATUS_CHANNEL = "status"
@@ -54,9 +54,10 @@ class Notifications @Inject constructor(
     
     fun createChannels() {
         val statusChannel = NotificationChannel(
-                STATUS_CHANNEL,
-                res.getText(R.string.notif_channel_status_name),
-                NotificationManager.IMPORTANCE_LOW).apply {
+            STATUS_CHANNEL,
+            res.getText(R.string.notif_channel_status_name),
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
             setShowBadge(false)
             enableLights(false)
             enableVibration(false)
@@ -81,16 +82,21 @@ class Notifications @Inject constructor(
         
         return Notification.Builder(context, STATUS_CHANNEL).apply {
             setSmallIcon(
-                    when {
-                        muted -> R.drawable.ic_notif_status_muted
-                        totalStreams == 0 -> R.drawable.ic_notif_status_unmuted
-                        else -> R.drawable.ic_notif_status_playing
-                    }
+                when {
+                    muted -> R.drawable.ic_notif_status_muted
+                    totalStreams == 0 -> R.drawable.ic_notif_status_unmuted
+                    else -> R.drawable.ic_notif_status_playing
+                }
             )
             
             // Always the total number of streams playing
-            setContentTitle(res.getQuantityString(R.plurals.notif_status_total_streams,
-                                                  totalStreams, totalStreams))
+            setContentTitle(
+                res.getQuantityString(
+                    R.plurals.notif_status_total_streams,
+                    totalStreams,
+                    totalStreams
+                )
+            )
             
             if (totalTypes == 1) {
                 // Count of only audio type
@@ -99,8 +105,12 @@ class Notifications @Inject constructor(
                 setContentText(getTypeCountText(typeOrdinal, typeCount))
             } else {
                 // Number of different audio types
-                setContentText(res.getQuantityString(R.plurals.notif_status_total_types,
-                                                     totalTypes, totalTypes))
+                setContentText(
+                    res.getQuantityString(
+                        R.plurals.notif_status_total_types,
+                        totalTypes, totalTypes
+                    )
+                )
                 
                 if (totalTypes > 0) {
                     val style = Notification.InboxStyle()
@@ -117,25 +127,37 @@ class Notifications @Inject constructor(
             }
             
             // Open SettingsActivity when clicked
-            setContentIntent(PendingIntent.getActivity(context, 0, Intent(
-                    context, SettingsActivity::class.java
-            ), 0))
+            setContentIntent(
+                PendingIntent.getActivity(
+                    context, 0, Intent(context, SettingsActivity::class.java), 0
+                )
+            )
             
             // Mute/unmute action
-            addAction(if (muted) {
-                buildAction(R.drawable.ic_notif_status_action_unmute,
-                            R.string.notif_status_action_unmute,
-                            AutoMuteService.ACTION_UNMUTE)
-            } else {
-                buildAction(R.drawable.ic_notif_status_action_mute,
-                            R.string.notif_status_action_mute,
-                            AutoMuteService.ACTION_MUTE)
-            })
+            addAction(
+                if (muted) {
+                    buildAction(
+                        R.drawable.ic_notif_status_action_unmute,
+                        R.string.notif_status_action_unmute,
+                        AutoMuteService.ACTION_UNMUTE
+                    )
+                } else {
+                    buildAction(
+                        R.drawable.ic_notif_status_action_mute,
+                        R.string.notif_status_action_mute,
+                        AutoMuteService.ACTION_MUTE
+                    )
+                }
+            )
             
             // Show volume action
-            addAction(buildAction(R.drawable.ic_notif_status_action_show,
-                                  R.string.notif_status_action_show,
-                                  AutoMuteService.ACTION_SHOW))
+            addAction(
+                buildAction(
+                    R.drawable.ic_notif_status_action_show,
+                    R.string.notif_status_action_show,
+                    AutoMuteService.ACTION_SHOW
+                )
+            )
         }.build()
     }
     
@@ -152,16 +174,20 @@ class Notifications @Inject constructor(
     
     private fun getTypeCountText(typeOrdinal: Int, typeCount: Int): CharSequence {
         val typeName = res.getStringArray(R.array.audio_type_names)[typeOrdinal]
-        return res.getQuantityString(R.plurals.notif_status_type_count, typeCount,
-                                     typeCount, typeName)
+        return res.getQuantityString(
+            R.plurals.notif_status_type_count, typeCount,
+            typeCount, typeName
+        )
     }
     
     private fun buildAction(icon: Int, title: Int, action: String): Notification.Action {
         return Notification.Action.Builder(
-                Icon.createWithResource(context, icon), res.getText(title),
-                PendingIntent.getService(context, 0, Intent(
-                        action, null, context, AutoMuteService::class.java
-                ), 0)
+            Icon.createWithResource(context, icon), res.getText(title),
+            PendingIntent.getService(
+                context, 0, Intent(
+                    action, null, context, AutoMuteService::class.java
+                ), 0
+            )
         ).build()
     }
 }

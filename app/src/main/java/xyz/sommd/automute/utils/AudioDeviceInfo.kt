@@ -20,19 +20,19 @@ package xyz.sommd.automute.utils
 import android.media.AudioDeviceInfo
 
 private val EXTERNAL_AUDIO_OUTPUT_TYPES = intArrayOf(
-        AudioDeviceInfo.TYPE_WIRED_HEADSET,
-        AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
-        AudioDeviceInfo.TYPE_LINE_ANALOG,
-        AudioDeviceInfo.TYPE_LINE_DIGITAL,
-        AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
-        AudioDeviceInfo.TYPE_HDMI,
-        AudioDeviceInfo.TYPE_USB_DEVICE,
-        AudioDeviceInfo.TYPE_USB_ACCESSORY,
-        AudioDeviceInfo.TYPE_DOCK,
-        AudioDeviceInfo.TYPE_AUX_LINE,
-        AudioDeviceInfo.TYPE_IP,
-        AudioDeviceInfo.TYPE_BUS,
-        AudioDeviceInfo.TYPE_USB_HEADSET
+    AudioDeviceInfo.TYPE_WIRED_HEADSET,
+    AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
+    AudioDeviceInfo.TYPE_LINE_ANALOG,
+    AudioDeviceInfo.TYPE_LINE_DIGITAL,
+    AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
+    AudioDeviceInfo.TYPE_HDMI,
+    AudioDeviceInfo.TYPE_USB_DEVICE,
+    AudioDeviceInfo.TYPE_USB_ACCESSORY,
+    AudioDeviceInfo.TYPE_DOCK,
+    AudioDeviceInfo.TYPE_AUX_LINE,
+    AudioDeviceInfo.TYPE_IP,
+    AudioDeviceInfo.TYPE_BUS,
+    AudioDeviceInfo.TYPE_USB_HEADSET
 )
 
 /**

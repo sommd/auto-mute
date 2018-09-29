@@ -28,8 +28,8 @@ const val STREAM_DEFAULT = AudioManager.STREAM_MUSIC
 /**
  * Check if the given audio stream is muted or the volume is 0.
  */
-fun AudioManager.isVolumeOff(stream: Int = AudioManager.STREAM_MUSIC) =
-        isStreamMute(stream) || getStreamVolume(stream) == 0
+fun AudioManager.isVolumeOff(stream: Int = STREAM_DEFAULT) =
+    isStreamMute(stream) || getStreamVolume(stream) == 0
 
 private fun getFlags(show: Boolean) = if (show) AudioManager.FLAG_SHOW_UI else 0
 
@@ -48,7 +48,7 @@ fun AudioManager.setVolume(fraction: Float, stream: Int = STREAM_DEFAULT, show: 
  * [AudioManager.getStreamMaxVolume].
  */
 fun AudioManager.getVolume(stream: Int = STREAM_DEFAULT) =
-        getStreamVolume(stream).toFloat() / getStreamMaxVolume(stream)
+    getStreamVolume(stream).toFloat() / getStreamMaxVolume(stream)
 
 /**
  * Unmute the given audio [stream].
@@ -56,8 +56,10 @@ fun AudioManager.getVolume(stream: Int = STREAM_DEFAULT) =
  * If unmuting left the stream volume at 0 (which is likely if the user manually muted via the
  * system volume controls), then set stream's volume to the [defaultVolume].
  */
-fun AudioManager.unmute(defaultVolume: Float = 0f, stream: Int = STREAM_DEFAULT,
-                        show: Boolean = false) {
+fun AudioManager.unmute(
+    defaultVolume: Float = 0f, stream: Int = STREAM_DEFAULT,
+    show: Boolean = false
+) {
     val flags = getFlags(show)
     
     // Unmute stream

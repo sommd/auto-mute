@@ -17,8 +17,6 @@
 
 package xyz.sommd.automute.utils.monitors
 
-import xyz.sommd.automute.service.AutoMuteService.Companion.stop
-
 /**
  * An abstract base class for a "monitor" which is a class that takes listeners and automatically
  * starts and stops monitoring when it has listeners.

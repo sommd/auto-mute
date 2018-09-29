@@ -36,8 +36,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class AudioPlaybackMonitor @Inject constructor(
-        private val audioManager: AudioManager,
-        private val handler: Handler = Handler(Looper.getMainLooper())
+    private val audioManager: AudioManager,
+    private val handler: Handler = Handler(Looper.getMainLooper())
 ): AbstractMonitor<AudioPlaybackMonitor.Listener>() {
     companion object {
         /** Interval to run [recheckRunnable] in milliseconds. */

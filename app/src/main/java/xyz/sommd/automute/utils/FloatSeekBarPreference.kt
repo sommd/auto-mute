@@ -33,10 +33,10 @@ import kotlin.math.roundToInt
 class FloatSeekBarPreference: SeekBarPreference {
     @JvmOverloads
     constructor(
-            context: Context,
-            attrs: AttributeSet? = null,
-            defStyleAttr: Int = R.attr.seekBarPreferenceStyle,
-            defStyleRes: Int = 0
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = R.attr.seekBarPreferenceStyle,
+        defStyleRes: Int = 0
     ): super(context, attrs, defStyleAttr, defStyleRes)
     
     var floatValue: Float

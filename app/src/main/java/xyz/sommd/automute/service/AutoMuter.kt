@@ -21,19 +21,19 @@ import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
 import android.os.Looper
-import xyz.sommd.automute.utils.monitors.AudioOutputMonitor
-import xyz.sommd.automute.utils.monitors.AudioPlaybackMonitor
 import xyz.sommd.automute.settings.Settings
 import xyz.sommd.automute.utils.*
+import xyz.sommd.automute.utils.monitors.AudioOutputMonitor
+import xyz.sommd.automute.utils.monitors.AudioPlaybackMonitor
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class AutoMuter @Inject constructor(
-        private val audioManager: AudioManager,
-        private val playbackMonitor: AudioPlaybackMonitor,
-        private val outputMonitor: AudioOutputMonitor,
-        private val settings: Settings,
-        private val handler: Handler = Handler(Looper.getMainLooper())
+    private val audioManager: AudioManager,
+    private val playbackMonitor: AudioPlaybackMonitor,
+    private val outputMonitor: AudioOutputMonitor,
+    private val settings: Settings,
+    private val handler: Handler = Handler(Looper.getMainLooper())
 ): AudioPlaybackMonitor.Listener, AudioOutputMonitor.Listener {
     interface Listener {
         /**
@@ -93,8 +93,7 @@ class AutoMuter @Inject constructor(
      */
     fun unmute(stream: Int = STREAM_DEFAULT) {
         // Unmute
-        audioManager.unmute(settings.autoUnmuteDefaultVolume, stream,
-                            settings.autoUnmuteShowUi)
+        audioManager.unmute(settings.autoUnmuteDefaultVolume, stream, settings.autoUnmuteShowUi)
         
         // Notify listeners
         listeners.forEach { it.onUnmuted(stream) }
@@ -182,7 +181,7 @@ class AutoMuter @Inject constructor(
         } else {
             // Check if any audio types are playing that we care about
             val audioPlaying = playbackMonitor.playbackConfigs
-                    .any { it.audioAttributes.audioType != AudioType.OTHER }
+                .any { it.audioAttributes.audioType != AudioType.OTHER }
             
             // Schedule auto mute if no audio playing
             if (!audioPlaying) {

@@ -51,8 +51,8 @@ import javax.inject.Inject
  * @param handler The [Handler] for the thread on which to execute listeners.
  */
 class AudioVolumeMonitor @Inject constructor(
-        private val context: Context,
-        private val handler: Handler = Handler(Looper.getMainLooper())
+    private val context: Context,
+    private val handler: Handler = Handler(Looper.getMainLooper())
 ) {
     interface Listener {
         /**
@@ -64,14 +64,14 @@ class AudioVolumeMonitor @Inject constructor(
     companion object {
         /** All available audio streams. */
         private val ALL_STREAMS = intArrayOf(
-                AudioManager.STREAM_VOICE_CALL,
-                AudioManager.STREAM_SYSTEM,
-                AudioManager.STREAM_RING,
-                AudioManager.STREAM_MUSIC,
-                AudioManager.STREAM_ALARM,
-                AudioManager.STREAM_NOTIFICATION,
-                AudioManager.STREAM_DTMF,
-                AudioManager.STREAM_ACCESSIBILITY
+            AudioManager.STREAM_VOICE_CALL,
+            AudioManager.STREAM_SYSTEM,
+            AudioManager.STREAM_RING,
+            AudioManager.STREAM_MUSIC,
+            AudioManager.STREAM_ALARM,
+            AudioManager.STREAM_NOTIFICATION,
+            AudioManager.STREAM_DTMF,
+            AudioManager.STREAM_ACCESSIBILITY
         )
     }
     
@@ -89,10 +89,10 @@ class AudioVolumeMonitor @Inject constructor(
     
     /** [Uri]s for volume settings in [Settings.System]. */
     private val volumeUris: List<Uri> =
-            resolver.query(Settings.System.CONTENT_URI, arrayOf("name"), null, null)
-                    .map { it.getString(0) }
-                    .filter { "volume" in it }
-                    .map { Uri.withAppendedPath(Settings.System.CONTENT_URI, it) }
+        resolver.query(Settings.System.CONTENT_URI, arrayOf("name"), null, null)
+            .map { it.getString(0) }
+            .filter { "volume" in it }
+            .map { Uri.withAppendedPath(Settings.System.CONTENT_URI, it) }
     
     /** [ContentObserver] for monitoring [Settings.System]. */
     private val contentObserver = object: ContentObserver(handler) {

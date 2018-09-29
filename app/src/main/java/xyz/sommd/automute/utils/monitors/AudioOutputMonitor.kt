@@ -34,8 +34,8 @@ import javax.inject.Inject
  * @param handler The [Handler] for the thread on which to execute listeners.
  */
 class AudioOutputMonitor @Inject constructor(
-        private val audioManager: AudioManager,
-        private val handler: Handler = Handler(Looper.getMainLooper())
+    private val audioManager: AudioManager,
+    private val handler: Handler = Handler(Looper.getMainLooper())
 ): AbstractMonitor<AudioOutputMonitor.Listener>() {
     interface Listener {
         /**
@@ -77,8 +77,8 @@ class AudioOutputMonitor @Inject constructor(
     override fun start() {
         // Get current external outputs to only track future changes
         externalOutputs.addAll(audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
-                                       .filter { it.isExternal }
-                                       .map { it.id })
+                                   .filter { it.isExternal }
+                                   .map { it.id })
         
         // Start listening
         audioManager.registerAudioDeviceCallback(audioDeviceCallback, handler)

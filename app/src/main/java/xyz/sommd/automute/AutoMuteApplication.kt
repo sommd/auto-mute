@@ -30,7 +30,7 @@ class AutoMuteApplication: Application() {
     override fun onCreate() {
         super.onCreate()
         component = DaggerAutoMuteComponent.builder()
-                .context(this)
-                .build()
+            .context(this)
+            .build()
     }
 }

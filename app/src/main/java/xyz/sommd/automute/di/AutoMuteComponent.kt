@@ -26,9 +26,11 @@ import xyz.sommd.automute.settings.SettingsFragment
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [
-    AndroidModule::class
-])
+@Component(
+    modules = [
+        AndroidModule::class
+    ]
+)
 interface AutoMuteComponent {
     @Component.Builder
     interface Builder {
@@ -43,5 +45,6 @@ interface AutoMuteComponent {
     
     // Injectors
     fun inject(target: AutoMuteService)
+    
     fun inject(target: SettingsFragment)
 }

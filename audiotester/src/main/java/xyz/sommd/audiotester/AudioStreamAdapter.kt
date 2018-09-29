@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.item_audio_stream.view.*
 
 class AudioStreamAdapter: RecyclerView.Adapter<AudioStreamAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View):
-            RecyclerView.ViewHolder(itemView), View.OnClickListener {
+        RecyclerView.ViewHolder(itemView), View.OnClickListener {
         
         private val playPauseButton = itemView.playPauseButton
         private val deleteButton = itemView.deleteButton
@@ -41,11 +41,13 @@ class AudioStreamAdapter: RecyclerView.Adapter<AudioStreamAdapter.ViewHolder>() 
         }
         
         fun bind(audioStream: AudioStream) {
-            playPauseButton.setImageResource(if (audioStream.isPlaying) {
-                R.drawable.ic_pause
-            } else {
-                R.drawable.ic_play
-            })
+            playPauseButton.setImageResource(
+                if (audioStream.isPlaying) {
+                    R.drawable.ic_pause
+                } else {
+                    R.drawable.ic_play
+                }
+            )
             
             sampleText.text = audioStream.sampleName
             usageText.text = audioStream.usageName

@@ -24,12 +24,15 @@ import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.IBinder
 import xyz.sommd.automute.di.Injection
+import xyz.sommd.automute.utils.STREAM_DEFAULT
+import xyz.sommd.automute.utils.log
 import xyz.sommd.automute.utils.monitors.AudioPlaybackMonitor
 import xyz.sommd.automute.utils.monitors.AudioVolumeMonitor
-import xyz.sommd.automute.utils.*
+import xyz.sommd.automute.utils.showVolumeControl
 import javax.inject.Inject
 
-class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, AudioVolumeMonitor.Listener, AutoMuter.Listener {
+class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, AudioVolumeMonitor.Listener,
+    AutoMuter.Listener {
     companion object {
         const val ACTION_MUTE = "xyz.sommd.automute.action.MUTE"
         const val ACTION_UNMUTE = "xyz.sommd.automute.action.UNMUTE"
@@ -39,8 +42,11 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, AudioVolumeMoni
         const val EXTRA_BOOT = "xyz.sommd.automute.extra.BOOT"
         
         fun start(context: Context, boot: Boolean = false) {
-            context.startForegroundService(Intent(context, AutoMuteService::class.java)
-                                                   .putExtra(EXTRA_BOOT, boot))
+            context.startForegroundService(
+                Intent(context, AutoMuteService::class.java).apply {
+                    putExtra(EXTRA_BOOT, boot)
+                }
+            )
         }
         
         fun stop(context: Context) {

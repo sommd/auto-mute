@@ -20,10 +20,12 @@ package xyz.sommd.audiotester
 import android.media.MediaPlayer
 import xyz.sommd.audiotester.utils.log
 
-class AudioStream(private val mediaPlayer: MediaPlayer,
-                  val sampleName: CharSequence,
-                  val usageName: CharSequence,
-                  val contentTypeName: CharSequence) {
+class AudioStream(
+    private val mediaPlayer: MediaPlayer,
+    val sampleName: CharSequence,
+    val usageName: CharSequence,
+    val contentTypeName: CharSequence
+) {
     
     val isPlaying get() = mediaPlayer.isPlaying
     
