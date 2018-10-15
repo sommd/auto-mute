@@ -21,22 +21,6 @@ android {
     defaultConfig {
         applicationId "xyz.sommd.automute"
     }
-
-    signingConfigs {
-        release {
-            storeFile file(System.env.KEY_STORE ?: "/dev/null")
-            keyPassword System.env.KEY_STORE_PASSWORD
-
-            keyAlias System.env.KEY_ALIAS
-            storePassword System.env.KEY_ALIAS_PASSWORD
-        }
-    }
-
-    buildTypes {
-        release {
-            signingConfig signingConfigs.release
-        }
-    }
 }
 
 dependencies {
