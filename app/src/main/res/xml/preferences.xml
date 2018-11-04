@@ -94,6 +94,13 @@
             android:summaryOn="@string/pref_auto_unmute_show_ui_summary_on"
             android:title="@string/pref_auto_unmute_show_ui_title" />
         
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="auto_unmute_headphones_plugged_in"
+            android:summaryOff="@string/pref_auto_unmute_headphones_plugged_in_summary_off"
+            android:summaryOn="@string/pref_auto_unmute_headphones_plugged_in_summary_on"
+            android:title="@string/pref_auto_unmute_headphones_plugged_in_title" />
+        
         <DropDownPreference
             android:defaultValue="ALWAYS"
             android:entries="@array/pref_auto_unmute_mode_entries"

@@ -79,6 +79,10 @@
     <string name="pref_auto_unmute_show_ui_summary_on">Show volume control when unmuting.</string>
     <string name="pref_auto_unmute_show_ui_summary_off">Don\'t show anything when unmuting.</string>
     
+    <string name="pref_auto_unmute_headphones_plugged_in_title">When Headphones Plugged In</string>
+    <string name="pref_auto_unmute_headphones_plugged_in_summary_on">Automatically unmute when headphones plugged in.</string>
+    <string name="pref_auto_unmute_headphones_plugged_in_summary_off">Do nothing when headphones plugged in.</string>
+    
     <string name="pref_auto_unmute_music_mode_title">Music</string>
     <string name="pref_auto_unmute_music_mode_summary" formatted="true">%1$s when music starts playing.</string>
     

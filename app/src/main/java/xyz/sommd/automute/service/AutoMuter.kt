@@ -196,9 +196,17 @@ class AutoMuter @Inject constructor(
     
     override fun onAudioOutputInternal() {
         if (settings.autoMuteHeadphonesUnplugged) {
-            log { "Audio output external, muting" }
+            log { "Audio output internal, muting" }
             
             mute()
+        }
+    }
+    
+    override fun onAudioOutputExternal() {
+        if (settings.autoUnmuteHeadphonesPluggedIn) {
+            log { "Audio output external, unmuting" }
+            
+            unmute()
         }
     }
     
