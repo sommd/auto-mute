@@ -94,16 +94,18 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, AudioVolumeMoni
     /**
      * Handle actions sent from status notification (or other places) or mute on boot.
      */
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        if (intent.getBooleanExtra(EXTRA_BOOT, false)) {
-            autoMuter.onBoot()
-        } else if (intent.action != null) {
-            log { "Received command: ${intent.action}" }
-            
-            when (intent.action) {
-                ACTION_MUTE -> autoMuter.mute()
-                ACTION_UNMUTE -> autoMuter.unmute()
-                ACTION_SHOW -> audioManager.showVolumeControl()
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent != null) {
+            if (intent.getBooleanExtra(EXTRA_BOOT, false)) {
+                autoMuter.onBoot()
+            } else if (intent.action != null) {
+                log { "Received command: ${intent.action}" }
+        
+                when (intent.action) {
+                    ACTION_MUTE -> autoMuter.mute()
+                    ACTION_UNMUTE -> autoMuter.unmute()
+                    ACTION_SHOW -> audioManager.showVolumeControl()
+                }
             }
         }
         
