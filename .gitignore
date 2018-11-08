@@ -11,5 +11,8 @@
 /local.properties
 /gradle.properties
 
+# Build
+release/
+
 # Other
 .DS_Store
