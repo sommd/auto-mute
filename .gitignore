@@ -3,6 +3,7 @@
 /.idea/caches/
 /.idea/dictionaries/
 /.idea/workspace.xml
+/.idea/assetWizardSettings.xml
 *.iml
 
 # Gradle

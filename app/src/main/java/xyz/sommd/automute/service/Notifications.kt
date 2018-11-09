@@ -83,9 +83,9 @@ class Notifications @Inject constructor(
         return Notification.Builder(context, STATUS_CHANNEL).apply {
             setSmallIcon(
                 when {
-                    muted -> R.drawable.ic_notif_status_muted
-                    totalStreams == 0 -> R.drawable.ic_notif_status_unmuted
-                    else -> R.drawable.ic_notif_status_playing
+                    muted -> R.drawable.ic_audio_mute
+                    totalStreams == 0 -> R.drawable.ic_audio_unmute
+                    else -> R.drawable.ic_audio_playing
                 }
             )
             
@@ -137,13 +137,13 @@ class Notifications @Inject constructor(
             addAction(
                 if (muted) {
                     buildAction(
-                        R.drawable.ic_notif_status_action_unmute,
+                        R.drawable.ic_audio_unmute,
                         R.string.notif_status_action_unmute,
                         AutoMuteService.ACTION_UNMUTE
                     )
                 } else {
                     buildAction(
-                        R.drawable.ic_notif_status_action_mute,
+                        R.drawable.ic_audio_mute,
                         R.string.notif_status_action_mute,
                         AutoMuteService.ACTION_MUTE
                     )
@@ -153,7 +153,7 @@ class Notifications @Inject constructor(
             // Show volume action
             addAction(
                 buildAction(
-                    R.drawable.ic_notif_status_action_show,
+                    R.drawable.ic_audio_show,
                     R.string.notif_status_action_show,
                     AutoMuteService.ACTION_SHOW
                 )
