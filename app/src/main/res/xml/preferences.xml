@@ -146,13 +146,17 @@
     </PreferenceCategory>
     
     <PreferenceCategory android:title="@string/pref_about_title">
-        <Preference android:title="@string/pref_about_project_title">
+        <Preference
+            android:icon="@drawable/ic_code"
+            android:title="@string/pref_about_project_title">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://github.com/sommd/auto-mute" />
         </Preference>
         
-        <Preference android:title="@string/pref_about_issue_title">
+        <Preference
+            android:icon="@drawable/ic_bug"
+            android:title="@string/pref_about_issue_title">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://github.com/sommd/auto-mute/issues/new" />
