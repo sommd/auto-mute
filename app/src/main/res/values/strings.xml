@@ -62,12 +62,12 @@
     <string name="pref_auto_mute_show_ui_summary_off">Don\'t show anything when muting.</string>
     
     <string name="pref_auto_mute_headphones_disabled_title">Ignore Headphones</string>
-    <string name="pref_auto_mute_headphones_disabled_summary_on">Disable auto mute while headphones connected.</string>
-    <string name="pref_auto_mute_headphones_disabled_summary_off">Don\'t disable auto mute while headphones connected.</string>
+    <string name="pref_auto_mute_headphones_disabled_summary_on">Don\'t automatically mute while headphones are connected.</string>
+    <string name="pref_auto_mute_headphones_disabled_summary_off">Automatically mute while headphones are connected.</string>
     
-    <string name="pref_auto_mute_headphones_unplugged_title">When Headphones Disconnected</string>
-    <string name="pref_auto_mute_headphones_unplugged_summary_on">Automatically mute when headphones disconnected.</string>
-    <string name="pref_auto_mute_headphones_unplugged_summary_off">Do nothing when headphones disconnected.</string>
+    <string name="pref_auto_mute_headphones_unplugged_title">When Headphones Disconnect</string>
+    <string name="pref_auto_mute_headphones_unplugged_summary_on">Automatically mute when headphones disconnect.</string>
+    <string name="pref_auto_mute_headphones_unplugged_summary_off">Do nothing when headphones disconnect.</string>
     
     <!-- Auto Unmute -->
     <string name="pref_auto_unmute_title">Auto Unmute</string>
@@ -79,9 +79,9 @@
     <string name="pref_auto_unmute_show_ui_summary_on">Show volume control when unmuting.</string>
     <string name="pref_auto_unmute_show_ui_summary_off">Don\'t show anything when unmuting.</string>
     
-    <string name="pref_auto_unmute_headphones_plugged_in_title">When Headphones Connected</string>
-    <string name="pref_auto_unmute_headphones_plugged_in_summary_on">Automatically unmute when headphones connected.</string>
-    <string name="pref_auto_unmute_headphones_plugged_in_summary_off">Do nothing when headphones connected.</string>
+    <string name="pref_auto_unmute_headphones_plugged_in_title">When Headphones Connect</string>
+    <string name="pref_auto_unmute_headphones_plugged_in_summary_on">Automatically unmute when headphones connect.</string>
+    <string name="pref_auto_unmute_headphones_plugged_in_summary_off">Do nothing when headphones connect.</string>
     
     <string name="pref_auto_unmute_music_mode_title">Music</string>
     <string name="pref_auto_unmute_music_mode_summary" formatted="true">%1$s when music starts playing.</string>
