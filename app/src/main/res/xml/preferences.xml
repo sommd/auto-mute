@@ -82,32 +82,6 @@
     </PreferenceCategory>
     
     <PreferenceCategory android:title="@string/pref_auto_unmute_title">
-        <xyz.sommd.automute.utils.FloatSeekBarPreference
-            android:defaultValue="50"
-            android:icon="@drawable/ic_audio_playing"
-            android:key="auto_unmute_default_volume"
-            android:max="100"
-            android:min="0"
-            android:summary="@string/pref_auto_unmute_default_volume_summary"
-            android:title="@string/pref_auto_unmute_default_volume_title"
-            app:showSeekBarValue="false" />
-        
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_audio_show"
-            android:key="auto_unmute_show_ui"
-            android:summaryOff="@string/pref_auto_unmute_show_ui_summary_off"
-            android:summaryOn="@string/pref_auto_unmute_show_ui_summary_on"
-            android:title="@string/pref_auto_unmute_show_ui_title" />
-        
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_headphones"
-            android:key="auto_unmute_headphones_plugged_in"
-            android:summaryOff="@string/pref_auto_unmute_headphones_plugged_in_summary_off"
-            android:summaryOn="@string/pref_auto_unmute_headphones_plugged_in_summary_on"
-            android:title="@string/pref_auto_unmute_headphones_plugged_in_title" />
-        
         <DropDownPreference
             android:defaultValue="ALWAYS"
             android:entries="@array/pref_auto_unmute_mode_entries"
@@ -143,6 +117,32 @@
             android:key="auto_unmute_game_mode"
             android:summary="@string/pref_auto_unmute_game_mode_summary"
             android:title="@string/pref_auto_unmute_game_mode_title" />
+        
+        <xyz.sommd.automute.utils.FloatSeekBarPreference
+            android:defaultValue="50"
+            android:icon="@drawable/ic_audio_playing"
+            android:key="auto_unmute_default_volume"
+            android:max="100"
+            android:min="0"
+            android:summary="@string/pref_auto_unmute_default_volume_summary"
+            android:title="@string/pref_auto_unmute_default_volume_title"
+            app:showSeekBarValue="false" />
+        
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_headphones"
+            android:key="auto_unmute_headphones_plugged_in"
+            android:summaryOff="@string/pref_auto_unmute_headphones_plugged_in_summary_off"
+            android:summaryOn="@string/pref_auto_unmute_headphones_plugged_in_summary_on"
+            android:title="@string/pref_auto_unmute_headphones_plugged_in_title" />
+        
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_audio_show"
+            android:key="auto_unmute_show_ui"
+            android:summaryOff="@string/pref_auto_unmute_show_ui_summary_off"
+            android:summaryOn="@string/pref_auto_unmute_show_ui_summary_on"
+            android:title="@string/pref_auto_unmute_show_ui_title" />
     </PreferenceCategory>
     
     <PreferenceCategory android:title="@string/pref_about_title">
