@@ -4,7 +4,7 @@
 
 Automatically mute or unmute your media volume based on the type of audio playing for Android 8.0 and up.
 
-Auto Mute can be configured to automatically unmute media audio or show the media volume control for music, media, assistant and game audio. It can also automatically mute after audio stops playing.
+Auto Mute can be configured to automatically unmute media audio or show the media volume control when music, media, assistant or game audio starts playing. It can also automatically mute after audio stops playing.
 
 [<img height="92px" alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png">](https://play.google.com/store/apps/details?id=xyz.sommd.automute&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
 
@@ -32,7 +32,7 @@ Auto Mute uses the audio stream's [AudioAttributes](https://developer.android.co
 
 Android only passes an [anonymized copy](https://android.googlesource.com/platform/frameworks/base/+/android-8.1.0_r1/media/java/android/media/AudioPlaybackConfiguration.java#222) of each [AudioPlaybackConfiguration](https://developer.android.com/reference/android/media/AudioPlaybackConfiguration.html) to the app, so it's impossible to detect which audio stream is coming from which app.
 
-#### Why does Auto Mute required Android 8.0 and up?
+#### Why does Auto Mute require Android 8.0 and up?
 
 The API used to monitor audio streams ([AudioManager.getActivePlaybackConfigurations()](https://developer.android.com/reference/android/media/AudioManager.html#getActivePlaybackConfigurations()) and [AudioManager.AudioPlaybackCallback](https://developer.android.com/reference/android/media/AudioManager.AudioPlaybackCallback.html)) was only added in Android 8.0 (API 26).
 
