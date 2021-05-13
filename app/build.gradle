@@ -21,6 +21,16 @@ android {
     defaultConfig {
         applicationId "xyz.sommd.automute"
     }
+
+    buildTypes {
+        debug {
+            resValue "string", "app_name", "Auto Mute (Debug)"
+        }
+
+        release {
+            resValue "string", "app_name", "@string/release_app_name"
+        }
+    }
 }
 
 dependencies {

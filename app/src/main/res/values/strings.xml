@@ -17,7 +17,8 @@
   -->
 
 <resources>
-    <string name="app_name">Auto Mute</string>
+    <!-- "app_name" is injected by build.gradle, "release_app_name" is used for release builds -->
+    <string name="release_app_name">Auto Mute</string>
     
     <!-- Preferences -->
     
