@@ -67,11 +67,11 @@ fun AudioManager.unmute(
     adjustStreamVolume(stream, AudioManager.ADJUST_UNMUTE, flags)
     
     val volume = getVolume(stream)
-    if (getStreamVolume(stream) == 0) {
+    if (volume == 0f) {
         log { "Unmuted to 0, setting to default volume" }
         
         setVolume(defaultVolume, stream, show)
-    } else if (getStreamVolume(stream) > volume) {
+    } else if (volume > maximumVolume) {
         log { "Unmuted above maximum, setting to maximum volume" }
         
         setVolume(maximumVolume, stream, show)
