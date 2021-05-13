@@ -27,10 +27,10 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import android.util.SparseArray
 import android.util.SparseIntArray
 import androidx.core.content.getSystemService
-import androidx.core.util.contains
 import androidx.core.util.forEach
 import androidx.core.util.isEmpty
 import androidx.core.util.set
@@ -89,10 +89,11 @@ class AudioVolumeMonitor @Inject constructor(
     
     /** [Uri]s for volume settings in [Settings.System]. */
     private val volumeUris: List<Uri> =
-        resolver.query(Settings.System.CONTENT_URI, arrayOf("name"), null, null)!!
-            .map { it.getString(0) }
-            .filter { "volume" in it }
-            .map { Uri.withAppendedPath(Settings.System.CONTENT_URI, it) }
+        resolver.query(Settings.System.CONTENT_URI, arrayOf("name"), null, null)
+            ?.map { it.getString(0) }
+            ?.filter { "volume" in it }
+            ?.map { Uri.withAppendedPath(Settings.System.CONTENT_URI, it) }
+            ?: emptyList<Uri>().also { this@AudioVolumeMonitor.log(Log.WARN) { "ContentResolver.query() returned null" } }
     
     /** [ContentObserver] for monitoring [Settings.System]. */
     private val contentObserver = object: ContentObserver(handler) {
