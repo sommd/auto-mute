@@ -18,7 +18,7 @@
 buildscript {
     ext {
         // Toolkit versions
-        kotlinVersion = '1.2.71'
+        kotlinVersion = '1.5.0'
         javaVersion = JavaVersion.VERSION_1_8
 
         // Get version string from git tag
@@ -79,26 +79,27 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:4.2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
 
 subprojects {
     apply plugin: 'com.android.application'
-    apply plugin: 'kotlin-android'
+    apply plugin: 'org.jetbrains.kotlin.android'
 
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     android {
-        compileSdkVersion 28
+        compileSdkVersion 30
+        buildToolsVersion "30.0.3"
 
         defaultConfig {
             minSdkVersion 26
@@ -118,7 +119,7 @@ subprojects {
             release {
                 minifyEnabled true
                 shrinkResources true
-                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             }
         }
 

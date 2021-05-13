@@ -89,14 +89,14 @@ class AudioVolumeMonitor @Inject constructor(
     
     /** [Uri]s for volume settings in [Settings.System]. */
     private val volumeUris: List<Uri> =
-        resolver.query(Settings.System.CONTENT_URI, arrayOf("name"), null, null)
+        resolver.query(Settings.System.CONTENT_URI, arrayOf("name"), null, null)!!
             .map { it.getString(0) }
             .filter { "volume" in it }
             .map { Uri.withAppendedPath(Settings.System.CONTENT_URI, it) }
     
     /** [ContentObserver] for monitoring [Settings.System]. */
     private val contentObserver = object: ContentObserver(handler) {
-        override fun onChange(selfChange: Boolean, uri: Uri) {
+        override fun onChange(selfChange: Boolean, uri: Uri?) {
             this@AudioVolumeMonitor.log { "Volume setting changed: $uri" }
             
             updateVolumes()

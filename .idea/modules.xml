@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/audiotester/audiotester.iml" filepath="$PROJECT_DIR$/audiotester/audiotester.iml" />
-      <module fileurl="file://$PROJECT_DIR$/auto-mute.iml" filepath="$PROJECT_DIR$/auto-mute.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/auto-mute.iml" filepath="$PROJECT_DIR$/.idea/modules/auto-mute.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/auto-mute.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/auto-mute.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/audiotester/auto-mute.audiotester.iml" filepath="$PROJECT_DIR$/.idea/modules/audiotester/auto-mute.audiotester.iml" />
     </modules>
   </component>
 </project>

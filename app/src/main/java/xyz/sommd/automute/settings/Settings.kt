@@ -93,7 +93,7 @@ class Settings @Inject constructor(
     
     // TODO use int pref
     var autoMuteDelay: Long
-        get() = sharedPrefs.getString(AUTO_MUTE_DELAY_KEY, "30").toLong()
+        get() = sharedPrefs.getString(AUTO_MUTE_DELAY_KEY, "30")!!.toLong()
         set(value) = sharedPrefs.edit { putString(AUTO_MUTE_DELAY_KEY, value.toString()) }
     
     var autoMuteHeadphonesDisabled: Boolean
@@ -140,7 +140,7 @@ class Settings @Inject constructor(
     
     private fun getUnmuteMode(key: String, default: UnmuteMode): UnmuteMode {
         return try {
-            UnmuteMode.valueOf(sharedPrefs.getString(key, ""))
+            UnmuteMode.valueOf(sharedPrefs.getString(key, "")!!)
         } catch (e: IllegalArgumentException) {
             default
         }
