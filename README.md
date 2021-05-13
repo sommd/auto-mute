@@ -13,9 +13,9 @@ Auto Mute can be configured to automatically unmute media audio or show the medi
 ## Screenshots
 
 <p align="center">
-    <img width="290px" alt="Auto Mute Settings Screenshot" src=".readme/screenshots/auto_mute_settings.png">
-    <img width="290px" alt="Auto Unmute Settings Screenshot" src=".readme/screenshots/auto_unmute_settings.png">
-    <img width="290px" alt="Status Notification Screenshot" src=".readme/screenshots/status_notification.png">
+    <img width="276px" alt="Auto Mute Settings Screenshot" src=".readme/screenshots/auto_mute_settings.png">
+    <img width="276px" alt="Auto Unmute Settings Screenshot" src=".readme/screenshots/auto_unmute_settings.png">
+    <img width="276px" alt="Status Notification Screenshot" src=".readme/screenshots/status_notification.png">
 </p>
 
 ## FAQ
