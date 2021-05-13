@@ -18,6 +18,7 @@
 package xyz.sommd.automute.settings
 
 import android.os.Bundle
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import xyz.sommd.automute.BuildConfig
 import xyz.sommd.automute.R
@@ -43,7 +44,7 @@ class SettingsFragment: PreferenceFragmentCompat(), Settings.ChangeListener {
         setPreferencesFromResource(R.xml.preferences, rootKey)
         
         // Set app version string
-        findPreference("app_version").summary = resources.getString(
+        findPreference<Preference>("app_version")!!.summary = resources.getString(
             R.string.pref_about_app_version_summary,
             BuildConfig.VERSION_NAME,
             BuildConfig.BUILD_TYPE

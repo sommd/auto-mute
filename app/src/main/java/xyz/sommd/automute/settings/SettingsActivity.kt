@@ -19,14 +19,14 @@ package xyz.sommd.automute.settings
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.transaction
+import androidx.fragment.app.commit
 
 class SettingsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         if (savedInstanceState == null) {
-            supportFragmentManager.transaction {
+            supportFragmentManager.commit {
                 replace(android.R.id.content, SettingsFragment())
             }
         }
