@@ -27,13 +27,9 @@
         
         <Preference
             android:icon="@drawable/ic_notifications"
+            android:key="notifications"
             android:summary="@string/pref_general_notifications_summary"
             android:title="@string/pref_general_notifications_title">
-            <intent android:action="android.settings.APP_NOTIFICATION_SETTINGS">
-                <extra
-                    android:name="android.provider.extra.APP_PACKAGE"
-                    android:value="xyz.sommd.automute" />
-            </intent>
         </Preference>
     </PreferenceCategory>
     

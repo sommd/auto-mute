@@ -17,13 +17,16 @@
 
 package xyz.sommd.automute.settings
 
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings.*
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import xyz.sommd.automute.BuildConfig
 import xyz.sommd.automute.R
 import xyz.sommd.automute.di.Injection
 import xyz.sommd.automute.service.AutoMuteService
+import xyz.sommd.automute.service.Notifications
 import javax.inject.Inject
 
 class SettingsFragment: PreferenceFragmentCompat(), Settings.ChangeListener {
@@ -42,6 +45,13 @@ class SettingsFragment: PreferenceFragmentCompat(), Settings.ChangeListener {
     
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
+        
+        // Setup notifications settings intent
+        findPreference<Preference>("notifications")!!.intent =
+            Intent(ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {
+                putExtra(EXTRA_APP_PACKAGE, BuildConfig.APPLICATION_ID)
+                putExtra(EXTRA_CHANNEL_ID, Notifications.STATUS_CHANNEL)
+            }
         
         // Set app version string
         findPreference<Preference>("app_version")!!.summary = resources.getString(
