@@ -22,7 +22,17 @@ Auto Mute can be configured to automatically unmute media audio or show the medi
 
 #### How do I hide the notification?
 
-Notification Settings > Status Notification > Importance > Low
+##### Android 8
+
+Notification Settings > Importance > Low
+
+##### Android 9
+
+Notification Settings > Behavior > Show silently and minimize
+
+##### Android 10 and up
+
+Notification Settings > Minimize
 
 #### Why does \<app> count as music when it's not?
 
