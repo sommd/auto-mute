@@ -98,6 +98,9 @@
     <string name="pref_auto_unmute_default_volume_title">Default Volume</string>
     <string name="pref_auto_unmute_default_volume_summary">Volume to use after being manually muted.</string>
     
+    <string name="pref_auto_unmute_maximum_volume_title">Maximum Volume</string>
+    <string name="pref_auto_unmute_maximum_volume_summary">Limit volume when unmuting.</string>
+    
     <string name="pref_auto_unmute_headphones_plugged_in_title">When Headphones Connect</string>
     <string name="pref_auto_unmute_headphones_plugged_in_summary_on">Automatically unmute when headphones connect.</string>
     <string name="pref_auto_unmute_headphones_plugged_in_summary_off">Do nothing when headphones connect.</string>

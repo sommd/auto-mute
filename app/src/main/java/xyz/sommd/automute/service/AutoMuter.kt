@@ -93,7 +93,7 @@ class AutoMuter @Inject constructor(
      */
     fun unmute(stream: Int = STREAM_DEFAULT) {
         // Unmute
-        audioManager.unmute(settings.autoUnmuteDefaultVolume, stream, settings.autoUnmuteShowUi)
+        audioManager.unmute(stream, defaultVolume = settings.autoUnmuteDefaultVolume, maximumVolume = settings.autoUnmuteMaximumVolume, settings.autoUnmuteShowUi)
         
         // Notify listeners
         listeners.forEach { it.onUnmuted(stream) }

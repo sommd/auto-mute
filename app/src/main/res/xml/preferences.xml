@@ -127,6 +127,15 @@
             android:summary="@string/pref_auto_unmute_default_volume_summary"
             android:title="@string/pref_auto_unmute_default_volume_title"
             app:showSeekBarValue="false" />
+    
+        <xyz.sommd.automute.utils.FloatSeekBarPreference
+            android:defaultValue="100"
+            android:key="auto_unmute_maximum_volume"
+            android:max="100"
+            android:min="0"
+            android:summary="@string/pref_auto_unmute_maximum_volume_summary"
+            android:title="@string/pref_auto_unmute_maximum_volume_title"
+            app:showSeekBarValue="false" />
         
         <SwitchPreference
             android:defaultValue="true"
