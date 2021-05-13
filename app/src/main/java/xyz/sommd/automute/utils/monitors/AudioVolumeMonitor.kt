@@ -28,12 +28,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
-import android.util.SparseArray
-import android.util.SparseIntArray
 import androidx.core.content.getSystemService
-import androidx.core.util.forEach
-import androidx.core.util.isEmpty
-import androidx.core.util.set
 import xyz.sommd.automute.utils.description
 import xyz.sommd.automute.utils.log
 import xyz.sommd.automute.utils.map
@@ -47,7 +42,6 @@ import javax.inject.Inject
  * notified of streams being muted/unmuted.
  *
  * @param context The [Context] to use.
- * @param streams The audio streams to monitor the volume of, e.g. [AudioManager.STREAM_MUSIC].
  * @param handler The [Handler] for the thread on which to execute listeners.
  */
 class AudioVolumeMonitor @Inject constructor(
@@ -73,19 +67,22 @@ class AudioVolumeMonitor @Inject constructor(
             AudioManager.STREAM_DTMF,
             AudioManager.STREAM_ACCESSIBILITY
         )
+        
+        /** Maximum stream value, for using arrays as maps by stream. */
+        private val STREAM_MAX = ALL_STREAMS.maxOrNull()!!
     }
     
     private val audioManager = context.getSystemService<AudioManager>()!!
     private val resolver = context.contentResolver
     
     /** Previous stream volumes to keep track of which volumes changed. */
-    private val streamVolumes = SparseIntArray()
+    private val streamVolumes = mutableMapOf<Int, Int>()
     
     /**
      * [Listener]s to be notified of volume changes for each stream. Streams are added and removed
      * as listeners are added and removed so we know which streams we need to track the changes of.
      */
-    private val streamListeners = SparseArray<MutableList<Listener>>()
+    private val streamListeners = mutableMapOf<Int, MutableList<Listener>>()
     
     /** [Uri]s for volume settings in [Settings.System]. */
     private val volumeUris: List<Uri> =
@@ -129,13 +126,14 @@ class AudioVolumeMonitor @Inject constructor(
         // Add listener to volume streams
         for (stream in streams) {
             // Create new list or add to existing
-            if (stream !in streamListeners) {
+            val listeners = streamListeners[stream]
+            if (listeners != null) {
+                listeners.add(listener)
+            } else {
                 streamListeners[stream] = mutableListOf(listener)
                 
                 // Record current volume to only track changes in the future
                 streamVolumes[stream] = audioManager.getStreamVolume(stream)
-            } else {
-                streamListeners[stream].add(listener)
             }
         }
     }
@@ -145,7 +143,7 @@ class AudioVolumeMonitor @Inject constructor(
      */
     fun removeListener(listener: Listener) {
         // Remove listener from all streams
-        streamListeners.forEach { _, listeners -> listeners.remove(listener) }
+        streamListeners.forEach { (_, listeners) -> listeners.remove(listener) }
         
         // Remove streams with no streamListeners
         // Modifying streamListeners while iterating won't work, so iterate over ALL_STREAMS
@@ -192,7 +190,7 @@ class AudioVolumeMonitor @Inject constructor(
     /** Update [streamVolumes] and notify [streamListeners] of any changes. */
     private fun updateVolumes() {
         // Get volume of each stream
-        streamListeners.forEach { stream, listeners ->
+        streamListeners.forEach { (stream, listeners) ->
             val volume = audioManager.getStreamVolume(stream)
             
             // Update volume if previous value is different
