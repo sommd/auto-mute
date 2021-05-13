@@ -19,7 +19,6 @@ package xyz.sommd.audiotester
 
 import android.media.AudioAttributes
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -28,6 +27,10 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity: AppCompatActivity() {
     companion object {
+        val AUDIO_SAMPLES = listOf(
+            "silence"
+        ).map { "android.resource://${BuildConfig.APPLICATION_ID}/raw/$it".toUri() }
+        
         val AUDIO_USAGES = listOf(
             AudioAttributes.USAGE_MEDIA,
             AudioAttributes.USAGE_GAME,
@@ -44,14 +47,11 @@ class MainActivity: AppCompatActivity() {
         )
     }
     
-    private lateinit var audioSampleUris: List<Uri>
     private val adapter = AudioStreamAdapter()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        
-        audioSampleUris = resources.getStringArray(R.array.audio_sample_urls).map(String::toUri)
         
         audioStreamRecycler.adapter = adapter
     }
@@ -71,7 +71,7 @@ class MainActivity: AppCompatActivity() {
             .build()
         
         val mediaPlayer = MediaPlayer()
-        mediaPlayer.setDataSource(this, audioSampleUris[sampleSpinner.selectedItemPosition])
+        mediaPlayer.setDataSource(this, AUDIO_SAMPLES[sampleSpinner.selectedItemPosition])
         mediaPlayer.setAudioAttributes(audioAttributes)
         mediaPlayer.isLooping = true
         mediaPlayer.prepare()

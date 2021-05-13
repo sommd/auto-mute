@@ -24,6 +24,10 @@
     
     <string name="button_add_audio_stream">Add Audio Stream</string>
     
+    <string-array name="spinner_audio_sample_entries">
+        <item>Silence</item>
+    </string-array>
+    
     <string-array name="spinner_audio_usage_entries">
         <item>USAGE_MEDIA</item>
         <item>USAGE_GAME</item>

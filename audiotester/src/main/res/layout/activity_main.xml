@@ -41,7 +41,7 @@
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:entries="@array/audio_sample_titles" />
+        android:entries="@array/spinner_audio_sample_entries" />
     
     <TextView
         android:layout_width="match_parent"
