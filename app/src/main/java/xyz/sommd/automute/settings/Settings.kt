@@ -94,7 +94,7 @@ class Settings @Inject constructor(
     
     // TODO use int pref
     var autoMuteDelay: Long
-        get() = sharedPrefs.getString(AUTO_MUTE_DELAY_KEY, "30")!!.toLong()
+        get() = sharedPrefs.getString(AUTO_MUTE_DELAY_KEY, "15")!!.toLong()
         set(value) = sharedPrefs.edit { putString(AUTO_MUTE_DELAY_KEY, value.toString()) }
     
     var autoMuteHeadphonesDisabled: Boolean
@@ -112,7 +112,7 @@ class Settings @Inject constructor(
     // Auto Unmute
     
     var autoUnmuteDefaultVolume: Float
-        get() = sharedPrefs.getFloat(AUTO_UNMUTE_DEFAULT_VOLUME_KEY, 0.5f)
+        get() = sharedPrefs.getFloat(AUTO_UNMUTE_DEFAULT_VOLUME_KEY, 0.25f)
         set(value) = sharedPrefs.edit { putFloat(AUTO_UNMUTE_DEFAULT_VOLUME_KEY, value) }
     
     var autoUnmuteMaximumVolume: Float

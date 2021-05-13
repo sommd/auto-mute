@@ -47,7 +47,7 @@
             android:title="@string/pref_auto_mute_enabled_title" />
         
         <DropDownPreference
-            android:defaultValue="30"
+            android:defaultValue="15"
             android:dependency="auto_mute_enabled"
             android:entries="@array/pref_auto_mute_delay_entries"
             android:entryValues="@array/pref_auto_mute_delay_values"
@@ -119,7 +119,7 @@
             android:title="@string/pref_auto_unmute_game_mode_title" />
         
         <xyz.sommd.automute.utils.FloatSeekBarPreference
-            android:defaultValue="50"
+            android:defaultValue="25"
             android:icon="@drawable/ic_audio_playing"
             android:key="auto_unmute_default_volume"
             android:max="100"
