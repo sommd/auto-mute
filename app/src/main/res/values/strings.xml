@@ -96,7 +96,7 @@
     </string-array>
     
     <string name="pref_auto_unmute_default_volume_title">Default Volume</string>
-    <string name="pref_auto_unmute_default_volume_summary">Volume to use after being manually muted.</string>
+    <string name="pref_auto_unmute_default_volume_summary">Volume to use after muting via system controls.</string>
     
     <string name="pref_auto_unmute_maximum_volume_title">Maximum Volume</string>
     <string name="pref_auto_unmute_maximum_volume_summary">Limit volume when unmuting.</string>
