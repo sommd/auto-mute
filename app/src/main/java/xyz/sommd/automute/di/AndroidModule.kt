@@ -44,12 +44,8 @@ object AndroidModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun contentResolver(context: Context) = context.contentResolver
-    
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun sharedPreferences(context: Context) = PreferenceManager.getDefaultSharedPreferences(context)
+    fun sharedPreferences(context: Context) =
+        PreferenceManager.getDefaultSharedPreferences(context)!!
     
     @JvmStatic
     @Provides

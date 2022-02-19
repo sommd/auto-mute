@@ -25,7 +25,6 @@ import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import androidx.core.content.getSystemService
@@ -46,7 +45,7 @@ import javax.inject.Inject
  */
 class AudioVolumeMonitor @Inject constructor(
     private val context: Context,
-    private val handler: Handler = Handler(Looper.getMainLooper())
+    private val handler: Handler
 ) {
     interface Listener {
         /**
@@ -67,9 +66,6 @@ class AudioVolumeMonitor @Inject constructor(
             AudioManager.STREAM_DTMF,
             AudioManager.STREAM_ACCESSIBILITY
         )
-        
-        /** Maximum stream value, for using arrays as maps by stream. */
-        private val STREAM_MAX = ALL_STREAMS.maxOrNull()!!
     }
     
     private val audioManager = context.getSystemService<AudioManager>()!!

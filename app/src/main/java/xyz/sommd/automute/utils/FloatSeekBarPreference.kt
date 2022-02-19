@@ -30,15 +30,12 @@ import kotlin.math.roundToInt
  * E.g. if [getMin] is `10`, [getMax] is `20` and [getValue] is `15`, then [floatValue] will be
  * `0.5`.
  */
-class FloatSeekBarPreference: SeekBarPreference {
-    @JvmOverloads
-    constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = R.attr.seekBarPreferenceStyle,
-        defStyleRes: Int = 0
-    ): super(context, attrs, defStyleAttr, defStyleRes)
-    
+class FloatSeekBarPreference @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = R.attr.seekBarPreferenceStyle,
+    defStyleRes: Int = 0
+): SeekBarPreference(context, attrs, defStyleAttr, defStyleRes) {
     var floatValue: Float
         get() = toFloat(value)
         set(value) = setValue(fromFloat(value))

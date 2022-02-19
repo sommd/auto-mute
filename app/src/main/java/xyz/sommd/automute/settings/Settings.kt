@@ -28,8 +28,7 @@ import javax.inject.Singleton
 @Singleton
 class Settings @Inject constructor(
     context: Context,
-    private val sharedPrefs: SharedPreferences =
-        PreferenceManager.getDefaultSharedPreferences(context)
+    private val sharedPrefs: SharedPreferences
 ): SharedPreferences.OnSharedPreferenceChangeListener {
     interface ChangeListener {
         fun onSettingsChanged(settings: Settings, key: String)

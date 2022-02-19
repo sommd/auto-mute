@@ -21,7 +21,6 @@ import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.os.Handler
-import android.os.Looper
 import xyz.sommd.automute.utils.description
 import xyz.sommd.automute.utils.isExternal
 import xyz.sommd.automute.utils.log
@@ -35,7 +34,7 @@ import javax.inject.Inject
  */
 class AudioOutputMonitor @Inject constructor(
     private val audioManager: AudioManager,
-    private val handler: Handler = Handler(Looper.getMainLooper())
+    private val handler: Handler
 ): AbstractMonitor<AudioOutputMonitor.Listener>() {
     interface Listener {
         /**

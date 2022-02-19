@@ -20,7 +20,6 @@ package xyz.sommd.automute.utils.monitors
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
-import android.os.Looper
 import xyz.sommd.automute.utils.log
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -37,7 +36,7 @@ import javax.inject.Singleton
 @Singleton
 class AudioPlaybackMonitor @Inject constructor(
     private val audioManager: AudioManager,
-    private val handler: Handler = Handler(Looper.getMainLooper())
+    private val handler: Handler
 ): AbstractMonitor<AudioPlaybackMonitor.Listener>() {
     companion object {
         /** Interval to run [recheckRunnable] in milliseconds. */

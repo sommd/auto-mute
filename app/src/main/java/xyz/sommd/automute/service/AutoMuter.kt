@@ -20,7 +20,6 @@ package xyz.sommd.automute.service
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
-import android.os.Looper
 import xyz.sommd.automute.settings.Settings
 import xyz.sommd.automute.utils.*
 import xyz.sommd.automute.utils.monitors.AudioOutputMonitor
@@ -33,7 +32,7 @@ class AutoMuter @Inject constructor(
     private val playbackMonitor: AudioPlaybackMonitor,
     private val outputMonitor: AudioOutputMonitor,
     private val settings: Settings,
-    private val handler: Handler = Handler(Looper.getMainLooper())
+    private val handler: Handler
 ): AudioPlaybackMonitor.Listener, AudioOutputMonitor.Listener {
     interface Listener {
         /**
@@ -93,7 +92,12 @@ class AutoMuter @Inject constructor(
      */
     fun unmute(stream: Int = STREAM_DEFAULT) {
         // Unmute
-        audioManager.unmute(stream, defaultVolume = settings.autoUnmuteDefaultVolume, maximumVolume = settings.autoUnmuteMaximumVolume, settings.autoUnmuteShowUi)
+        audioManager.unmute(
+            stream,
+            defaultVolume = settings.autoUnmuteDefaultVolume,
+            maximumVolume = settings.autoUnmuteMaximumVolume,
+            settings.autoUnmuteShowUi
+        )
         
         // Notify listeners
         listeners.forEach { it.onUnmuted(stream) }
