@@ -20,10 +20,9 @@ package xyz.sommd.audiotester
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
-import kotlinx.android.synthetic.main.activity_main.*
+import xyz.sommd.audiotester.databinding.ActivityMainBinding
 
 class MainActivity: AppCompatActivity() {
     companion object {
@@ -47,13 +46,16 @@ class MainActivity: AppCompatActivity() {
         )
     }
     
+    private lateinit var binding: ActivityMainBinding
     private val adapter = AudioStreamAdapter()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         
-        audioStreamRecycler.adapter = adapter
+        binding.addAudioStreamButton.setOnClickListener { addAudioStream() }
+        binding.audioStreamRecycler.adapter = adapter
     }
     
     override fun onDestroy() {
@@ -64,23 +66,23 @@ class MainActivity: AppCompatActivity() {
         }
     }
     
-    fun addAudioStream(view: View) {
+    private fun addAudioStream() {
         val audioAttributes = AudioAttributes.Builder()
-            .setUsage(AUDIO_USAGES[usageSpinner.selectedItemPosition])
-            .setContentType(AUDIO_CONTENT_TYPES[contentTypeSpinner.selectedItemPosition])
+            .setUsage(AUDIO_USAGES[binding.usageSpinner.selectedItemPosition])
+            .setContentType(AUDIO_CONTENT_TYPES[binding.contentTypeSpinner.selectedItemPosition])
             .build()
         
         val mediaPlayer = MediaPlayer()
-        mediaPlayer.setDataSource(this, AUDIO_SAMPLES[sampleSpinner.selectedItemPosition])
+        mediaPlayer.setDataSource(this, AUDIO_SAMPLES[binding.sampleSpinner.selectedItemPosition])
         mediaPlayer.setAudioAttributes(audioAttributes)
         mediaPlayer.isLooping = true
         mediaPlayer.prepare()
         
         val audioStream = AudioStream(
             mediaPlayer,
-            sampleSpinner.selectedItem as CharSequence,
-            usageSpinner.selectedItem as CharSequence,
-            contentTypeSpinner.selectedItem as CharSequence
+            binding.sampleSpinner.selectedItem as CharSequence,
+            binding.usageSpinner.selectedItem as CharSequence,
+            binding.contentTypeSpinner.selectedItem as CharSequence
         )
         
         adapter.addAudioStream(audioStream)

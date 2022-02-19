@@ -15,11 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-apply plugin: 'kotlin-android-extensions'
-
 android {
     defaultConfig {
         applicationId "xyz.sommd.audiotester"
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 }
 

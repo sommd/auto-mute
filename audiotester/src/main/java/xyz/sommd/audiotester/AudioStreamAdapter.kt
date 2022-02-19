@@ -21,27 +21,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.item_audio_stream.view.*
+import xyz.sommd.audiotester.databinding.ItemAudioStreamBinding
 
 class AudioStreamAdapter: RecyclerView.Adapter<AudioStreamAdapter.ViewHolder>() {
-    inner class ViewHolder(itemView: View):
-        RecyclerView.ViewHolder(itemView), View.OnClickListener {
-        
-        private val playPauseButton = itemView.playPauseButton
-        private val deleteButton = itemView.deleteButton
-        private val sampleText = itemView.sampleText
-        private val usageText = itemView.usageText
-        private val contentTypeText = itemView.contentTypeText
+    inner class ViewHolder(private val binding: ItemAudioStreamBinding):
+        RecyclerView.ViewHolder(binding.root), View.OnClickListener {
         
         private val audioStream get() = _audioStreams[bindingAdapterPosition]
         
         init {
-            playPauseButton.setOnClickListener(this)
-            deleteButton.setOnClickListener(this)
+            binding.playPauseButton.setOnClickListener(this)
+            binding.deleteButton.setOnClickListener(this)
         }
         
         fun bind(audioStream: AudioStream) {
-            playPauseButton.setImageResource(
+            binding.playPauseButton.setImageResource(
                 if (audioStream.isPlaying) {
                     R.drawable.ic_pause
                 } else {
@@ -49,14 +43,14 @@ class AudioStreamAdapter: RecyclerView.Adapter<AudioStreamAdapter.ViewHolder>() 
                 }
             )
             
-            sampleText.text = audioStream.sampleName
-            usageText.text = audioStream.usageName
-            contentTypeText.text = audioStream.contentTypeName
+            binding.sampleText.text = audioStream.sampleName
+            binding.usageText.text = audioStream.usageName
+            binding.contentTypeText.text = audioStream.contentTypeName
         }
         
         override fun onClick(v: View) {
             when (v) {
-                playPauseButton -> {
+                binding.playPauseButton -> {
                     if (audioStream.isPlaying) {
                         audioStream.pause()
                     } else {
@@ -65,7 +59,7 @@ class AudioStreamAdapter: RecyclerView.Adapter<AudioStreamAdapter.ViewHolder>() 
                     
                     notifyItemChanged(bindingAdapterPosition)
                 }
-                deleteButton -> {
+                binding.deleteButton -> {
                     audioStream.release()
                     _audioStreams.removeAt(bindingAdapterPosition)
                     notifyItemRemoved(bindingAdapterPosition)
@@ -79,8 +73,8 @@ class AudioStreamAdapter: RecyclerView.Adapter<AudioStreamAdapter.ViewHolder>() 
     
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.item_audio_stream, parent, false)
-        return ViewHolder(view)
+        val binding = ItemAudioStreamBinding.inflate(inflater, parent, false)
+        return ViewHolder(binding)
     }
     
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

@@ -22,7 +22,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="16dp"
     android:paddingTop="16dp"
     tools:context="xyz.sommd.audiotester.MainActivity">
     
@@ -78,14 +77,14 @@
         android:entries="@array/spinner_audio_content_type_entries" />
     
     <Button
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:id="@+id/addAudioStreamButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:onClick="addAudioStream"
-        android:text="@string/button_add_audio_stream" />
+        android:text="@string/button_add_audio_stream"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored" />
     
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/audioStreamRecycler"
