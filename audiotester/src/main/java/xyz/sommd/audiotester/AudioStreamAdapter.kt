@@ -33,7 +33,7 @@ class AudioStreamAdapter: RecyclerView.Adapter<AudioStreamAdapter.ViewHolder>() 
         private val usageText = itemView.usageText
         private val contentTypeText = itemView.contentTypeText
         
-        private val audioStream get() = _audioStreams[adapterPosition]
+        private val audioStream get() = _audioStreams[bindingAdapterPosition]
         
         init {
             playPauseButton.setOnClickListener(this)
@@ -63,12 +63,12 @@ class AudioStreamAdapter: RecyclerView.Adapter<AudioStreamAdapter.ViewHolder>() 
                         audioStream.play()
                     }
                     
-                    notifyItemChanged(adapterPosition)
+                    notifyItemChanged(bindingAdapterPosition)
                 }
                 deleteButton -> {
                     audioStream.release()
-                    _audioStreams.removeAt(adapterPosition)
-                    notifyItemRemoved(adapterPosition)
+                    _audioStreams.removeAt(bindingAdapterPosition)
+                    notifyItemRemoved(bindingAdapterPosition)
                 }
             }
         }
