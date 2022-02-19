@@ -18,7 +18,7 @@
 buildscript {
     ext {
         // Toolkit versions
-        kotlinVersion = '1.5.0'
+        kotlinVersion = '1.6.10'
         javaVersion = JavaVersion.VERSION_1_8
 
         // Get version string from git tag
