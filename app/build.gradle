@@ -35,7 +35,7 @@ android {
 
 dependencies {
     // AndroidX
-    implementation "androidx.preference:preference:1.1.1"
+    implementation "androidx.preference:preference:1.2.0"
 
     // Dagger
     implementation "com.google.dagger:dagger:2.17"
