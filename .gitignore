@@ -2,8 +2,10 @@
 /.idea/libraries/
 /.idea/caches/
 /.idea/dictionaries/
+/.idea/misc.xml
 /.idea/workspace.xml
 /.idea/assetWizardSettings.xml
+/.idea/deploymentTargetDropDown.xml
 *.iml
 
 # Gradle
