@@ -129,7 +129,10 @@ class Notifications @Inject constructor(
             // Open SettingsActivity when clicked
             setContentIntent(
                 PendingIntent.getActivity(
-                    context, 0, Intent(context, SettingsActivity::class.java), 0
+                    context,
+                    0,
+                    Intent(context, SettingsActivity::class.java),
+                    PendingIntent.FLAG_IMMUTABLE
                 )
             )
             
@@ -186,7 +189,7 @@ class Notifications @Inject constructor(
             PendingIntent.getService(
                 context, 0, Intent(
                     action, null, context, AutoMuteService::class.java
-                ), 0
+                ), PendingIntent.FLAG_IMMUTABLE
             )
         ).build()
     }
