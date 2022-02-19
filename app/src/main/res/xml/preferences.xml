@@ -29,8 +29,7 @@
             android:icon="@drawable/ic_notifications"
             android:key="notifications"
             android:summary="@string/pref_general_notifications_summary"
-            android:title="@string/pref_general_notifications_title">
-        </Preference>
+            android:title="@string/pref_general_notifications_title" />
     </PreferenceCategory>
     
     <PreferenceCategory android:title="@string/pref_auto_mute_title">
@@ -123,7 +122,7 @@
             android:summary="@string/pref_auto_unmute_default_volume_summary"
             android:title="@string/pref_auto_unmute_default_volume_title"
             app:showSeekBarValue="false" />
-    
+        
         <xyz.sommd.automute.utils.FloatSeekBarPreference
             android:defaultValue="100"
             android:key="auto_unmute_maximum_volume"

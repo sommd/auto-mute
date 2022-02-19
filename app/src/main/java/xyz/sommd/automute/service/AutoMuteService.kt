@@ -62,6 +62,7 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, AudioVolumeMoni
     
     @Inject
     lateinit var playbackMonitor: AudioPlaybackMonitor
+    
     @Inject
     lateinit var volumeMonitor: AudioVolumeMonitor
     
@@ -100,7 +101,7 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, AudioVolumeMoni
                 autoMuter.onBoot()
             } else if (intent.action != null) {
                 log { "Received command: ${intent.action}" }
-        
+                
                 when (intent.action) {
                     ACTION_MUTE -> autoMuter.mute()
                     ACTION_UNMUTE -> autoMuter.unmute()
