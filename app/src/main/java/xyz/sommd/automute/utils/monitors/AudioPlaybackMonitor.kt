@@ -19,6 +19,7 @@ package xyz.sommd.automute.utils.monitors
 
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
+import android.os.Build
 import android.os.Handler
 import xyz.sommd.automute.utils.log
 import javax.inject.Inject
@@ -134,7 +135,8 @@ class AudioPlaybackMonitor @Inject constructor(
     
     /**
      * Recheck [AudioManager.getActivePlaybackConfigurations] to make sure audio is still playing.
-     * This is a workaround for [AOSP issue 93227199](https://issuetracker.google.com/issues/93227199).
+     * This is a workaround for [AOSP issue 93227199](https://issuetracker.google.com/issues/93227199),
+     * which was [fixed in Android 9](https://android.googlesource.com/platform/frameworks/base/+/2a28126af931554a8621341149b86cc54773c71a).
      */
     private fun recheck() {
         log { "Rechecking audio playback configurations" }
@@ -153,10 +155,13 @@ class AudioPlaybackMonitor @Inject constructor(
      * Schedule [recheckRunnable] to be run after [RECHECK_INTERVAL].
      */
     private fun startRechecking() {
-        // Cancel the current recheck if scheduled
-        handler.removeCallbacks(recheckRunnable)
-        
-        handler.postDelayed(recheckRunnable, RECHECK_INTERVAL)
+        // Fixed in Android 9
+        if (Build.VERSION.SDK_INT < 28) {
+            // Cancel the current recheck if scheduled
+            handler.removeCallbacks(recheckRunnable)
+            
+            handler.postDelayed(recheckRunnable, RECHECK_INTERVAL)
+        }
     }
     
     /**
