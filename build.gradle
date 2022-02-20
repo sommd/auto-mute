@@ -133,6 +133,9 @@ subprojects {
     dependencies {
         // Kotlin
         implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlinVersion"
 
         // AndroidX
         implementation 'androidx.core:core-ktx:1.7.0'
