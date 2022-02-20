@@ -32,6 +32,7 @@ class Settings @Inject constructor(
 ): SharedPreferences.OnSharedPreferenceChangeListener {
     interface ChangeListener {
         fun onSettingsChanged(settings: Settings, key: String)
+        fun onSettingsCleared(settings: Settings)
     }
     
     enum class UnmuteMode {
@@ -75,9 +76,13 @@ class Settings @Inject constructor(
         listeners.remove(listener)
     }
     
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         for (listener in listeners) {
-            listener.onSettingsChanged(this, key)
+            if (key != null) {
+                listener.onSettingsChanged(this, key)
+            } else {
+                listener.onSettingsCleared(this)
+            }
         }
     }
     

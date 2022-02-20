@@ -48,6 +48,10 @@ class QuickSettingsTileService: TileService(), Settings.ChangeListener {
         }
     }
     
+    override fun onSettingsCleared(settings: Settings) {
+        updateState()
+    }
+    
     private fun updateState() {
         qsTile.apply {
             val enabled = settings.serviceEnabled
