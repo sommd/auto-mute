@@ -21,6 +21,7 @@ import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
 import xyz.sommd.automute.service.AutoMuteService
+import xyz.sommd.automute.settings.QuickSettingsTileService
 import xyz.sommd.automute.settings.Settings
 import xyz.sommd.automute.settings.SettingsFragment
 import javax.inject.Singleton
@@ -45,6 +46,6 @@ interface AutoMuteComponent {
     
     // Injectors
     fun inject(target: AutoMuteService)
-    
     fun inject(target: SettingsFragment)
+    fun inject(target: QuickSettingsTileService)
 }

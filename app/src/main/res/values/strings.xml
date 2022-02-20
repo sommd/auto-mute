@@ -139,6 +139,15 @@
     <string name="notif_status_action_unmute">Unmute</string>
     <string name="notif_status_action_show">Change Volume</string>
     
+    <!-- Quick Settings -->
+    
+    <!-- Enabled -->
+    <string name="qs_tile_enable_label">Auto Mute</string>
+    <string name="qs_tile_enable_subtitle_enabled">Enabled</string>
+    <string name="qs_tile_enable_subtitle_disabled">Disabled</string>
+    <string name="qs_tile_enable_state_enabled">Auto Mute service is enabled</string>
+    <string name="qs_tile_enable_state_disabled">Auto Mute service is disabled</string>
+    
     <!-- Other -->
     <string-array name="audio_type_names">
         <item>music</item>

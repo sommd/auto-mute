@@ -22,6 +22,7 @@ import android.os.Bundle
 import android.provider.Settings.*
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreference
 import xyz.sommd.automute.BuildConfig
 import xyz.sommd.automute.R
 import xyz.sommd.automute.di.Injection
@@ -32,6 +33,8 @@ import javax.inject.Inject
 class SettingsFragment: PreferenceFragmentCompat(), Settings.ChangeListener {
     @Inject
     lateinit var settings: Settings
+    
+    private lateinit var enabledPreference: SwitchPreference
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +48,8 @@ class SettingsFragment: PreferenceFragmentCompat(), Settings.ChangeListener {
     
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
+        
+        enabledPreference = findPreference(Settings.SERVICE_ENABLED_KEY)!!
         
         // Setup notifications settings intent
         findPreference<Preference>("notifications")!!.intent =
@@ -76,6 +81,9 @@ class SettingsFragment: PreferenceFragmentCompat(), Settings.ChangeListener {
     override fun onSettingsChanged(settings: Settings, key: String) {
         when (key) {
             Settings.SERVICE_ENABLED_KEY -> {
+                // Update state in case change was external (e.g. from Quick Settings)
+                enabledPreference.isChecked = settings.serviceEnabled
+                
                 // Start or stop the AutoMuteService
                 if (settings.serviceEnabled) {
                     AutoMuteService.start(requireContext())
