@@ -83,7 +83,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.1'
+        classpath 'com.android.tools.build:gradle:7.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
@@ -99,7 +99,7 @@ subprojects {
 
     android {
         compileSdkVersion 31
-        buildToolsVersion "30.0.3"
+        buildToolsVersion "31.0.0"
 
         defaultConfig {
             minSdkVersion 26
