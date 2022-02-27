@@ -20,10 +20,10 @@ package xyz.sommd.automute.it
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.uiautomator.Until
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import xyz.sommd.automute.service.AutoMuteService
 import xyz.sommd.automute.settings.Settings
 
 @RunWith(AndroidJUnit4::class)
@@ -31,51 +31,56 @@ import xyz.sommd.automute.settings.Settings
 class SettingsIT {
     @Before
     fun before() {
-        AutoMuteService.stop(context)
+        Service.stop()
         Prefs.reset()
+    }
+    
+    @After
+    fun after() {
+        Service.stop()
     }
     
     @Test
     fun startsServiceOnStartupIfEnabled() {
         Prefs.set(Settings.SERVICE_ENABLED_KEY, true)
-        App.open()
+        SettingsUi.open()
         Service.assertRunning()
     }
     
     @Test
     fun doesntStartServiceOnStartupIfDisabled() {
         Prefs.set(Settings.SERVICE_ENABLED_KEY, false)
-        App.open()
+        SettingsUi.open()
         Service.assertStopped()
     }
     
     @Test
     fun disablingAndEnabledServiceStopsAndStartsService() {
-        App.open()
-        App.assertServiceEnabled()
+        SettingsUi.open()
+        SettingsUi.assertServiceEnabled()
         
         // turn off
-        App.serviceEnabledSwitch.click()
-        App.serviceEnabledSwitch.wait(Until.checked(false), TIMEOUT)
+        SettingsUi.serviceEnabledSwitch.click()
+        SettingsUi.serviceEnabledSwitch.wait(Until.checked(false), TIMEOUT)
         Service.assertStopped()
         
         // turn on
-        App.serviceEnabledSwitch.click()
-        App.serviceEnabledSwitch.wait(Until.checked(true), TIMEOUT)
+        SettingsUi.serviceEnabledSwitch.click()
+        SettingsUi.serviceEnabledSwitch.wait(Until.checked(true), TIMEOUT)
         Service.assertRunning()
     }
     
     @Test
     fun disablingAndEnabledServiceExternallyUpdatesUi() {
-        App.open()
-        App.assertServiceEnabled()
+        SettingsUi.open()
+        SettingsUi.assertServiceEnabled()
         
         // turn off
         Prefs.set(Settings.SERVICE_ENABLED_KEY, false)
-        App.serviceEnabledSwitch.wait(Until.checked(false), TIMEOUT)
+        SettingsUi.serviceEnabledSwitch.wait(Until.checked(false), TIMEOUT)
         
         // turn on
         Prefs.set(Settings.SERVICE_ENABLED_KEY, true)
-        App.serviceEnabledSwitch.wait(Until.checked(true), TIMEOUT)
+        SettingsUi.serviceEnabledSwitch.wait(Until.checked(true), TIMEOUT)
     }
 }
