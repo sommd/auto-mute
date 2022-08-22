@@ -18,7 +18,7 @@
 buildscript {
     ext {
         // Toolkit versions
-        kotlinVersion = '1.6.10'
+        kotlinVersion = '1.7.10'
         javaVersion = JavaVersion.VERSION_1_8
 
         // Get version string from git tag
@@ -83,7 +83,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.2'
+        classpath 'com.android.tools.build:gradle:7.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
@@ -98,12 +98,12 @@ subprojects {
     }
 
     android {
-        compileSdkVersion 31
-        buildToolsVersion "31.0.0"
+        compileSdkVersion 33
+        buildToolsVersion "33.0.0"
 
         defaultConfig {
             minSdkVersion 26
-            targetSdkVersion 31
+            targetSdkVersion 33
 
             versionCode projectVersion.code
             versionName projectVersion.name
@@ -138,9 +138,9 @@ subprojects {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlinVersion"
 
         // AndroidX
-        implementation 'androidx.core:core-ktx:1.7.0'
-        implementation 'androidx.fragment:fragment-ktx:1.4.1'
-        implementation "androidx.appcompat:appcompat:1.4.1"
+        implementation 'androidx.core:core-ktx:1.8.0'
+        implementation 'androidx.fragment:fragment-ktx:1.5.2'
+        implementation "androidx.appcompat:appcompat:1.5.0"
 
         // Test dependencies
         androidTestImplementation "androidx.test:runner:1.4.0"
