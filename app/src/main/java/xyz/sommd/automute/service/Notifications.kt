@@ -160,6 +160,8 @@ class Notifications @Inject constructor(
                     AutoMuteService.ACTION_SHOW
                 )
             )
+            
+            setOngoing(true)
         }.build()
     }
     
