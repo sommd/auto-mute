@@ -66,9 +66,13 @@ class Notifications @Inject constructor(
     }
     
     fun updateStatusNotification() {
-        log { "Updating status notification" }
-        
-        notifManager.notify(STATUS_ID, createStatusNotification())
+        if (notifManager.areNotificationsEnabled()) {
+            log { "Updating status notification" }
+    
+            notifManager.notify(STATUS_ID, createStatusNotification())
+        } else {
+            log { "Notifications disabled, not updating status notification" }
+        }
     }
     
     fun createStatusNotification(): Notification {
