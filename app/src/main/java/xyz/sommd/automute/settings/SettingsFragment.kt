@@ -17,6 +17,7 @@
 
 package xyz.sommd.automute.settings
 
+import android.app.NotificationManager
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings.*
@@ -34,7 +35,14 @@ class SettingsFragment: PreferenceFragmentCompat(), Settings.ChangeListener {
     @Inject
     lateinit var settings: Settings
     
+    @Inject
+    lateinit var notifications: Notifications
+    
+    @Inject
+    lateinit var notifManager: NotificationManager
+    
     private lateinit var serviceEnabledPreference: SwitchPreference
+    private lateinit var notificationSettingsPreference: Preference
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,13 +58,7 @@ class SettingsFragment: PreferenceFragmentCompat(), Settings.ChangeListener {
         setPreferencesFromResource(R.xml.preferences, rootKey)
         
         serviceEnabledPreference = findPreference(Settings.SERVICE_ENABLED_KEY)!!
-        
-        // Setup notifications settings intent
-        findPreference<Preference>("notifications")!!.intent =
-            Intent(ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {
-                putExtra(EXTRA_APP_PACKAGE, BuildConfig.APPLICATION_ID)
-                putExtra(EXTRA_CHANNEL_ID, Notifications.STATUS_CHANNEL)
-            }
+        notificationSettingsPreference = findPreference("notifications")!!
         
         // Set app version string
         findPreference<Preference>("app_version")!!.summary = resources.getString(
@@ -70,6 +72,28 @@ class SettingsFragment: PreferenceFragmentCompat(), Settings.ChangeListener {
         super.onStart()
         
         settings.addChangeListener(this)
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        
+        // Open app notification settings instead of channel notifications settings if notifications
+        // are disabled so that user can enable notifications since trying to enable a channel with
+        // app notifications disabled doesn't work.
+        notificationSettingsPreference.intent = if (notifManager.areNotificationsEnabled()) {
+            Intent(ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {
+                putExtra(EXTRA_CHANNEL_ID, Notifications.STATUS_CHANNEL)
+            }
+        } else {
+            Intent(ACTION_APP_NOTIFICATION_SETTINGS)
+        }.apply {
+            putExtra(EXTRA_APP_PACKAGE, BuildConfig.APPLICATION_ID)
+        }
+        
+        // Update status notification in case notifications were just enabled
+        if (settings.serviceEnabled) {
+            notifications.updateStatusNotification()
+        }
     }
     
     override fun onStop() {
@@ -91,7 +115,7 @@ class SettingsFragment: PreferenceFragmentCompat(), Settings.ChangeListener {
     private fun updateServiceState() {
         // Update state in case change was external (e.g. from Quick Settings)
         serviceEnabledPreference.isChecked = settings.serviceEnabled
-    
+        
         // Start or stop the AutoMuteService
         if (settings.serviceEnabled) {
             AutoMuteService.start(requireContext())
