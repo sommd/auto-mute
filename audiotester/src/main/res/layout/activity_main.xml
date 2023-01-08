@@ -47,6 +47,23 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
+        android:text="@string/text_audio_player_type_label" />
+    
+    <Spinner
+        android:id="@+id/playerTypeSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:entries="@array/spinner_audio_player_type_entries" />
+    
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         android:text="@string/text_audio_usage_label" />
     
     <Spinner

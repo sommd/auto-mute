@@ -19,16 +19,18 @@ package xyz.sommd.audiotester
 
 import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.media.SoundPool
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
 import xyz.sommd.audiotester.databinding.ActivityMainBinding
 
 class MainActivity: AppCompatActivity() {
     companion object {
         val AUDIO_SAMPLES = listOf(
-            "silence"
-        ).map { "android.resource://${BuildConfig.APPLICATION_ID}/raw/$it".toUri() }
+            R.raw.silence,
+            R.raw.chirp,
+            R.raw.tone
+        )
         
         val AUDIO_USAGES = listOf(
             AudioAttributes.USAGE_MEDIA,
@@ -67,24 +69,44 @@ class MainActivity: AppCompatActivity() {
     }
     
     private fun addAudioStream() {
+        val sample =
+            resources.openRawResourceFd(AUDIO_SAMPLES[binding.sampleSpinner.selectedItemPosition])
         val audioAttributes = AudioAttributes.Builder()
             .setUsage(AUDIO_USAGES[binding.usageSpinner.selectedItemPosition])
             .setContentType(AUDIO_CONTENT_TYPES[binding.contentTypeSpinner.selectedItemPosition])
             .build()
-        
-        val mediaPlayer = MediaPlayer()
-        mediaPlayer.setDataSource(this, AUDIO_SAMPLES[binding.sampleSpinner.selectedItemPosition])
-        mediaPlayer.setAudioAttributes(audioAttributes)
-        mediaPlayer.isLooping = true
-        mediaPlayer.prepare()
-        
-        val audioStream = AudioStream(
-            mediaPlayer,
+        val description = AudioStream.Description(
             binding.sampleSpinner.selectedItem as CharSequence,
+            binding.playerTypeSpinner.selectedItem as CharSequence,
             binding.usageSpinner.selectedItem as CharSequence,
             binding.contentTypeSpinner.selectedItem as CharSequence
         )
         
-        adapter.addAudioStream(audioStream)
+        adapter.addAudioStream(
+            when (binding.playerTypeSpinner.selectedItemPosition) {
+                0 -> { // MediaPlayer
+                    val mediaPlayer = MediaPlayer()
+                    mediaPlayer.setDataSource(sample)
+                    mediaPlayer.setAudioAttributes(audioAttributes)
+                    mediaPlayer.isLooping = true
+                    mediaPlayer.prepare()
+                    
+                    MediaPlayerAudioStream(mediaPlayer, description)
+                }
+                1 -> { // SoundPool
+                    val soundPool = SoundPool.Builder()
+                        .setAudioAttributes(audioAttributes)
+                        .build()
+                    soundPool.load(sample, 1)
+                    soundPool.setOnLoadCompleteListener { _, soundId, _ ->
+                        soundPool.play(soundId, 1.0f, 1.0f, 1, -1, 1.0f)
+                        soundPool.autoPause()
+                    }
+                    
+                    SoundPoolAudioStream(soundPool, description)
+                }
+                else -> error("Unknown player type")
+            }
+        )
     }
 }

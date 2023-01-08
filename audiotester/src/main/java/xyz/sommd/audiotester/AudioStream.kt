@@ -18,29 +18,57 @@
 package xyz.sommd.audiotester
 
 import android.media.MediaPlayer
-import xyz.sommd.audiotester.utils.log
+import android.media.SoundPool
 
-class AudioStream(
+interface AudioStream {
+    data class Description(
+        val sampleName: CharSequence,
+        val playerTypeName: CharSequence,
+        val usageName: CharSequence,
+        val contentTypeName: CharSequence
+    )
+    
+    val description: Description
+    
+    val isPlaying: Boolean
+    
+    fun play()
+    
+    fun pause()
+    
+    fun release()
+}
+
+class MediaPlayerAudioStream(
     private val mediaPlayer: MediaPlayer,
-    val sampleName: CharSequence,
-    val usageName: CharSequence,
-    val contentTypeName: CharSequence
-) {
+    override val description: AudioStream.Description,
+): AudioStream {
     
-    val isPlaying get() = mediaPlayer.isPlaying
+    override val isPlaying get() = mediaPlayer.isPlaying
     
-    fun play() {
-        log("Playing: $mediaPlayer")
-        mediaPlayer.start()
+    override fun play() = mediaPlayer.start()
+    
+    override fun pause() = mediaPlayer.pause()
+    
+    override fun release() = mediaPlayer.release()
+}
+
+class SoundPoolAudioStream(
+    private val soundPool: SoundPool,
+    override val description: AudioStream.Description,
+): AudioStream {
+    override var isPlaying: Boolean = false
+        private set
+    
+    override fun play() {
+        isPlaying = true
+        soundPool.autoResume()
     }
     
-    fun pause() {
-        log("Pausing: $mediaPlayer")
-        mediaPlayer.pause()
+    override fun pause() {
+        isPlaying = false
+        soundPool.autoPause()
     }
     
-    fun release() {
-        log("Releasing: $mediaPlayer")
-        mediaPlayer.release()
-    }
+    override fun release() = soundPool.release()
 }

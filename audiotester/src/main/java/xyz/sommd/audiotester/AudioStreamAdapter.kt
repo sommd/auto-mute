@@ -43,9 +43,13 @@ class AudioStreamAdapter: RecyclerView.Adapter<AudioStreamAdapter.ViewHolder>() 
                 }
             )
             
-            binding.sampleText.text = audioStream.sampleName
-            binding.usageText.text = audioStream.usageName
-            binding.contentTypeText.text = audioStream.contentTypeName
+            binding.titleText.text = binding.titleText.resources.getString(
+                R.string.text_audio_stream_title,
+                audioStream.description.sampleName,
+                audioStream.description.playerTypeName
+            )
+            binding.usageText.text = audioStream.description.usageName
+            binding.contentTypeText.text = audioStream.description.contentTypeName
         }
         
         override fun onClick(v: View) {

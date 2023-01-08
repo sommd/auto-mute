@@ -19,6 +19,7 @@
     <string name="app_name">Audio Tester</string>
     
     <string name="text_audio_sample_label">Audio Sample</string>
+    <string name="text_audio_player_type_label">Player Type</string>
     <string name="text_audio_usage_label">Usage</string>
     <string name="text_audio_content_type_label">Content Type</string>
     
@@ -26,6 +27,13 @@
     
     <string-array name="spinner_audio_sample_entries">
         <item>Silence</item>
+        <item>Chirp</item>
+        <item>Tone</item>
+    </string-array>
+    
+    <string-array name="spinner_audio_player_type_entries">
+        <item>MediaPlayer</item>
+        <item>SoundPool</item>
     </string-array>
     
     <string-array name="spinner_audio_usage_entries">
@@ -42,4 +50,6 @@
         <item>CONTENT_TYPE_SPEECH</item>
         <item>CONTENT_TYPE_UNKNOWN</item>
     </string-array>
+    
+    <string name="text_audio_stream_title">%1$s (%2$s)</string>
 </resources>
