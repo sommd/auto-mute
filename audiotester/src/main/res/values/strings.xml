@@ -33,6 +33,7 @@
     
     <string-array name="spinner_audio_player_type_entries">
         <item>MediaPlayer</item>
+        <item>AsyncPlayer</item>
         <item>SoundPool</item>
     </string-array>
     

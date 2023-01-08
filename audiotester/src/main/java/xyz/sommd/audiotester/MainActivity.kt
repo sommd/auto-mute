@@ -17,9 +17,12 @@
 
 package xyz.sommd.audiotester
 
+import android.content.ContentResolver
+import android.media.AsyncPlayer
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.media.SoundPool
+import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import xyz.sommd.audiotester.databinding.ActivityMainBinding
@@ -69,8 +72,7 @@ class MainActivity: AppCompatActivity() {
     }
     
     private fun addAudioStream() {
-        val sample =
-            resources.openRawResourceFd(AUDIO_SAMPLES[binding.sampleSpinner.selectedItemPosition])
+        val sample = AUDIO_SAMPLES[binding.sampleSpinner.selectedItemPosition]
         val audioAttributes = AudioAttributes.Builder()
             .setUsage(AUDIO_USAGES[binding.usageSpinner.selectedItemPosition])
             .setContentType(AUDIO_CONTENT_TYPES[binding.contentTypeSpinner.selectedItemPosition])
@@ -86,18 +88,37 @@ class MainActivity: AppCompatActivity() {
             when (binding.playerTypeSpinner.selectedItemPosition) {
                 0 -> { // MediaPlayer
                     val mediaPlayer = MediaPlayer()
-                    mediaPlayer.setDataSource(sample)
+                    mediaPlayer.setDataSource(resources.openRawResourceFd(sample))
                     mediaPlayer.setAudioAttributes(audioAttributes)
                     mediaPlayer.isLooping = true
                     mediaPlayer.prepare()
                     
                     MediaPlayerAudioStream(mediaPlayer, description)
                 }
-                1 -> { // SoundPool
+                1 -> { // AsyncPlayer
+                    AsyncPlayerAudioStream(
+                        AsyncPlayer(description.toString()),
+                        this,
+                        Uri.parse(
+                            "${
+                                ContentResolver.SCHEME_ANDROID_RESOURCE
+                            }://${
+                                resources.getResourcePackageName(sample)
+                            }/${
+                                resources.getResourceTypeName(sample)
+                            }/${
+                                resources.getResourceEntryName(sample)
+                            }"
+                        ),
+                        audioAttributes,
+                        description
+                    )
+                }
+                2 -> { // SoundPool
                     val soundPool = SoundPool.Builder()
                         .setAudioAttributes(audioAttributes)
                         .build()
-                    soundPool.load(sample, 1)
+                    soundPool.load(this, sample, 1)
                     soundPool.setOnLoadCompleteListener { _, soundId, _ ->
                         soundPool.play(soundId, 1.0f, 1.0f, 1, -1, 1.0f)
                         soundPool.autoPause()

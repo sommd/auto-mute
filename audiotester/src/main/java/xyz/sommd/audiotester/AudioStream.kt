@@ -17,8 +17,12 @@
 
 package xyz.sommd.audiotester
 
+import android.content.Context
+import android.media.AsyncPlayer
+import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.media.SoundPool
+import android.net.Uri
 
 interface AudioStream {
     data class Description(
@@ -51,6 +55,32 @@ class MediaPlayerAudioStream(
     override fun pause() = mediaPlayer.pause()
     
     override fun release() = mediaPlayer.release()
+}
+
+class AsyncPlayerAudioStream(
+    private val asyncPlayer: AsyncPlayer,
+    private val context: Context,
+    private val uri: Uri,
+    private val audioAttributes: AudioAttributes,
+    override val description: AudioStream.Description
+): AudioStream {
+    
+    override var isPlaying: Boolean = false
+        private set
+    
+    override fun play() {
+        isPlaying = true
+        asyncPlayer.play(context, uri, true, audioAttributes)
+    }
+    
+    override fun pause() {
+        isPlaying = false
+        asyncPlayer.stop()
+    }
+    
+    override fun release() {
+        pause()
+    }
 }
 
 class SoundPoolAudioStream(
