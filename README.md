@@ -56,7 +56,7 @@ The API used to monitor audio streams ([AudioManager.getActivePlaybackConfigurat
 ## License
 
 ```
-Copyright (C) 2018 David Sommerich
+Copyright (C) 2024 Dana Sommerich
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
