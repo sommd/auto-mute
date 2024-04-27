@@ -18,6 +18,8 @@
 apply plugin: 'kotlin-kapt'
 
 android {
+    namespace 'xyz.sommd.automute'
+
     defaultConfig {
         applicationId "xyz.sommd.automute"
     }
