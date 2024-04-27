@@ -23,11 +23,10 @@ enum class AudioType {
     MUSIC,
     MEDIA,
     ASSISTANT,
-    GAME,
-    OTHER
+    GAME
 }
 
-val AudioAttributes.audioType: AudioType
+val AudioAttributes.audioType: AudioType?
     get() = when (usage) {
         AudioAttributes.USAGE_GAME -> AudioType.GAME
         AudioAttributes.USAGE_ASSISTANT,
@@ -39,7 +38,7 @@ val AudioAttributes.audioType: AudioType
         AudioAttributes.USAGE_UNKNOWN -> when (contentType) {
             AudioAttributes.CONTENT_TYPE_MUSIC -> AudioType.MUSIC
             AudioAttributes.CONTENT_TYPE_MOVIE -> AudioType.MEDIA
-            else -> AudioType.OTHER
+            else -> null
         }
-        else -> AudioType.OTHER
+        else -> null
     }

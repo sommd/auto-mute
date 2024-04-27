@@ -131,9 +131,25 @@
         <item quantity="one">%1$d type of audio playing</item>
         <item quantity="other">%1$d types of audio playing</item>
     </plurals>
-    <plurals name="notif_status_type_count">
-        <item quantity="one">%1$d %2$s audio stream playing</item>
-        <item quantity="other">%1$d %2$s audio streams playing</item>
+    <plurals name="notif_status_music_count">
+        <item quantity="one">%1$d music audio stream playing</item>
+        <item quantity="other">%1$d music audio streams playing</item>
+    </plurals>
+    <plurals name="notif_status_media_count">
+        <item quantity="one">%1$d media audio stream playing</item>
+        <item quantity="other">%1$d media audio streams playing</item>
+    </plurals>
+    <plurals name="notif_status_assistant_count">
+        <item quantity="one">%1$d assistant audio stream playing</item>
+        <item quantity="other">%1$d assistant audio streams playing</item>
+    </plurals>
+    <plurals name="notif_status_game_count">
+        <item quantity="one">%1$d game audio stream playing</item>
+        <item quantity="other">%1$d game audio streams playing</item>
+    </plurals>
+    <plurals name="notif_status_other_count">
+        <item quantity="one">%1$d other audio stream playing</item>
+        <item quantity="other">%1$d other audio streams playing</item>
     </plurals>
     <string name="notif_status_action_mute">Mute</string>
     <string name="notif_status_action_unmute">Unmute</string>
@@ -147,13 +163,4 @@
     <string name="qs_tile_enable_subtitle_disabled">Disabled</string>
     <string name="qs_tile_enable_state_enabled">Auto Mute service is enabled</string>
     <string name="qs_tile_enable_state_disabled">Auto Mute service is disabled</string>
-    
-    <!-- Other -->
-    <string-array name="audio_type_names">
-        <item>music</item>
-        <item>media</item>
-        <item>assistant</item>
-        <item>game</item>
-        <item>other</item>
-    </string-array>
 </resources>

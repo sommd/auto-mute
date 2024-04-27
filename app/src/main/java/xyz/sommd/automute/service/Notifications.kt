@@ -26,10 +26,6 @@ import android.content.Intent
 import android.graphics.drawable.Icon
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
-import android.util.SparseIntArray
-import androidx.core.util.getOrDefault
-import androidx.core.util.set
-import androidx.core.util.size
 import xyz.sommd.automute.R
 import xyz.sommd.automute.settings.SettingsActivity
 import xyz.sommd.automute.utils.isVolumeOff
@@ -77,8 +73,8 @@ class Notifications @Inject constructor(
     
     fun createStatusNotification(): Notification {
         val playbackConfigs = audioManager.activePlaybackConfigurations
-        val typeCounts = countAudioTypes(playbackConfigs)
         val totalStreams = playbackConfigs.size
+        val typeCounts = countAudioTypes(playbackConfigs)
         val totalTypes = typeCounts.size
         
         val muted = audioManager.isVolumeOff()
@@ -102,10 +98,7 @@ class Notifications @Inject constructor(
             )
             
             if (totalTypes == 1) {
-                // Count of only audio type
-                val typeOrdinal = typeCounts.keyAt(0)
-                val typeCount = typeCounts.valueAt(0)
-                setContentText(getTypeCountText(typeOrdinal, typeCount))
+                setContentText(getTypeCountText(typeCounts.keys.first(), typeCounts.values.first()))
             } else {
                 // Number of different audio types
                 setContentText(
@@ -116,16 +109,12 @@ class Notifications @Inject constructor(
                 )
                 
                 if (totalTypes > 0) {
-                    val style = Notification.InboxStyle()
-                    
                     // Counts of each audio type
-                    for (i in 0 until typeCounts.size) {
-                        val typeOrdinal = typeCounts.keyAt(i)
-                        val typeCount = typeCounts.valueAt(i)
-                        style.addLine(getTypeCountText(typeOrdinal, typeCount))
-                    }
-                    
-                    setStyle(style)
+                    setStyle(Notification.InboxStyle().apply {
+                        for ((type, count) in typeCounts) {
+                            addLine(getTypeCountText(type, count))
+                        }
+                    })
                 }
             }
             
@@ -169,22 +158,27 @@ class Notifications @Inject constructor(
         }.build()
     }
     
-    private fun countAudioTypes(playbackConfigs: List<AudioPlaybackConfiguration>): SparseIntArray {
-        // Count number of streams of each type
-        val typeCounts = SparseIntArray(0)
-        for (config in playbackConfigs) {
-            val ordinal = config.audioAttributes.audioType.ordinal
-            typeCounts[ordinal] = typeCounts.getOrDefault(ordinal, 0) + 1
-        }
+    private fun countAudioTypes(playbackConfigs: List<AudioPlaybackConfiguration>): Map<AudioType?, Int> {
+        val counts = playbackConfigs.groupingBy { it.audioAttributes.audioType }.eachCount()
+        
+        val typeCounts = mutableMapOf<AudioType?, Int>()
+        AudioType.values().forEach { type -> counts[type]?.let { typeCounts[type] = it } }
+        counts[null]?.let { typeCounts[null] = it }
         
         return typeCounts
     }
     
-    private fun getTypeCountText(typeOrdinal: Int, typeCount: Int): CharSequence {
-        val typeName = res.getStringArray(R.array.audio_type_names)[typeOrdinal]
+    private fun getTypeCountText(type: AudioType?, count: Int): CharSequence {
         return res.getQuantityString(
-            R.plurals.notif_status_type_count, typeCount,
-            typeCount, typeName
+            when (type) {
+                AudioType.MUSIC -> R.plurals.notif_status_music_count
+                AudioType.MEDIA -> R.plurals.notif_status_media_count
+                AudioType.ASSISTANT -> R.plurals.notif_status_assistant_count
+                AudioType.GAME -> R.plurals.notif_status_game_count
+                null -> R.plurals.notif_status_other_count
+            },
+            count,
+            count
         )
     }
     

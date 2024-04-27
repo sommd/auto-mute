@@ -125,12 +125,16 @@ class AutoMuter @Inject constructor(
         val audioAttr = config.audioAttributes
         val audioType = audioAttr.audioType
         
-        log { "Playback started (type=$audioType, attr=$audioAttr)" }
-        
-        // Cancel scheduled auto mute if audio we care about is now playing
-        if (audioType != AudioType.OTHER) {
-            cancelAutoMute()
+        if (audioType != null) {
+            log { "Playback started (type=$audioType, attr=$audioAttr)" }
+        } else {
+            // Ignore unknown audio types
+            log { "Playback started with unknown type, ignoring (attr=$audioAttr)" }
+            return
         }
+        
+        // Cancel scheduled auto mute since audio we care about is now playing
+        cancelAutoMute()
         
         // Get unmute mode
         val unmuteMode = getUnmuteMode(audioType)
@@ -149,7 +153,6 @@ class AutoMuter @Inject constructor(
         AudioType.MEDIA -> settings.autoUnmuteMediaMode
         AudioType.ASSISTANT -> settings.autoUnmuteAssistantMode
         AudioType.GAME -> settings.autoUnmuteGameMode
-        AudioType.OTHER -> Settings.UnmuteMode.NEVER
     }
     
     private fun autoUnmute(unmuteMode: Settings.UnmuteMode, stream: Int = STREAM_DEFAULT) {
@@ -176,25 +179,28 @@ class AutoMuter @Inject constructor(
     // Auto mute
     
     override fun onAudioPlaybackStopped(config: AudioPlaybackConfiguration) {
-        log { "Playback stopped (type=${config.audioAttributes.audioType}, attr=${config.audioAttributes})" }
+        // Get audio type
+        val audioAttr = config.audioAttributes
+        val audioType = audioAttr.audioType
+        
+        if (audioType != null) {
+            log { "Playback stopped (type=$audioType, attr=$audioAttr)" }
+        } else {
+            // Ignore unknown audio types
+            log { "Playback stopped with unknown type, ignoring (attr=$audioAttr)" }
+            return
+        }
         
         if (!settings.autoMuteEnabled) {
             log { "Auto mute disabled, not auto muting" }
         } else if (settings.autoMuteHeadphonesDisabled && outputMonitor.isOutputExternal) {
             log { "Audio output external, not auto muting" }
-        } else {
-            // Check if any audio types are playing that we care about
-            val audioPlaying = playbackMonitor.playbackConfigs
-                .any { it.audioAttributes.audioType != AudioType.OTHER }
+        } else if (playbackMonitor.playbackConfigs.isEmpty()) {
+            log { "All known audio stopped, scheduling auto mute" }
             
-            // Schedule auto mute if no audio playing
-            if (!audioPlaying) {
-                log { "Audio stopped, scheduling auto mute" }
-                
-                scheduleAutoMute()
-            } else {
-                log { "Audio still playing, not auto muting" }
-            }
+            scheduleAutoMute()
+        } else {
+            log { "Some known audio still playing, not auto muting" }
         }
     }
     
