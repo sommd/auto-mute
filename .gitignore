@@ -1,9 +1,10 @@
 # Android Studio
 /.idea/libraries/
 /.idea/caches/
-/.idea/dictionaries/
 /.idea/misc.xml
+/.idea/modules.xml
 /.idea/workspace.xml
+/.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
 /.idea/deploymentTargetDropDown.xml
 *.iml
@@ -12,7 +13,6 @@
 /.gradle/
 /build/
 /local.properties
-/gradle.properties
 
 # Build
 release/
