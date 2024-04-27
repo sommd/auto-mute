@@ -20,7 +20,6 @@ package xyz.sommd.automute.utils
 import android.content.Context
 import android.util.AttributeSet
 import androidx.preference.SeekBarPreference
-import xyz.sommd.automute.R
 import kotlin.math.roundToInt
 
 /**
@@ -33,7 +32,7 @@ import kotlin.math.roundToInt
 class FloatSeekBarPreference @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.seekBarPreferenceStyle,
+    defStyleAttr: Int = androidx.preference.R.attr.seekBarPreferenceStyle,
     defStyleRes: Int = 0
 ): SeekBarPreference(context, attrs, defStyleAttr, defStyleRes) {
     var floatValue: Float
