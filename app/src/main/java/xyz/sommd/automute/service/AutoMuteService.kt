@@ -17,12 +17,15 @@
 
 package xyz.sommd.automute.service
 
+import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.IBinder
+import androidx.core.app.ServiceCompat
 import xyz.sommd.automute.di.Injection
 import xyz.sommd.automute.utils.STREAM_DEFAULT
 import xyz.sommd.automute.utils.log
@@ -71,6 +74,7 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, AudioVolumeMoni
     
     // Service
     
+    @SuppressLint("InlinedApi")
     override fun onCreate() {
         log { "Starting" }
         
@@ -86,7 +90,12 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, AudioVolumeMoni
         
         // Show foreground status notification
         val statusNotification = notifications.createStatusNotification()
-        startForeground(Notifications.STATUS_ID, statusNotification)
+        ServiceCompat.startForeground(
+            this,
+            Notifications.STATUS_ID,
+            statusNotification,
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+        )
         
         // Start auto muter
         autoMuter.start()

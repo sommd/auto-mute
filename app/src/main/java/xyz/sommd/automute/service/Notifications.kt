@@ -23,9 +23,10 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Icon
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
+import androidx.core.app.NotificationCompat
+import androidx.core.graphics.drawable.IconCompat
 import xyz.sommd.automute.R
 import xyz.sommd.automute.settings.SettingsActivity
 import xyz.sommd.automute.utils.isVolumeOff
@@ -79,7 +80,7 @@ class Notifications @Inject constructor(
         
         val muted = audioManager.isVolumeOff()
         
-        return Notification.Builder(context, STATUS_CHANNEL).apply {
+        return NotificationCompat.Builder(context, STATUS_CHANNEL).apply {
             setSmallIcon(
                 when {
                     muted -> R.drawable.ic_audio_mute
@@ -109,12 +110,13 @@ class Notifications @Inject constructor(
                 )
                 
                 if (totalTypes > 0) {
+                    val style = NotificationCompat.InboxStyle()
                     // Counts of each audio type
-                    setStyle(Notification.InboxStyle().apply {
-                        for ((type, count) in typeCounts) {
-                            addLine(getTypeCountText(type, count))
-                        }
-                    })
+                    for ((type, count) in typeCounts) {
+                        style.addLine(getTypeCountText(type, count))
+                    }
+                    
+                    setStyle(style)
                 }
             }
             
@@ -154,6 +156,8 @@ class Notifications @Inject constructor(
                 )
             )
             
+            setCategory(NotificationCompat.CATEGORY_STATUS)
+            setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             setOngoing(true)
         }.build()
     }
@@ -162,7 +166,7 @@ class Notifications @Inject constructor(
         val counts = playbackConfigs.groupingBy { it.audioAttributes.audioType }.eachCount()
         
         val typeCounts = mutableMapOf<AudioType?, Int>()
-        AudioType.values().forEach { type -> counts[type]?.let { typeCounts[type] = it } }
+        AudioType.entries.forEach { type -> counts[type]?.let { typeCounts[type] = it } }
         counts[null]?.let { typeCounts[null] = it }
         
         return typeCounts
@@ -182,9 +186,10 @@ class Notifications @Inject constructor(
         )
     }
     
-    private fun buildAction(icon: Int, title: Int, action: String): Notification.Action {
-        return Notification.Action.Builder(
-            Icon.createWithResource(context, icon), res.getText(title),
+    private fun buildAction(icon: Int, title: Int, action: String): NotificationCompat.Action {
+        return NotificationCompat.Action.Builder(
+            IconCompat.createWithResource(context, icon),
+            res.getText(title),
             PendingIntent.getService(
                 context, 0, Intent(
                     action, null, context, AutoMuteService::class.java
