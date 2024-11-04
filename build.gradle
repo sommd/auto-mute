@@ -18,8 +18,8 @@
 buildscript {
     ext {
         // Toolkit versions
-        kotlinVersion = '1.7.10'
-        javaVersion = JavaVersion.VERSION_1_8
+        kotlinVersion = '1.9.25'
+        javaVersion = JavaVersion.VERSION_11
 
         // Get version string from git tag
         def describe = ['git', 'describe', '--tags', '--long', '--dirty'].execute().text.trim()
@@ -83,7 +83,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.3.2'
+        classpath 'com.android.tools.build:gradle:8.7.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
@@ -98,7 +98,7 @@ subprojects {
     }
 
     android {
-        compileSdkVersion 34
+        compileSdkVersion 35
 
         defaultConfig {
             minSdkVersion 26
@@ -130,6 +130,10 @@ subprojects {
         compileOptions {
             sourceCompatibility javaVersion
             targetCompatibility javaVersion
+        }
+
+        kotlinOptions {
+            jvmTarget = javaVersion
         }
     }
 
