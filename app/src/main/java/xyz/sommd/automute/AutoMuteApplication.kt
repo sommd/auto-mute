@@ -21,6 +21,9 @@ import android.app.Application
 import com.google.android.material.color.DynamicColors
 import xyz.sommd.automute.di.AutoMuteComponent
 import xyz.sommd.automute.di.DaggerAutoMuteComponent
+import xyz.sommd.automute.di.Injection
+import xyz.sommd.automute.service.Notifications
+import javax.inject.Inject
 
 class AutoMuteApplication: Application() {
     companion object {
@@ -28,13 +31,18 @@ class AutoMuteApplication: Application() {
             private set
     }
     
+    @Inject
+    lateinit var notifications: Notifications
+    
     override fun onCreate() {
         super.onCreate()
-        
         component = DaggerAutoMuteComponent.builder()
             .context(this)
             .build()
+        Injection.inject(this)
         
         DynamicColors.applyToActivitiesIfAvailable(this)
+        
+        notifications.createChannels()
     }
 }

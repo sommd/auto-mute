@@ -20,6 +20,7 @@ package xyz.sommd.automute.di
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
+import xyz.sommd.automute.AutoMuteApplication
 import xyz.sommd.automute.service.AutoMuteService
 import xyz.sommd.automute.settings.QuickSettingsTileService
 import xyz.sommd.automute.settings.Settings
@@ -45,6 +46,7 @@ interface AutoMuteComponent {
     val settings: Settings
     
     // Injectors
+    fun inject(target: AutoMuteApplication)
     fun inject(target: AutoMuteService)
     fun inject(target: SettingsFragment)
     fun inject(target: QuickSettingsTileService)

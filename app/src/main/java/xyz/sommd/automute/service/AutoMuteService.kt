@@ -80,9 +80,6 @@ class AutoMuteService: Service(), AudioPlaybackMonitor.Listener, AudioVolumeMoni
         
         Injection.inject(this)
         
-        // Setup notifications
-        notifications.createChannels()
-        
         // Start monitors
         playbackMonitor.addListener(this)
         volumeMonitor.addListener(this, STREAM_DEFAULT)
