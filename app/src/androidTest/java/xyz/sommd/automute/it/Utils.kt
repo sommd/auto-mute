@@ -41,7 +41,7 @@ val TIMEOUT = 5.seconds
 val AUTO_MUTE_DELAY = 1.seconds
 val EPSILON = 100.milliseconds
 
-val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())!!
+val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 val context = ApplicationProvider.getApplicationContext<Context>()!!
 
 fun sleep(duration: Duration) = Thread.sleep(duration.inWholeMilliseconds)
