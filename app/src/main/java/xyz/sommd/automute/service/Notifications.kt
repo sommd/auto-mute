@@ -25,6 +25,8 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.IconCompat
 import xyz.sommd.automute.R
@@ -83,9 +85,9 @@ class Notifications @Inject constructor(
         return NotificationCompat.Builder(context, STATUS_CHANNEL).apply {
             setSmallIcon(
                 when {
-                    muted -> R.drawable.ic_audio_mute
-                    totalStreams == 0 -> R.drawable.ic_audio_unmute
-                    else -> R.drawable.ic_audio_playing
+                    muted -> R.drawable.ic_status_muted
+                    totalStreams == 0 -> R.drawable.ic_status_unmuted
+                    else -> R.drawable.ic_status_playing
                 }
             )
             
@@ -186,14 +188,19 @@ class Notifications @Inject constructor(
         )
     }
     
-    private fun buildAction(icon: Int, title: Int, action: String): NotificationCompat.Action {
+    private fun buildAction(
+        @DrawableRes icon: Int,
+        @StringRes title: Int,
+        action: String
+    ): NotificationCompat.Action {
         return NotificationCompat.Action.Builder(
             IconCompat.createWithResource(context, icon),
             res.getText(title),
             PendingIntent.getService(
-                context, 0, Intent(
-                    action, null, context, AutoMuteService::class.java
-                ), PendingIntent.FLAG_IMMUTABLE
+                context,
+                0,
+                Intent(action, null, context, AutoMuteService::class.java),
+                PendingIntent.FLAG_IMMUTABLE
             )
         ).build()
     }
