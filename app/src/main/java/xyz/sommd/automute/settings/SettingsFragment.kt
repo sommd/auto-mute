@@ -21,9 +21,15 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings.*
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
+import androidx.preference.TwoStatePreference
+import androidx.recyclerview.widget.RecyclerView
 import xyz.sommd.automute.BuildConfig
 import xyz.sommd.automute.R
 import xyz.sommd.automute.di.Injection
@@ -41,7 +47,7 @@ class SettingsFragment: PreferenceFragmentCompat(), Settings.ChangeListener {
     @Inject
     lateinit var notifManager: NotificationManager
     
-    private lateinit var serviceEnabledPreference: SwitchPreference
+    private lateinit var serviceEnabledPreference: TwoStatePreference
     private lateinit var notificationSettingsPreference: Preference
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +72,20 @@ class SettingsFragment: PreferenceFragmentCompat(), Settings.ChangeListener {
             BuildConfig.VERSION_NAME,
             BuildConfig.BUILD_TYPE
         )
+    }
+    
+    override fun onCreateRecyclerView(
+        inflater: LayoutInflater,
+        parent: ViewGroup,
+        savedInstanceState: Bundle?
+    ): RecyclerView = super.onCreateRecyclerView(inflater, parent, savedInstanceState).apply {
+        // Add padding to bottom so that content isn't stuck behind navigation bar (really hacky, wish this was easy to do in the layout instead)
+        clipToPadding = false
+        ViewCompat.setOnApplyWindowInsetsListener(this) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            view.setPaddingRelative(0, 0, 0, insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
     }
     
     override fun onStart() {

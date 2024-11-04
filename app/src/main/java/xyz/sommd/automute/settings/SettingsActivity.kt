@@ -18,17 +18,14 @@
 package xyz.sommd.automute.settings
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.commit
+import xyz.sommd.automute.R
 
 class SettingsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        
-        if (savedInstanceState == null) {
-            supportFragmentManager.commit {
-                replace(android.R.id.content, SettingsFragment())
-            }
-        }
+        setContentView(R.layout.activity_settings)
     }
 }

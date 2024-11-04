@@ -18,6 +18,7 @@
 package xyz.sommd.automute
 
 import android.app.Application
+import com.google.android.material.color.DynamicColors
 import xyz.sommd.automute.di.AutoMuteComponent
 import xyz.sommd.automute.di.DaggerAutoMuteComponent
 
@@ -29,8 +30,11 @@ class AutoMuteApplication: Application() {
     
     override fun onCreate() {
         super.onCreate()
+        
         component = DaggerAutoMuteComponent.builder()
             .context(this)
             .build()
+        
+        DynamicColors.applyToActivitiesIfAvailable(this)
     }
 }

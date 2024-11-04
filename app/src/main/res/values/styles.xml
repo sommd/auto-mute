@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
-    <style name="AppTheme" parent="Theme.AppCompat">
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+    <style name="AppTheme" parent="Theme.Material3.DynamicColors.Dark.NoActionBar">
+        <item name="switchPreferenceStyle">@style/MaterialSwitchPreference</item>
+    </style>
+    
+    <!-- https://github.com/material-components/material-components-android/issues/2828 -->
+    <style name="MaterialSwitchPreference" parent="Preference.SwitchPreference.Material">
+        <item name="widgetLayout">@layout/preference_widget_material_switch</item>
     </style>
 </resources>
