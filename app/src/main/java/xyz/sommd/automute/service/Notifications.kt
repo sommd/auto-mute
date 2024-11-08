@@ -85,9 +85,9 @@ class Notifications @Inject constructor(
         return NotificationCompat.Builder(context, STATUS_CHANNEL).apply {
             setSmallIcon(
                 when {
-                    muted -> R.drawable.ic_status_muted
-                    totalStreams == 0 -> R.drawable.ic_status_unmuted
-                    else -> R.drawable.ic_status_playing
+                    muted -> R.drawable.ic_audio_mute
+                    totalStreams == 0 -> R.drawable.ic_audio_unmute
+                    else -> R.drawable.ic_audio_playing
                 }
             )
             
