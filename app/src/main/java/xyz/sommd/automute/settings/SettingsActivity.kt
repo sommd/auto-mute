@@ -17,14 +17,27 @@
 
 package xyz.sommd.automute.settings
 
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import xyz.sommd.automute.R
 
 class SettingsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
+        if (Build.VERSION.SDK_INT >= 29) {
+            enableEdgeToEdge()
+        } else {
+            // When system Dark Mode isn't supported, enableEdgeToEdge() assumes light mode, but we
+            // use a dark theme so we need to override it
+            enableEdgeToEdge(
+                statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+                navigationBarStyle = SystemBarStyle.dark(Color.argb(0x80, 0x1b, 0x1b, 0x1b))
+            )
+        }
+        
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
     }

@@ -17,14 +17,5 @@
 
 <resources>
     
-    <style name="ParentTheme" parent="Theme.Material3.DynamicColors.Dark.NoActionBar" />
-    
-    <style name="AppTheme" parent="ParentTheme">
-        <item name="switchPreferenceStyle">@style/MaterialSwitchPreference</item>
-    </style>
-    
-    <!-- https://github.com/material-components/material-components-android/issues/2828 -->
-    <style name="MaterialSwitchPreference" parent="Preference.SwitchPreference.Material">
-        <item name="widgetLayout">@layout/preference_widget_material_switch</item>
-    </style>
+    <style name="ParentTheme" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar" />
 </resources>
