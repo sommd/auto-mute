@@ -30,7 +30,7 @@
         <service
             android:name=".settings.QuickSettingsTileService"
             android:label="@string/qs_tile_enable_label"
-            android:icon="@drawable/ic_qs_icon"
+            android:icon="@drawable/ic_qs"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
             android:exported="true">
             <intent-filter>
