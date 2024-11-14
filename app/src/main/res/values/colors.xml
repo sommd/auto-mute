@@ -16,6 +16,7 @@
   -->
 
 <resources>
-    <color name="ic_launcher_background">#263238</color>
-    <color name="ic_launcher_foreground">#E8EAF6</color>
+    <!-- https://m1.material.io/style/color.html#color-color-palette -->
+    <color name="ic_launcher_background">#263238</color> <!-- Blue Grey 900 -->
+    <color name="ic_launcher_foreground">#E8EAF6</color> <!-- Indigo 50 -->
 </resources>
