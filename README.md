@@ -1,12 +1,12 @@
 # Auto Mute [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-<img align="right" height="96px" alt="App Icon" src="app/src/main/ic_launcher-web.png">
+<img align="right" width="96px" height="96px" alt="App Icon" src="app/src/main/ic_web.png">
 
 Automatically mute or unmute your media volume based on the type of audio playing for Android 8.0 and up.
 
 Auto Mute can be configured to automatically unmute media audio or show the media volume control when music, media, assistant or game audio starts playing. It can also automatically mute after audio stops playing.
 
-[<img height="92px" alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png">](https://play.google.com/store/apps/details?id=xyz.sommd.automute&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
+[<img height="92px" alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png">](https://play.google.com/store/apps/details?id=xyz.sommd.automute&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
 
 [Or download the latest release.](https://github.com/sommd/auto-mute/releases/latest)
 
