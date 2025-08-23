@@ -1,4 +1,4 @@
-# Auto Mute [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+# Auto Mute [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [<img src="https://shields.rbtlog.dev/simple/xyz.sommd.automute" alt="RB Status">](https://shields.rbtlog.dev/xyz.sommd.automute)
 
 <img align="right" width="96px" height="96px" alt="App Icon" src="app/src/main/ic_web.png">
 
