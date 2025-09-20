@@ -1,0 +1,2 @@
+json_key_file("~/.config/fastlane/key.json")
+package_name("xyz.sommd.automute")

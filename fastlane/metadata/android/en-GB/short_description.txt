@@ -1,0 +1,1 @@
+Automatically mute or unmute media volume based on the type of audio playing

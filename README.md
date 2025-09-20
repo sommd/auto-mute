@@ -13,9 +13,9 @@ Auto Mute can be configured to automatically unmute media audio or show the medi
 ## Screenshots
 
 <p align="center">
-    <img width="273px" alt="Auto Mute Settings Screenshot" src=".readme/screenshots/auto_mute_settings.png">
-    <img width="273px" alt="Auto Unmute Settings Screenshot" src=".readme/screenshots/auto_unmute_settings.png">
-    <img width="273px" alt="Status Notification Screenshot" src=".readme/screenshots/status_notification.png">
+    <img width="273px" alt="Auto Mute Settings Screenshot" src="fastlane/metadata/android/en-GB/images/phoneScreenshots/1_en-GB.png">
+    <img width="273px" alt="Auto Unmute Settings Screenshot" src="fastlane/metadata/android/en-GB/images/phoneScreenshots/2_en-GB.png">
+    <img width="273px" alt="Status Notification Screenshot" src="fastlane/metadata/android/en-GB/images/phoneScreenshots/3_en-GB.png">
 </p>
 
 ## FAQ

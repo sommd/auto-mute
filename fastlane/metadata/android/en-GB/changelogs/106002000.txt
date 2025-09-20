@@ -1,0 +1,2 @@
+- Update UI and icons to Material 3
+- Add support for light mode
