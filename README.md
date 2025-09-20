@@ -7,7 +7,7 @@ Automatically mute or unmute your media volume based on the type of audio playin
 Auto Mute can be configured to automatically unmute media audio or show the media volume control when music, media, assistant or game audio starts playing. It can also automatically mute after audio stops playing.
 
 [<img height="92px" alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png">](https://play.google.com/store/apps/details?id=xyz.sommd.automute&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
-[<img height="92px" alt="Get it at IzzyOnDroid" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png">](https://apt.izzysoft.de/packages/xyz.sommd.automute)
+[<img height="92px" alt="Get it on IzzyOnDroid" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png">](https://apt.izzysoft.de/packages/xyz.sommd.automute)
 
 [Or download the latest release.](https://github.com/sommd/auto-mute/releases/latest)
 
